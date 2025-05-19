@@ -1,2 +1,2 @@
-# HRMS---Frontend
+# HRMS-Frontend
 HRMS Frontend
