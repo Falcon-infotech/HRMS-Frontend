@@ -78,6 +78,7 @@ const Profile: React.FC = () => {
       console.log(response.data);
       toast.success('Files uploaded successfully!');
       setSelectedFiles([]);
+      setTitle("")
     } catch (error) {
       console.error(error);
       toast.error('Upload failed. Please try again.');
