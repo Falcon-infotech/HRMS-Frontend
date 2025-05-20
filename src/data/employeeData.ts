@@ -1,0 +1,618 @@
+// This file contains mock data for the HRMS application
+
+export interface  Employee {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  password:string;
+  department: string;
+  designation: string;
+  joiningDate: string;
+  status?: 'active' | 'inactive' | 'on-leave';
+  employeeType?: 'full-time' | 'part-time' | 'contract';
+  avatar?: string;
+  address_line?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  country?: string;
+  role?:string;
+  salary:number;
+  empployeeId:string;
+  village?: string;
+  emergencyContact?: {
+    name: string;
+    relationship: string;
+    phone: string;
+  };
+  bankDetails?: {
+    accountName: string;
+    accountNumber: string;
+    bankName: string;
+    ifscCode: string;
+  };
+  documents?: {
+    id: string;
+    name: string;
+    type: string;
+    uploadedOn: string;
+  }[];
+
+  // salary?: {
+  //   basic: number;
+  //   houseRentAllowance: number;
+  //   medicalAllowance: number;
+  //   travelAllowance: number;
+  //   dearnessAllowance: number;
+  //   providentFund: number;
+  //   incomeTax: number;
+  //   professionalTax: number;
+  // };
+}
+
+export const departments = [
+  'Engineering',
+  'Product',
+  'Marketing',
+  'Sales',
+  'Customer Support',
+  'Finance',
+  'Human Resources',
+  'Operations',
+  'Administration',
+];
+
+export const designations = [
+  'Software Engineer',
+  'Senior Software Engineer',
+  'Tech Lead',
+  'Product Manager',
+  'UI/UX Designer',
+  'Marketing Specialist',
+  'Sales Representative',
+  'Finance Manager',
+  'HR Manager',
+  'Operations Manager',
+  'Office Administrator',
+  'Customer Success Representative',
+  'Data Analyst',
+  'Director of Engineering',
+];
+
+export const employeesData: Employee[] = [
+  {
+    id: 'EMP001',
+    first_Name: 'John',
+    last_Name: 'Smith',
+    email: 'john.smith@example.com',
+    phone: '(555) 123-4567',
+    department: 'Engineering',
+    designation: 'Senior Software Engineer',
+    joiningDate: '2022-07-15',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address_line: '123 Main St',
+    city: 'San Francisco',
+    state: 'CA',
+    pincode: '94105',
+    password:"",
+    country: 'USA',
+    emergencyContact: {
+      name: 'Jane Smith',
+      relationship: 'Spouse',
+      phone: '(555) 987-6543',
+    },
+    bankDetails: {
+      accountName: 'John Smith',
+      accountNumber: 'XXXX-XXXX-1234',
+      bankName: 'Chase Bank',
+      ifscCode: 'CHAS12345',
+    },
+    documents: [
+      {
+        id: 'DOC001',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2022-07-10',
+      },
+      {
+        id: 'DOC002',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2022-07-10',
+      },
+    ],
+    salary: {
+      basic: 8000,
+      houseRentAllowance: 3000,
+      medicalAllowance: 1000,
+      travelAllowance: 500,
+      dearnessAllowance: 1500,
+      providentFund: 1200,
+      incomeTax: 2000,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP002',
+    firstName: 'Sarah',
+    lastName: 'Johnson',
+    email: 'sarah.johnson@example.com',
+    phone: '(555) 234-5678',
+    department: 'Product',
+    designation: 'Product Manager',
+    joiningDate: '2021-05-20',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/3746226/pexels-photo-3746226.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '456 Market St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Tom Johnson',
+      relationship: 'Brother',
+      phone: '(555) 876-5432',
+    },
+    bankDetails: {
+      accountName: 'Sarah Johnson',
+      accountNumber: 'XXXX-XXXX-5678',
+      bankName: 'Bank of America',
+      ifscCode: 'BOFA12345',
+    },
+    documents: [
+      {
+        id: 'DOC003',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2021-05-15',
+      },
+      {
+        id: 'DOC004',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2021-05-15',
+      },
+    ],
+    salary: {
+      basic: 9000,
+      houseRentAllowance: 3500,
+      medicalAllowance: 1200,
+      travelAllowance: 600,
+      dearnessAllowance: 1800,
+      providentFund: 1350,
+      incomeTax: 2500,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP003',
+    firstName: 'Michael',
+    lastName: 'Chen',
+    email: 'michael.chen@example.com',
+    phone: '(555) 345-6789',
+    department: 'Engineering',
+    designation: 'Software Engineer',
+    joiningDate: '2023-01-10',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/2269872/pexels-photo-2269872.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '789 Pine St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Wei Chen',
+      relationship: 'Father',
+      phone: '(555) 765-4321',
+    },
+    bankDetails: {
+      accountName: 'Michael Chen',
+      accountNumber: 'XXXX-XXXX-9012',
+      bankName: 'Wells Fargo',
+      ifscCode: 'WEFA12345',
+    },
+    documents: [
+      {
+        id: 'DOC005',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2023-01-05',
+      },
+      {
+        id: 'DOC006',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2023-01-05',
+      },
+    ],
+    salary: {
+      basic: 7000,
+      houseRentAllowance: 2500,
+      medicalAllowance: 800,
+      travelAllowance: 400,
+      dearnessAllowance: 1200,
+      providentFund: 1050,
+      incomeTax: 1800,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP004',
+    firstName: 'Emily',
+    lastName: 'Davis',
+    email: 'emily.davis@example.com',
+    phone: '(555) 456-7890',
+    department: 'Marketing',
+    designation: 'Marketing Specialist',
+    joiningDate: '2022-03-15',
+    status: 'on-leave',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/1239288/pexels-photo-1239288.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '101 Broadway',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Robert Davis',
+      relationship: 'Father',
+      phone: '(555) 654-3210',
+    },
+    bankDetails: {
+      accountName: 'Emily Davis',
+      accountNumber: 'XXXX-XXXX-3456',
+      bankName: 'Citibank',
+      ifscCode: 'CITI12345',
+    },
+    documents: [
+      {
+        id: 'DOC007',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2022-03-10',
+      },
+      {
+        id: 'DOC008',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2022-03-10',
+      },
+    ],
+    salary: {
+      basic: 6500,
+      houseRentAllowance: 2200,
+      medicalAllowance: 700,
+      travelAllowance: 350,
+      dearnessAllowance: 1100,
+      providentFund: 975,
+      incomeTax: 1500,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP005',
+    firstName: 'David',
+    lastName: 'Wilson',
+    email: 'david.wilson@example.com',
+    phone: '(555) 567-8901',
+    department: 'Sales',
+    designation: 'Sales Representative',
+    joiningDate: '2021-11-01',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '202 Valencia St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Linda Wilson',
+      relationship: 'Mother',
+      phone: '(555) 543-2109',
+    },
+    bankDetails: {
+      accountName: 'David Wilson',
+      accountNumber: 'XXXX-XXXX-7890',
+      bankName: 'US Bank',
+      ifscCode: 'USBK12345',
+    },
+    documents: [
+      {
+        id: 'DOC009',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2021-10-27',
+      },
+      {
+        id: 'DOC010',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2021-10-27',
+      },
+    ],
+    salary: {
+      basic: 5500,
+      houseRentAllowance: 1800,
+      medicalAllowance: 600,
+      travelAllowance: 300,
+      dearnessAllowance: 900,
+      providentFund: 825,
+      incomeTax: 1200,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP006',
+    firstName: 'Sophia',
+    lastName: 'Martinez',
+    email: 'sophia.martinez@example.com',
+    phone: '(555) 678-9012',
+    department: 'Human Resources',
+    designation: 'HR Manager',
+    joiningDate: '2020-08-15',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '303 Mission St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Carlos Martinez',
+      relationship: 'Spouse',
+      phone: '(555) 432-1098',
+    },
+    bankDetails: {
+      accountName: 'Sophia Martinez',
+      accountNumber: 'XXXX-XXXX-0123',
+      bankName: 'Chase Bank',
+      ifscCode: 'CHAS12345',
+    },
+    documents: [
+      {
+        id: 'DOC011',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2020-08-10',
+      },
+      {
+        id: 'DOC012',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2020-08-10',
+      },
+    ],
+    salary: {
+      basic: 8500,
+      houseRentAllowance: 3200,
+      medicalAllowance: 1100,
+      travelAllowance: 550,
+      dearnessAllowance: 1600,
+      providentFund: 1275,
+      incomeTax: 2200,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP007',
+    firstName: 'James',
+    lastName: 'Taylor',
+    email: 'james.taylor@example.com',
+    phone: '(555) 789-0123',
+    department: 'Engineering',
+    designation: 'Tech Lead',
+    joiningDate: '2019-06-01',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '404 Howard St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Patricia Taylor',
+      relationship: 'Spouse',
+      phone: '(555) 321-0987',
+    },
+    bankDetails: {
+      accountName: 'James Taylor',
+      accountNumber: 'XXXX-XXXX-4567',
+      bankName: 'Bank of America',
+      ifscCode: 'BOFA12345',
+    },
+    documents: [
+      {
+        id: 'DOC013',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2019-05-27',
+      },
+      {
+        id: 'DOC014',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2019-05-27',
+      },
+    ],
+    salary: {
+      basic: 10000,
+      houseRentAllowance: 4000,
+      medicalAllowance: 1500,
+      travelAllowance: 700,
+      dearnessAllowance: 2000,
+      providentFund: 1500,
+      incomeTax: 3000,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP008',
+    firstName: 'Olivia',
+    lastName: 'Brown',
+    email: 'olivia.brown@example.com',
+    phone: '(555) 890-1234',
+    department: 'Finance',
+    designation: 'Finance Manager',
+    joiningDate: '2020-04-15',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '505 Folsom St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'William Brown',
+      relationship: 'Father',
+      phone: '(555) 210-9876',
+    },
+    bankDetails: {
+      accountName: 'Olivia Brown',
+      accountNumber: 'XXXX-XXXX-8901',
+      bankName: 'Wells Fargo',
+      ifscCode: 'WEFA12345',
+    },
+    documents: [
+      {
+        id: 'DOC015',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2020-04-10',
+      },
+      {
+        id: 'DOC016',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2020-04-10',
+      },
+    ],
+    salary: {
+      basic: 9000,
+      houseRentAllowance: 3500,
+      medicalAllowance: 1200,
+      travelAllowance: 600,
+      dearnessAllowance: 1800,
+      providentFund: 1350,
+      incomeTax: 2500,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP009',
+    firstName: 'William',
+    lastName: 'Lee',
+    email: 'william.lee@example.com',
+    phone: '(555) 901-2345',
+    department: 'Customer Support',
+    designation: 'Customer Success Representative',
+    joiningDate: '2022-09-01',
+    status: 'active',
+    employeeType: 'full-time',
+    avatar: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '606 3rd St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Susan Lee',
+      relationship: 'Mother',
+      phone: '(555) 109-8765',
+    },
+    bankDetails: {
+      accountName: 'William Lee',
+      accountNumber: 'XXXX-XXXX-2345',
+      bankName: 'Citibank',
+      ifscCode: 'CITI12345',
+    },
+    documents: [
+      {
+        id: 'DOC017',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2022-08-27',
+      },
+      {
+        id: 'DOC018',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2022-08-27',
+      },
+    ],
+    salary: {
+      basic: 5000,
+      houseRentAllowance: 1500,
+      medicalAllowance: 500,
+      travelAllowance: 250,
+      dearnessAllowance: 800,
+      providentFund: 750,
+      incomeTax: 1000,
+      professionalTax: 200,
+    },
+  },
+  {
+    id: 'EMP010',
+    firstName: 'Emma',
+    lastName: 'Garcia',
+    email: 'emma.garcia@example.com',
+    phone: '(555) 012-3456',
+    department: 'Product',
+    designation: 'UI/UX Designer',
+    joiningDate: '2021-07-15',
+    status: 'inactive',
+    employeeType: 'part-time',
+    avatar: 'https://images.pexels.com/photos/1024311/pexels-photo-1024311.jpeg?auto=compress&cs=tinysrgb&w=128',
+    address: '707 Harrison St',
+    city: 'San Francisco',
+    state: 'CA',
+    postalCode: '94105',
+    country: 'USA',
+    emergencyContact: {
+      name: 'Miguel Garcia',
+      relationship: 'Father',
+      phone: '(555) 098-7654',
+    },
+    bankDetails: {
+      accountName: 'Emma Garcia',
+      accountNumber: 'XXXX-XXXX-6789',
+      bankName: 'US Bank',
+      ifscCode: 'USBK12345',
+    },
+    documents: [
+      {
+        id: 'DOC019',
+        name: 'Resume',
+        type: 'PDF',
+        uploadedOn: '2021-07-10',
+      },
+      {
+        id: 'DOC020',
+        name: 'ID Proof',
+        type: 'PDF',
+        uploadedOn: '2021-07-10',
+      },
+    ],
+    salary: {
+      basic: 6000,
+      houseRentAllowance: 2000,
+      medicalAllowance: 700,
+      travelAllowance: 350,
+      dearnessAllowance: 1000,
+      providentFund: 900,
+      incomeTax: 1500,
+      professionalTax: 200,
+    },
+  }
+];
+
+export default employeesData;
