@@ -28,7 +28,7 @@ const EmployeeForm: React.FC = () => {
     pincode: '',
     country: '',
     empployeeId: "",
-    id:""
+    id: ""
   });
 
   const [emergencyContact, setEmergencyContact] = useState({
@@ -79,12 +79,12 @@ const EmployeeForm: React.FC = () => {
               last_name: emp.last_name || '',
               email: emp.email || '',
               phone: emp.phone || '',
-              password: '', // Never include this from backend for security
+              password: '',
               department: emp.department || '',
               designation: emp.designation || '',
               joiningDate: emp.joining_date ? new Date(emp.joining_date).toISOString().split('T')[0] : '',
               status: emp.status || 'active',
-              employeeType: emp.employeeType || 'full-time', // fallback if not in response
+              employeeType: emp.employeeType || 'full-time',
               address_line: emp.address?.address_line || '',
               city: emp.address?.city || '',
               state: emp.address?.state || '',
@@ -92,8 +92,8 @@ const EmployeeForm: React.FC = () => {
               country: emp.address?.country || '',
               salary: emp.salary || 0,
               empployeeId: emp._id || '',
-              village: emp.address.village,
-              id:emp._id
+              village: emp?.address?.village,
+              id: emp._id
             });
 
             // if (existingEmployee.emergencyContact) {
@@ -171,7 +171,7 @@ const EmployeeForm: React.FC = () => {
     if (!employee.last_name?.trim()) errors.lastName = 'Last name is required';
     if (!employee.email?.trim()) errors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(employee.email)) errors.email = 'Email is invalid';
-    if (!employee.phone?.trim()) errors.phone = 'Phone number is required';
+    if (!employee.phone?.length === 0) errors.phone = 'Phone number is required';
     if (!employee.department?.trim()) errors.department = 'Department is required';
     if (!employee.designation?.trim()) errors.designation = 'Designation is required';
     if (!employee.joiningDate?.trim()) errors.joiningDate = 'Joining date is required';
@@ -196,6 +196,7 @@ const EmployeeForm: React.FC = () => {
         joining_date: new Date(employee.joiningDate || '').toISOString(),
         salary: employee.salary || 0,
         status: employee.status || 'active',
+        employeeId: employee.empployeeId,
         address: {
           country: employee.country || '',
           state: employee.state || '',
@@ -203,12 +204,13 @@ const EmployeeForm: React.FC = () => {
           village: employee.village,
           address_line: employee.address_line || '',
           pincode: employee.pincode || ''
-        }
+        },
+        userId: employee.empployeeId || '',
       };
 
       try {
         const token = localStorage.getItem("tokenId")
-
+        console.log("running")
         if (isEditMode && id) {
           const response = await axios.put(`${BASE_URL}/api/employee/${id}`, payload, {
             headers: {
@@ -829,12 +831,27 @@ const EmployeeForm: React.FC = () => {
 
           {/* Form Actions */}
           <div className="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex justify-end space-x-3">
-            <Link to="/employees" className="btn btn-secondary">
-              Cancel
-            </Link>
-            <button type="submit" className="btn btn-primary">
-              {isEditMode ? 'Update Employee' : 'Add Employee'}
-            </button>
+            {
+              activeTab === 'employment' ? (
+                <>
+                  <Link to="/employees" className="btn btn-secondary">
+                    Cancel
+                  </Link>
+                  <button type="submit" className="btn btn-primary">
+                    {isEditMode ? 'Update Employee' : 'Add Employee'}
+                  </button>
+                </>
+              ) : (
+                <>
+                <Link to="/employees" className="btn btn-secondary">
+                    Cancel
+                  </Link>
+                <button type="button" className="btn btn-primary" onClick={() => setActiveTab('employment')}>
+                  Next
+                </button>
+                </>
+              )
+            }
           </div>
         </form>
       </div>
