@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Filter, Plus, ArrowUpDown, Download, RefreshCw } from 'lucide-react';
 import { leaveRequests, leaveBalances, leaveTypes } from '../../data/leaveData';
 import employeesData from '../../data/employeeData';
 import PageHeader from '../../components/common/PageHeader';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
 
 const LeaveManagement: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -14,6 +16,55 @@ const LeaveManagement: React.FC = () => {
     startDate: '',
     endDate: ''
   });
+  const [allLeaveRequests, setAllLeaveRequests] = useState([]);
+
+  const [loadingList, setLoadingList] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  const handleAllusers = async (showGlobalLoader = true) => {
+    try {
+      // setLoadingList(true);
+      if (showGlobalLoader) setLoadingList(true); // only set loading if requested
+
+      const response = await axios.get(`${BASE_URL}/api/leaves`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+        }
+      })
+      console.log(response.data.data)
+      setAllLeaveRequests(response.data.data)
+    } catch (error) {
+      console.error(error);
+    } finally {
+      // setLoadingList(false);
+      if (showGlobalLoader) setLoadingList(false);
+
+    }
+  }
+
+  const updateLeaveStatus = async (leaveId: string, status: 'approved' | 'rejected') => {
+    try {
+      setUpdatingId({ id: leaveId, action: status })
+      const response = await axios.put(`${BASE_URL}/api/leaves/update_leave/${leaveId}`, {
+        status: status,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+        }
+      });
+      await handleAllusers(false);
+    } catch (error) {
+      console.error('Error updating leave status:', error);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+
+  useEffect(() => {
+    handleAllusers()
+  }, [])
+
 
   const clearFilters = () => {
     setSelectedDepartment('');
@@ -21,6 +72,22 @@ const LeaveManagement: React.FC = () => {
     setSelectedType('');
     setDateRange({ startDate: '', endDate: '' });
   };
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const paginatedRequests = allLeaveRequests.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(leaveRequests.length / itemsPerPage);
+
+
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+
+
 
   return (
     <div className="animate-fade-in">
@@ -45,7 +112,7 @@ const LeaveManagement: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {leaveTypes.slice(0, 4).map(type => {
           const totalRequests = leaveRequests.filter(req => req.leaveType === type.id).length;
-          const pendingRequests = leaveRequests.filter(req => 
+          const pendingRequests = leaveRequests.filter(req =>
             req.leaveType === type.id && req.status === 'pending'
           ).length;
 
@@ -82,14 +149,14 @@ const LeaveManagement: React.FC = () => {
             />
           </div>
           <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
-            <button 
+            <button
               className="btn btn-secondary flex items-center justify-center"
               onClick={() => setFilterOpen(!filterOpen)}
             >
               <Filter size={16} className="mr-1" />
               Filter
             </button>
-            <button 
+            <button
               className="btn btn-secondary flex items-center justify-center"
               onClick={clearFilters}
             >
@@ -103,7 +170,7 @@ const LeaveManagement: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-neutral-200">
             <div>
               <label className="form-label">Department</label>
-              <select 
+              <select
                 className="form-select"
                 value={selectedDepartment}
                 onChange={(e) => setSelectedDepartment(e.target.value)}
@@ -166,7 +233,7 @@ const LeaveManagement: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
         <div className="p-4 border-b border-neutral-200 flex justify-between">
           <h2 className="text-lg font-semibold">Leave Requests</h2>
-          <span className="text-sm text-neutral-500">{leaveRequests.length} requests</span>
+          <span className="text-sm text-neutral-500">{allLeaveRequests.length} requests</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -209,12 +276,18 @@ const LeaveManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {leaveRequests.map(request => {
+              {loadingList ? (
+                <div className="text-center py-8 flex justify-center items-center space-x-2">
+                  <span className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin inline-block"></span>
+                  <span className="text-gray-500 text-sm">Loading leave requests...</span>
+                </div>
+
+              ) : paginatedRequests.map(request => {
                 const employee = employeesData.find(emp => emp.id === request.employeeId);
                 const leaveType = leaveTypes.find(type => type.id === request.leaveType);
 
                 return (
-                  <tr key={request.id} className="hover:bg-neutral-50">
+                  <tr key={request._id} className="hover:bg-neutral-50">
                     <td>
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center overflow-hidden">
@@ -222,19 +295,19 @@ const LeaveManagement: React.FC = () => {
                             <img src={employee.avatar} alt={request.employeeName} className="h-full w-full object-cover" />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-sm font-medium">
-                              {request.employeeName.split(' ').map(n => n[0]).join('')}
+                              {request?.employee?.first_name?.split(' ').map(n => n[0]).join('')}
                             </div>
                           )}
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium text-neutral-900">{request.employeeName}</p>
-                          <p className="text-xs text-neutral-500">{employee?.department}</p>
+                          <p className="text-sm font-medium text-neutral-900">{request.employee?.first_name}</p>
+                          <p className="text-xs text-neutral-500">{request.employee?.email}</p>
                         </div>
                       </div>
                     </td>
                     <td>
                       <span className="inline-flex items-center">
-                        <span 
+                        <span
                           className="w-2 h-2 rounded-full mr-2"
                           style={{ backgroundColor: leaveType?.color }}
                         />
@@ -243,30 +316,29 @@ const LeaveManagement: React.FC = () => {
                     </td>
                     <td>
                       <span className="text-sm">
-                        {new Date(request.startDate).toLocaleDateString()}
+                        {new Date(request.fromDate).toLocaleDateString()}
                       </span>
                     </td>
                     <td>
                       <span className="text-sm">
-                        {new Date(request.endDate).toLocaleDateString()}
+                        {new Date(request.toDate).toLocaleDateString()}
                       </span>
                     </td>
                     <td>
-                      <span className="text-sm font-medium">{request.daysCount}</span>
+                      <span className="text-sm font-medium">{request.leaveTaken}</span>
                     </td>
                     <td>
-                      <span className={`badge ${
-                        request.status === 'approved' ? 'badge-success' :
+                      <span className={`badge ${request.status === 'approved' ? 'badge-success' :
                         request.status === 'rejected' ? 'badge-danger' :
-                        request.status === 'pending' ? 'badge-warning' :
-                        'badge-info'
-                      }`}>
+                          request.status === 'pending' ? 'badge-warning' :
+                            'badge-info'
+                        }`}>
                         {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                       </span>
                     </td>
                     <td>
                       <span className="text-sm">
-                        {new Date(request.appliedOn).toLocaleDateString()}
+                        {new Date(request.appliedAt).toLocaleDateString()}
                       </span>
                     </td>
                     <td>
@@ -276,14 +348,25 @@ const LeaveManagement: React.FC = () => {
                         </button>
                         {request.status === 'pending' && (
                           <>
-                            <button className="text-sm text-success-600 hover:text-success-700 font-medium">
-                              Approve
+                            <button
+                              onClick={() => updateLeaveStatus(request._id, 'approved')}
+                              className="text-sm text-success-600 hover:text-success-700 font-medium"
+                              disabled={updatingId?.id === request._id && updatingId?.action === 'approved'}
+                            >
+                              {updatingId?.id === request._id && updatingId?.action === 'approved' ? 'Approving...' : 'Approve'}
                             </button>
-                            <button className="text-sm text-error-600 hover:text-error-700 font-medium">
-                              Reject
+                            <button
+                              onClick={() => updateLeaveStatus(request._id, 'rejected')}
+                              className="text-sm text-error-600 hover:text-error-700 font-medium"
+                              disabled={updatingId?.id === request._id && updatingId?.action === 'rejected'}
+                            >
+                              {updatingId?.id === request._id && updatingId?.action === 'rejected' ? 'Rejecting...' : 'Reject'}
                             </button>
                           </>
                         )}
+
+
+
                       </div>
                     </td>
                   </tr>
@@ -309,11 +392,20 @@ const LeaveManagement: React.FC = () => {
             </div>
             <div>
               <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button className="btn btn-secondary rounded-l-md">Previous</button>
-                <button className="btn btn-primary">1</button>
-                <button className="btn btn-secondary">2</button>
-                <button className="btn btn-secondary">3</button>
-                <button className="btn btn-secondary rounded-r-md">Next</button>
+                <button className="btn btn-secondary rounded-l-md" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                >Previous</button>
+                {pageNumbers.map((number) => (
+                  <button
+                    key={number}
+                    onClick={() => setCurrentPage(number)}
+                    className={`btn ${currentPage === number ? 'btn-primary' : 'btn-secondary'}`}
+                  >
+                    {number}
+                  </button>
+                ))}
+
+                <button className="btn btn-secondary rounded-r-md" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                >Next</button>
               </nav>
             </div>
           </div>

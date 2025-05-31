@@ -1,34 +1,60 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, AlertCircle } from 'lucide-react';
 import { leaveTypes, getEmployeeLeaveBalance } from '../../data/leaveData';
 import { useAuth } from '../../contexts/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
+import toast from 'react-hot-toast';
 
 const ApplyLeave: React.FC = () => {
   const { user } = useAuth();
-  const leaveBalance = user ? getEmployeeLeaveBalance(user.id) : null;
+  // const leaveBalance = user ? getEmployeeLeaveBalance(user.id) : null;
+  const [leaveBalance, setLeaveBalance] = useState<any>(null);
 
+  useEffect(() => {
+    const Alluseleaves = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+          }
+        });
+        if (response.status === 200) {
+          setLeaveBalance(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching leave balance:', error);
+        toast.error('Failed to fetch leave balance. Please try again later.');
+      }
+    }
+
+    Alluseleaves();
+  },[])
+  useEffect(() => {
+    console.log(leaveBalance)
+  }, [])
   const [formData, setFormData] = useState({
     leaveType: '',
-    startDate: '',
-    endDate: '',
+    fromDate: '',
+    toDate: '',
     reason: '',
-    attachment: null as File | null
+    // attachment: null as File | null
   });
 
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
+    const newErrors: { [key: string]: string } = {};
 
     if (!formData.leaveType) {
       newErrors.leaveType = 'Please select a leave type';
     }
-    if (!formData.startDate) {
+    if (!formData.fromDate) {
       newErrors.startDate = 'Start date is required';
     }
-    if (!formData.endDate) {
+    if (!formData.toDate) {
       newErrors.endDate = 'End date is required';
     }
     if (!formData.reason) {
@@ -36,9 +62,9 @@ const ApplyLeave: React.FC = () => {
     }
 
     // Check if end date is after start date
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
+    if (formData.fromDate && formData.toDate) {
+      const start = new Date(formData.fromDate);
+      const end = new Date(formData.toDate);
       if (end < start) {
         newErrors.endDate = 'End date cannot be before start date';
       }
@@ -48,11 +74,32 @@ const ApplyLeave: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(formData)
     if (validateForm()) {
-      // In a real app, this would submit to an API
-      alert('Leave application submitted successfully!');
+      try {
+        const response = await axios.post(`${BASE_URL}/api/leaves/apply_leave`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+          }
+        })
+        if (response.status === 201) {
+          // Reset form on successful submission
+          setFormData({
+            leaveType: '',
+            fromDate: '',
+            toDate: '',
+            reason: '',
+            // attachment: null
+          });
+          setErrors({});
+          toast.success('Leave request submitted successfully!');
+        }
+      } catch (error) {
+        console.error('Error submitting leave request:', error);
+        toast.error('Failed to submit leave request. Please try again.');
+      }
     }
   };
 
@@ -120,10 +167,10 @@ const ApplyLeave: React.FC = () => {
                       </div>
                       <input
                         type="date"
-                        id="startDate"
-                        name="startDate"
+                        id="fromDate"
+                        name="fromDate"
                         className={`form-input pl-10 ${errors.startDate ? 'border-red-300' : ''}`}
-                        value={formData.startDate}
+                        value={formData.fromDate}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -140,10 +187,10 @@ const ApplyLeave: React.FC = () => {
                       </div>
                       <input
                         type="date"
-                        id="endDate"
-                        name="endDate"
+                        id="toDate"
+                        name="toDate"
                         className={`form-input pl-10 ${errors.endDate ? 'border-red-300' : ''}`}
-                        value={formData.endDate}
+                        value={formData.toDate}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -201,89 +248,88 @@ const ApplyLeave: React.FC = () => {
 
         {/* Leave Balance Card */}
         <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
-            <h3 className="text-lg font-semibold mb-4">Leave Balance</h3>
-            
-            {leaveBalance ? (
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm text-neutral-600">Sick Leave</span>
-                    <span className="text-sm font-medium">
-                      {leaveBalance.sick.available} / {leaveBalance.sick.total}
-                    </span>
-                  </div>
-                  <div className="w-full bg-neutral-200 rounded-full h-2">
-                    <div 
-                      className="bg-primary-600 h-2 rounded-full"
-                      style={{ width: `${(leaveBalance.sick.available / leaveBalance.sick.total) * 100}%` }}
-                    />
-                  </div>
-                </div>
+  <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+    <h3 className="text-lg font-semibold mb-4">Leave Balance</h3>
 
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm text-neutral-600">Casual Leave</span>
-                    <span className="text-sm font-medium">
-                      {leaveBalance.casual.available} / {leaveBalance.casual.total}
-                    </span>
-                  </div>
-                  <div className="w-full bg-neutral-200 rounded-full h-2">
-                    <div 
-                      className="bg-warning-500 h-2 rounded-full"
-                      style={{ width: `${(leaveBalance.casual.available / leaveBalance.casual.total) * 100}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm text-neutral-600">Annual Leave</span>
-                    <span className="text-sm font-medium">
-                      {leaveBalance.annual.available} / {leaveBalance.annual.total}
-                    </span>
-                  </div>
-                  <div className="w-full bg-neutral-200 rounded-full h-2">
-                    <div 
-                      className="bg-accent-500 h-2 rounded-full"
-                      style={{ width: `${(leaveBalance.annual.available / leaveBalance.annual.total) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-4">
-                <AlertCircle className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
-                <p className="text-neutral-600">No leave balance data available</p>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
-            <h3 className="text-lg font-semibold mb-4">Leave Policy</h3>
-            <div className="space-y-4 text-sm text-neutral-600">
-              <div>
-                <h4 className="font-medium text-neutral-800 mb-1">Application Timeline</h4>
-                <p>Leave requests should be submitted at least 3 working days in advance.</p>
-              </div>
-              <div>
-                <h4 className="font-medium text-neutral-800 mb-1">Documentation</h4>
-                <p>Medical certificates are required for sick leave exceeding 2 days.</p>
-              </div>
-              <div>
-                <h4 className="font-medium text-neutral-800 mb-1">Cancellation</h4>
-                <p>Leave can be cancelled up to 24 hours before the start date.</p>
-              </div>
-              <div>
-                <h4 className="font-medium text-neutral-800 mb-1">Half Day Leave</h4>
-                <p>Half day leaves can be taken either in the first or second half of the working day.</p>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-4">
+      {/* Sick Leave */}
+      <div>
+        <div className="flex justify-between mb-1">
+          <span className="text-sm text-neutral-600">Sick Leave</span>
+          <span className="text-sm font-medium">4 / 5</span>
         </div>
+        <div className="w-full bg-neutral-200 rounded-full h-2">
+          <div
+            className="bg-primary-600 h-2 rounded-full"
+            style={{ width: `${(4 / 5) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Casual Leave */}
+      <div>
+        <div className="flex justify-between mb-1">
+          <span className="text-sm text-neutral-600">Casual Leave</span>
+          <span className="text-sm font-medium">5 / 5</span>
+        </div>
+        <div className="w-full bg-neutral-200 rounded-full h-2">
+          <div
+            className="bg-warning-500 h-2 rounded-full"
+            style={{ width: `${(5 / 5) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Annual Leave */}
+      <div>
+        <div className="flex justify-between mb-1">
+          <span className="text-sm text-neutral-600">Annual Leave</span>
+          <span className="text-sm font-medium">2 / 4</span>
+        </div>
+        <div className="w-full bg-neutral-200 rounded-full h-2">
+          <div
+            className="bg-accent-500 h-2 rounded-full"
+            style={{ width: `${(2 / 4) * 100}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Leave Policy Section */}
+  <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+    <h3 className="text-lg font-semibold mb-4">Leave Policy</h3>
+    <div className="space-y-4 text-sm text-neutral-600">
+      <div>
+        <h4 className="font-medium text-neutral-800 mb-1">Application Timeline</h4>
+        <p>Leave requests should be submitted at least 3 working days in advance.</p>
+      </div>
+      <div>
+        <h4 className="font-medium text-neutral-800 mb-1">Documentation</h4>
+        <p>Medical certificates are required for sick leave exceeding 2 days.</p>
+      </div>
+      <div>
+        <h4 className="font-medium text-neutral-800 mb-1">Cancellation</h4>
+        <p>Leave can be cancelled up to 24 hours before the start date.</p>
+      </div>
+      <div>
+        <h4 className="font-medium text-neutral-800 mb-1">Half Day Leave</h4>
+        <p>Half day leaves can be taken either in the first or second half of the working day.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
       </div>
     </div>
   );
 };
 
 export default ApplyLeave;
+
+
+
+
+
+
+

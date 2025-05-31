@@ -24,7 +24,10 @@ const EmployeeList: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
   const { user } = useSelector((state: RootState) => state.auth)
-  const [allEmployees, setAllEmployees] = useState([]); // full list from API
+  const [allEmployees, setAllEmployees] = useState([]); 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+
 
   // console.log(user.role)
 
@@ -41,7 +44,7 @@ const EmployeeList: React.FC = () => {
       const datas = response.data;
       // console.log(datas.data.users)
       setEmployees(datas.data.users)
-          setAllEmployees(datas.data.users);  
+      setAllEmployees(datas.data.users);
 
     } catch (error) {
       console.log(error);
@@ -125,7 +128,7 @@ const EmployeeList: React.FC = () => {
     });
 
     setEmployees(filteredEmployees);
-  }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy,allEmployees]);
+  }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy, allEmployees]);
 
   const handleSort = (field: keyof Employee) => {
     if (sortBy.field === field) {
@@ -172,7 +175,6 @@ const EmployeeList: React.FC = () => {
 
       setEmployees(prevEmployees => prevEmployees.filter(emp => emp._id !== id));
       console.log(data.data)
-      alert("Employee deleted successfully")
     } catch (error) {
       console.log(error)
     }
@@ -384,7 +386,10 @@ const EmployeeList: React.FC = () => {
                       <Link to={`/employees/edit/${employee._id}`} className="text-neutral-500 hover:text-warning-500" title="Edit">
                         <Edit size={18} />
                       </Link>
-                      <button className="text-neutral-500 hover:text-error-500" title="Delete" onClick={() => handleDelete(employee._id)}>
+                      <button className="text-neutral-500 hover:text-error-500" title="Delete" onClick={() => {
+                        setSelectedEmployeeId(employee._id);
+                        setShowDeleteModal(true);
+                      }}>
                         <Trash2 size={18} />
                       </button>
                       <div className="relative inline-block text-left">
@@ -419,6 +424,32 @@ const EmployeeList: React.FC = () => {
                   </td>
                 </tr>
               ))}
+              {showDeleteModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                  <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                    <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
+                    <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this employee?</p>
+                    <div className="flex justify-end space-x-4">
+                      <button
+                        className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                        onClick={() => setShowDeleteModal(false)}
+                      >
+                        No
+                      </button>
+                      <button
+                        className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                        onClick={() => {
+                          handleDelete(selectedEmployeeId);
+                          setShowDeleteModal(false);
+                        }}
+                      >
+                        Yes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
 
               {employees.length === 0 && (
                 <tr>

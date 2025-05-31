@@ -26,8 +26,12 @@ const Login: React.FC = () => {
     try {
       // await login(email, password);
       const resultAction = await dispatch(loginUser({ email, password })).unwrap();
-      
+      if(resultAction.user.role === 'admin'|| resultAction.user.role === 'hr' ) {
       navigate('/dashboard');
+      }
+      else if(resultAction.user.role === 'employee') {
+        navigate('/home');
+      }
     } catch (err) {
       setError('Invalid email or password. Please try again.');
     } finally {

@@ -129,7 +129,7 @@ const EmployeeDetail: React.FC = () => {
               </div>
               <div className="flex items-center text-sm text-neutral-600">
                 <Calendar size={16} className="mr-2 text-neutral-400" />
-                <span>Joined {new Date(employee.joiningDate).toLocaleDateString()}</span>
+                <span>Joined {new Date(employee.joining_date).toLocaleDateString()}</span>
               </div>
             </div>
 
@@ -178,7 +178,7 @@ const EmployeeDetail: React.FC = () => {
                   <div>
                     <p className="text-sm text-neutral-500">Experience</p>
                     <p className="text-lg font-semibold">
-                      {Math.floor((new Date().getTime() - new Date(employee.joiningDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
+                      {Math.floor((new Date().getTime() - new Date(employee.joining_date).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
                     </p>
                   </div>
                 </div>
@@ -192,7 +192,7 @@ const EmployeeDetail: React.FC = () => {
                   <div>
                     <p className="text-sm text-neutral-500">Leave Balance</p>
                     <p className="text-lg font-semibold">
-                      {/* {leaveBalance ? leaveBalance.sick.available + leaveBalance.casual.available + leaveBalance.annual.available : 0} days */}
+                      {/* {leaveBalance ? leaveBalance.sick.available + leaveBalance.casual.available + leaveBalance.annual.available : 0} days */}0
                     </p>
                   </div>
                 </div>
@@ -205,7 +205,7 @@ const EmployeeDetail: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-neutral-500">Performance</p>
-                    {/* <p className="text-lg font-semibold">{averageRating.toFixed(1)}/5.0</p> */}
+                    {/* <p className="text-lg font-semibold">{averageRating.toFixed(1)}/5.0</p> */}Good
                   </div>
                 </div>
               </div>

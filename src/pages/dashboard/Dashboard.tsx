@@ -40,7 +40,7 @@ const Dashboard: React.FC = () => {
   //   };
   const COLORS = ['#2563eb', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
   const { user } = useSelector((state: RootState) => state.auth)
-  console.log(user)
+  // console.log(user)
 
   useEffect(()=>{
     const handlefetch=async()=>{

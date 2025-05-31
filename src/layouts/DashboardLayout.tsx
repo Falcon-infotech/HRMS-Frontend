@@ -47,7 +47,8 @@ const DashboardLayout: React.FC = () => {
       icon: Calendar,
       children: [
         { name: 'Daily Status', href: '/attendance' },
-        { name: 'Attendance Log', href: '/attendance/log' }
+        { name: 'Attendance Log', href: '/attendance/log' },
+        { name: 'Home', href: '/home' }
       ]
     },
     {
@@ -88,9 +89,21 @@ const DashboardLayout: React.FC = () => {
   const filteredNavigation = navigation.filter(item => {
     if (user?.role === "employee" && item.name === "Employees") {
       return false;
+    }else if (user?.role === "employee" && item.name === "Attendance") {
+      return false;
+    }else if (user?.role === "employee" && item.name === "Recruitment") {
+      return false;
     }
     return true;
-  });
+  }).map(item => {
+    if (user?.role === "employee" && item.name === "Dashboard") {
+      return {
+        ...item, name: 'Home', href: '/home'
+      }
+
+    }
+    return item
+  })
 
 
   return (
@@ -198,7 +211,7 @@ const DashboardLayout: React.FC = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
 
-              <span className="text-primary-600 font-medium">{user?.name?.[0]||user?.first_name[0]}</span>
+              <span className="text-primary-600 font-medium">{user?.name?.[0] || user?.first_name[0]}</span>
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-neutral-800">{user?.name || user.first_name}</p>
@@ -274,7 +287,7 @@ const DashboardLayout: React.FC = () => {
               {/* User Menu */}
               <div className="hidden md:ml-3 md:flex md:items-center">
                 <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                  <Link to={'/profile'}><span className="text-primary-600 font-medium">{user?.name?.[0]|| user?.first_name[0]}</span></Link>
+                  <Link to={'/profile'}><span className="text-primary-600 font-medium">{user?.name?.[0] || user?.first_name[0]}</span></Link>
                 </div>
               </div>
             </div>

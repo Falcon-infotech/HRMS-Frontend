@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Check, X, Clock, AlertCircle } from 'lucide-react';
 import Calendar from 'react-calendar';
@@ -7,13 +7,15 @@ import { format, getMonth, getYear, addMonths, subMonths } from 'date-fns';
 import { generateCalendarDays, attendanceData, getEmployeeAttendance } from '../../data/attendanceData';
 import employeesData from '../../data/employeeData';
 import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
 
 const Attendance: React.FC = () => {
   const { user } = useAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEmployee, setSelectedEmployee] = useState(user?.role === 'employee' ? user.id : '');
-  
+
   const handleMonthChange = (offset: number) => {
     if (offset > 0) {
       setCurrentMonth(addMonths(currentMonth, 1));
@@ -21,35 +23,57 @@ const Attendance: React.FC = () => {
       setCurrentMonth(subMonths(currentMonth, 1));
     }
   };
-  
+  // today all user attendance data
+  const [todayattendanceData, setTodayAttendanceData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const todayAttendance = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+          }
+        })
+        const data = response.data.data
+        // console.log(data[0])
+        setTodayAttendanceData(data);
+      } catch (error) {
+        console.error('Error fetching today\'s attendance:', error);
+      }
+    }
+    todayAttendance();
+
+  }, [])
+
+
   // Get employee attendance data
   const getAttendanceForDate = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     let filteredAttendance;
-    
+
     if (selectedEmployee) {
-      filteredAttendance = attendanceData.find(record => 
+      filteredAttendance = attendanceData.find(record =>
         record.employeeId === selectedEmployee && record.date === dateStr
       );
     } else {
       filteredAttendance = attendanceData.filter(record => record.date === dateStr);
     }
-    
+
     return filteredAttendance;
   };
-  
+
   // Custom calendar tile content
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view !== 'month') return null;
-    
+
     const dateStr = format(date, 'yyyy-MM-dd');
     const dayOfWeek = date.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    
+
     let status;
-    
+
     if (selectedEmployee) {
-      const record = attendanceData.find(rec => 
+      const record = attendanceData.find(rec =>
         rec.employeeId === selectedEmployee && rec.date === dateStr
       );
       status = record?.status;
@@ -59,7 +83,7 @@ const Attendance: React.FC = () => {
       if (dayRecords.length > 0) {
         const presentCount = dayRecords.filter(rec => rec.status === 'present' || rec.status === 'half-day').length;
         const ratio = presentCount / dayRecords.length;
-        
+
         if (isWeekend) {
           status = 'weekend';
         } else if (dayRecords[0].status === 'holiday') {
@@ -75,10 +99,10 @@ const Attendance: React.FC = () => {
         status = 'weekend';
       }
     }
-    
+
     // Apply styles based on status
     let className = '';
-    
+
     switch (status) {
       case 'present':
         className = 'bg-green-100 text-green-800';
@@ -104,58 +128,58 @@ const Attendance: React.FC = () => {
           className = 'bg-neutral-50 text-neutral-400';
         }
     }
-    
+
     return (
       <div className={`h-full w-full ${className} rounded-full flex items-center justify-center`}>
         {String(date.getDate())}
       </div>
     );
   };
-  
+
   // Get the selected date's attendance data
   const selectedDateAttendance = getAttendanceForDate(selectedDate);
-  
+
   // Calculate attendance stats for the month
   const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
   const monthStartStr = format(monthStart, 'yyyy-MM-dd');
   const monthEndStr = format(monthEnd, 'yyyy-MM-dd');
-  
+
   let monthlyAttendance;
-  
+
   if (selectedEmployee) {
     monthlyAttendance = employeesData
       .filter(emp => emp.id === selectedEmployee)
       .map(employee => {
         // Get employee's attendance records for the month
-        const records = getEmployeeAttendance(employee.id).filter(record => 
+        const records = getEmployeeAttendance(employee.id).filter(record =>
           record.date >= monthStartStr && record.date <= monthEndStr
         );
-        
-        const workdays = records.filter(record => 
+
+        const workdays = records.filter(record =>
           record.status !== 'weekend' && record.status !== 'holiday'
         ).length;
-        
-        const presentDays = records.filter(record => 
+
+        const presentDays = records.filter(record =>
           record.status === 'present'
         ).length;
-        
-        const halfDays = records.filter(record => 
+
+        const halfDays = records.filter(record =>
           record.status === 'half-day'
         ).length;
-        
-        const absentDays = records.filter(record => 
+
+        const absentDays = records.filter(record =>
           record.status === 'absent'
         ).length;
-        
-        const leaveDays = records.filter(record => 
+
+        const leaveDays = records.filter(record =>
           record.status === 'leave'
         ).length;
-        
-        const attendanceRate = workdays > 0 
-          ? Math.round(((presentDays + halfDays * 0.5) / workdays) * 100) 
+
+        const attendanceRate = workdays > 0
+          ? Math.round(((presentDays + halfDays * 0.5) / workdays) * 100)
           : 0;
-        
+
         return {
           id: employee.id,
           name: `${employee.firstName} ${employee.lastName}`,
@@ -170,28 +194,28 @@ const Attendance: React.FC = () => {
       });
   } else {
     // Overall attendance stats
-    const allRecords = attendanceData.filter(record => 
+    const allRecords = attendanceData.filter(record =>
       record.date >= monthStartStr && record.date <= monthEndStr
     );
-    
+
     const workdays = new Set(
       allRecords
         .filter(record => record.status !== 'weekend' && record.status !== 'holiday')
         .map(record => record.date)
     ).size;
-    
+
     const employees = employeesData.filter(emp => emp.status !== 'inactive').length;
     const totalWorkEntries = employees * workdays;
-    
+
     const presentCount = allRecords.filter(record => record.status === 'present').length;
     const halfDayCount = allRecords.filter(record => record.status === 'half-day').length;
     const absentCount = allRecords.filter(record => record.status === 'absent').length;
     const leaveCount = allRecords.filter(record => record.status === 'leave').length;
-    
-    const overallAttendanceRate = totalWorkEntries > 0 
-      ? Math.round(((presentCount + halfDayCount * 0.5) / totalWorkEntries) * 100) 
+
+    const overallAttendanceRate = totalWorkEntries > 0
+      ? Math.round(((presentCount + halfDayCount * 0.5) / totalWorkEntries) * 100)
       : 0;
-    
+
     monthlyAttendance = [{
       name: 'Overall',
       workdays,
@@ -202,7 +226,7 @@ const Attendance: React.FC = () => {
       attendanceRate: overallAttendanceRate,
     }];
   }
-  
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -216,7 +240,7 @@ const Attendance: React.FC = () => {
           </Link>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Calendar and Filters */}
         <div className="lg:col-span-2">
@@ -227,7 +251,7 @@ const Attendance: React.FC = () => {
                 <h2 className="text-lg font-semibold">Attendance Calendar</h2>
               </div>
               <div className="flex items-center space-x-2">
-                <button 
+                <button
                   className="p-1 rounded hover:bg-neutral-100"
                   onClick={() => handleMonthChange(-1)}
                 >
@@ -236,7 +260,7 @@ const Attendance: React.FC = () => {
                 <span className="text-sm font-medium">
                   {format(currentMonth, 'MMMM yyyy')}
                 </span>
-                <button 
+                <button
                   className="p-1 rounded hover:bg-neutral-100"
                   onClick={() => handleMonthChange(1)}
                 >
@@ -244,7 +268,7 @@ const Attendance: React.FC = () => {
                 </button>
               </div>
             </div>
-            
+
             <div className="border-b border-neutral-200 p-4">
               <div className="md:w-1/2">
                 <label htmlFor="employeeSelect" className="form-label">Select Employee</label>
@@ -264,7 +288,7 @@ const Attendance: React.FC = () => {
                 </select>
               </div>
             </div>
-            
+
             <div className="p-6">
               <div className="flex justify-between mb-4">
                 <div className="flex space-x-4">
@@ -286,10 +310,10 @@ const Attendance: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="attendance-calendar">
                 <Calendar
-                className='CustomAttendance-calendar'
+                  className='CustomAttendance-calendar'
                   onChange={setSelectedDate}
                   value={selectedDate}
                   tileContent={tileContent}
@@ -300,7 +324,7 @@ const Attendance: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Attendance Details */}
           <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
             <div className="flex justify-between items-center mb-4">
@@ -308,7 +332,7 @@ const Attendance: React.FC = () => {
                 {format(selectedDate, 'EEEE, MMMM d, yyyy')} Details
               </h3>
             </div>
-            
+
             {Array.isArray(selectedDateAttendance) ? (
               // Multiple employees for the selected date
               selectedDateAttendance.length > 0 ? (
@@ -329,12 +353,11 @@ const Attendance: React.FC = () => {
                         <tr key={record.id}>
                           <td>{record.employeeName}</td>
                           <td>
-                            <span className={`badge ${
-                              record.status === 'present' ? 'badge-success' : 
-                              record.status === 'absent' ? 'badge-danger' : 
-                              record.status === 'half-day' ? 'badge-warning' : 
-                              record.status === 'leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
-                            }`}>
+                            <span className={`badge ${record.status === 'present' ? 'badge-success' :
+                              record.status === 'absent' ? 'badge-danger' :
+                                record.status === 'half-day' ? 'badge-warning' :
+                                  record.status === 'leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
+                              }`}>
                               {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                             </span>
                           </td>
@@ -361,16 +384,15 @@ const Attendance: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <h4 className="text-sm font-medium text-neutral-700 mb-1">Status</h4>
-                      <span className={`badge ${
-                        selectedDateAttendance.status === 'present' ? 'badge-success' : 
-                        selectedDateAttendance.status === 'absent' ? 'badge-danger' : 
-                        selectedDateAttendance.status === 'half-day' ? 'badge-warning' : 
-                        selectedDateAttendance.status === 'leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
-                      }`}>
+                      <span className={`badge ${selectedDateAttendance.status === 'present' ? 'badge-success' :
+                        selectedDateAttendance.status === 'absent' ? 'badge-danger' :
+                          selectedDateAttendance.status === 'half-day' ? 'badge-warning' :
+                            selectedDateAttendance.status === 'leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
+                        }`}>
                         {selectedDateAttendance.status.charAt(0).toUpperCase() + selectedDateAttendance.status.slice(1)}
                       </span>
                     </div>
-                    
+
                     <div>
                       <h4 className="text-sm font-medium text-neutral-700 mb-1">Check In</h4>
                       <div className="flex items-center">
@@ -378,7 +400,7 @@ const Attendance: React.FC = () => {
                         <span className="text-lg">{selectedDateAttendance.checkIn || 'N/A'}</span>
                       </div>
                     </div>
-                    
+
                     <div>
                       <h4 className="text-sm font-medium text-neutral-700 mb-1">Check Out</h4>
                       <div className="flex items-center">
@@ -386,14 +408,14 @@ const Attendance: React.FC = () => {
                         <span className="text-lg">{selectedDateAttendance.checkOut || 'N/A'}</span>
                       </div>
                     </div>
-                    
+
                     <div>
                       <h4 className="text-sm font-medium text-neutral-700 mb-1">Working Hours</h4>
                       <span className="text-lg">
                         {selectedDateAttendance.workHours ? `${selectedDateAttendance.workHours} hours` : 'N/A'}
                       </span>
                     </div>
-                    
+
                     <div className="md:col-span-2">
                       <h4 className="text-sm font-medium text-neutral-700 mb-1">Notes</h4>
                       <p className="text-neutral-600">{selectedDateAttendance.notes || 'No notes'}</p>
@@ -410,7 +432,7 @@ const Attendance: React.FC = () => {
             )}
           </div>
         </div>
-        
+
         {/* Right Column: Stats */}
         <div>
           <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6 mb-6">
@@ -425,17 +447,16 @@ const Attendance: React.FC = () => {
                       <span className="text-sm font-medium">{attendance.attendanceRate}%</span>
                     </div>
                     <div className="w-full bg-neutral-200 rounded-full h-2 mt-1">
-                      <div 
-                        className={`h-2 rounded-full ${
-                          attendance.attendanceRate >= 90 ? 'bg-green-500' : 
-                          attendance.attendanceRate >= 75 ? 'bg-yellow-500' : 
-                          'bg-red-500'
-                        }`}
+                      <div
+                        className={`h-2 rounded-full ${attendance.attendanceRate >= 90 ? 'bg-green-500' :
+                          attendance.attendanceRate >= 75 ? 'bg-yellow-500' :
+                            'bg-red-500'
+                          }`}
                         style={{ width: `${attendance.attendanceRate}%` }}
                       ></div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between items-center p-2 bg-green-50 rounded">
                       <div className="flex items-center">
@@ -444,7 +465,7 @@ const Attendance: React.FC = () => {
                       </div>
                       <span className="text-sm font-medium">{attendance.presentDays} days</span>
                     </div>
-                    
+
                     <div className="flex justify-between items-center p-2 bg-yellow-50 rounded">
                       <div className="flex items-center">
                         <Clock size={16} className="text-yellow-500 mr-2" />
@@ -452,7 +473,7 @@ const Attendance: React.FC = () => {
                       </div>
                       <span className="text-sm font-medium">{attendance.halfDays} days</span>
                     </div>
-                    
+
                     <div className="flex justify-between items-center p-2 bg-red-50 rounded">
                       <div className="flex items-center">
                         <X size={16} className="text-red-500 mr-2" />
@@ -460,7 +481,7 @@ const Attendance: React.FC = () => {
                       </div>
                       <span className="text-sm font-medium">{attendance.absentDays} days</span>
                     </div>
-                    
+
                     <div className="flex justify-between items-center p-2 bg-purple-50 rounded">
                       <div className="flex items-center">
                         <CalendarIcon size={16} className="text-purple-500 mr-2" />
@@ -468,7 +489,7 @@ const Attendance: React.FC = () => {
                       </div>
                       <span className="text-sm font-medium">{attendance.leaveDays} days</span>
                     </div>
-                    
+
                     <div className="flex justify-between items-center p-2 bg-neutral-50 rounded">
                       <div className="flex items-center">
                         <CalendarIcon size={16} className="text-neutral-500 mr-2" />
@@ -481,17 +502,17 @@ const Attendance: React.FC = () => {
               ))}
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
             <h3 className="text-lg font-semibold mb-4">Today's Attendance</h3>
-            
+
             <div className="space-y-3">
-              {employeesData.slice(0, 5).map(employee => {
+              {/* {employeesData.slice(0, 5).map(employee => {
                 const today = format(new Date(), 'yyyy-MM-dd');
-                const record = attendanceData.find(rec => 
+                const record = attendanceData.find(rec =>
                   rec.employeeId === employee.id && rec.date === today
                 );
-                
+
                 return (
                   <div key={employee.id} className="flex items-center justify-between p-2 border-b border-neutral-100">
                     <div className="flex items-center">
@@ -509,12 +530,11 @@ const Attendance: React.FC = () => {
                     </div>
                     <div>
                       {record ? (
-                        <span className={`badge ${
-                          record.status === 'present' ? 'badge-success' : 
-                          record.status === 'absent' ? 'badge-danger' : 
-                          record.status === 'half-day' ? 'badge-warning' : 
-                          record.status === 'leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
-                        }`}>
+                        <span className={`badge ${record.status === 'present' ? 'badge-success' :
+                            record.status === 'absent' ? 'badge-danger' :
+                              record.status === 'half-day' ? 'badge-warning' :
+                                record.status === 'leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
+                          }`}>
                           {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                         </span>
                       ) : (
@@ -523,9 +543,55 @@ const Attendance: React.FC = () => {
                     </div>
                   </div>
                 );
+              })} */}
+
+
+              {todayattendanceData.slice(0, 5).map((item) => {
+                // console.log(item)
+                const { user, date, inTime, todayStatus } = item;
+                const email = user.email;
+                const emailFirstLetter = email?.charAt(0).toUpperCase();
+                const status = todayStatus?.toLowerCase();
+
+                return (
+                  <div
+                    key={user._id}
+                    className="flex items-center justify-between p-2 border-b border-neutral-100"
+                  >
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-neutral-200 mr-3 text-sm font-medium text-white bg-blue-500">
+                        {emailFirstLetter}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{email}</p>
+                        <p className="text-xs text-neutral-500">{new Date(date).toDateString()}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <span
+                        className={`badge ${status === 'present'
+                          ? 'bg-green-100 text-green-800'
+                          : status === 'absent'
+                            ? 'bg-red-100 text-red-800'
+                            : status === 'half-day'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : status === 'leave'
+                                ? 'bg-blue-100 text-blue-800'
+                                : status === 'holiday'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-neutral-100 text-neutral-800'
+                          } px-2 py-1 rounded text-xs font-medium`}
+                      >
+                        {todayStatus}
+                      </span>
+                    </div>
+                  </div>
+                );
               })}
+
             </div>
-            
+
+
             <div className="mt-4 text-center">
               <Link to="/attendance/log" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
                 View All Employees
@@ -534,7 +600,7 @@ const Attendance: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       <style jsx>{`
         .attendance-calendar .react-calendar {
           width: 100%;

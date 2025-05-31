@@ -837,7 +837,7 @@ const EmployeeForm: React.FC = () => {
                   <Link to="/employees" className="btn btn-secondary">
                     Cancel
                   </Link>
-                  <button type="submit" className="btn btn-primary">
+                  <button type="button" onClick={handleSubmit} className="btn btn-primary">
                     {isEditMode ? 'Update Employee' : 'Add Employee'}
                   </button>
                 </>

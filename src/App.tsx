@@ -33,6 +33,8 @@ import Settings from './pages/settings/Settings';
 // Guards
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Profile from './pages/Profile/Profile';
+import UserDashboard from './pages/dashboard/UserDashboard';
+import 'react-datepicker/dist/react-datepicker.css';
 
 function App() {
   return (
@@ -49,6 +51,7 @@ function App() {
             {/* Dashboard Routes - Protected */}
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/home" element={<UserDashboard />} />
 
               {/* Employee Management
               <Route path="/employees" element={<EmployeeList />} />
