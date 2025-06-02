@@ -89,9 +89,11 @@ const DashboardLayout: React.FC = () => {
   const filteredNavigation = navigation.filter(item => {
     if (user?.role === "employee" && item.name === "Employees") {
       return false;
-    }else if (user?.role === "employee" && item.name === "Attendance") {
+    } else if (user?.role === "employee" && item.name === "Attendance") {
       return false;
-    }else if (user?.role === "employee" && item.name === "Recruitment") {
+    } else if (user?.role === "employee" && item.name === "Recruitment") {
+      return false;
+    } else if (user?.role === "employee" && item.name === "Recruitment") {
       return false;
     }
     return true;
@@ -102,8 +104,17 @@ const DashboardLayout: React.FC = () => {
       }
 
     }
+
+    if (user?.role === "employee" && item.name === "Leave" && item.children) {
+      return {
+        ...item,
+        children: item.children.filter(child => child.name !== "Leave Dashboard")
+      };
+    }
     return item
   })
+
+
 
 
   return (
