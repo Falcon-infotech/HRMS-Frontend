@@ -209,6 +209,27 @@ const UserDashboard = () => {
   //   year: 'numeric',
   // })}`;
 
+  const calculateLateBy = (inTime) => {
+    if (!inTime) return '--';
+    const sep = inTime.split(" ")[0]
+
+    const [hours, minutes] = sep.split(':').map(Number);
+    console.log(hours, minutes)
+    const inDate = new Date();
+    inDate.setHours(hours, minutes);
+
+    const expected = new Date();
+    expected.setHours(9, 0); // 09:00 AM
+
+    if (inDate <= expected) return '00:00';
+
+    const diffMs = inDate - expected;
+    const diffMins = Math.floor(diffMs / 60000);
+    const h = Math.floor(diffMins / 60);
+    const m = diffMins % 60;
+
+    return `${h}h ${m}m`;
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -218,14 +239,18 @@ const UserDashboard = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
-        console.log(res.data)
-        setUser(res.data.user);
+        console.log(res.data.data.records)
+        setUser(res.data.data.records);
       } catch (error) {
         console.error('Failed to fetch user', error);
       }
     };
     fetchUser();
   }, [])
+
+
+
+
   const capitalize = (str: string) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
@@ -599,7 +624,7 @@ const UserDashboard = () => {
                     </span>
 
                     {showCalendar && (
-                      <div className="absolute z-10 mt-2">
+                      <div className="absolute z-10 mt-2 ">
                         <DatePicker
                           selected={selectedDate}
                           onChange={handleDateChange}
@@ -666,7 +691,61 @@ const UserDashboard = () => {
                   </button>
                 </div>
               </div>
+              {/* Weekly Attendance Summary (Styled Row Cards) */}
+              <div className="space-y-4 mt-6">
+                <div className="flex items-center justify-between px-4 text-md font-semibold text-sky-500 text-nowrap">
+                  <div className="w-16">Day</div>
+                  <div className="w-9 text-center">Date</div>
+                  <div className="w-20 text-center">Check-in</div>
+                  <div className="w-20 text-center">Check-out</div>
+                  <div className="w-20 text-center">Late By</div>
+                  <div className="w-24 text-center">Hours Worked</div>
+                </div>
+                {days.map((day, index) => {
+                  const isToday = isSameDay(day, new Date());
+                  const isWeekend = format(day, 'EEE') === 'Sun' || format(day, 'EEE') === 'Sat';
+                  const record = user.find(
+                    (rec) => rec.date === format(day, 'yyyy-MM-dd')
+                  ) || [];
 
+                  // console.log("user", user)
+
+                  return (
+                    <div
+                      key={index}
+                      className={`flex items-center justify-between bg-white shadow rounded-lg px-4 py-3 ${isToday ? 'border-2 border-blue-500' : ''
+                        }`}
+                    >
+                      {/* Day Name */}
+                      <div className="text-sm font-medium w-16 text-gray-800">
+                        {format(day, 'EEE')}
+                      </div>
+
+                      {/* Date in Circle */}
+                      <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-800">
+                        {format(day, 'dd')}
+                      </div>
+
+                      {/* Check-out */}
+                      <div className="text-xs text-gray-600 w-20 text-center">
+                        {record?.inTime ?? '--'}
+                      </div>
+                      {/* Check-in */}
+                      <div className="text-xs text-gray-600 w-20 text-center">
+                        {record?.outTime ?? '--'}
+                      </div>
+
+                      <div className="text-xs text-red-500 w-20 text-center">
+                        {record ? calculateLateBy(record.inTime) : '--'}
+                      </div>
+
+                      <div className="text-xs text-green-600 w-24 text-center">
+                        {record?.duration ?? '00:00'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </>
           )
         }

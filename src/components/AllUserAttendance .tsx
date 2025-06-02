@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const USERS_PER_PAGE = 5;
+const USERS_PER_PAGE = 10;
 
 const AllUserAttendance = ({ attendanceData, isLoading }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,12 +61,12 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User ID
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Attendance Records
-              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Designation</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attendance Records</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -94,7 +94,19 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
                 }}
               >
                 <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {user.userId}
+                  {user.user.userId}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {user.user.first_name}{" "} {user.user.last_name}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {user.user.phone}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {user.user.role}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {user.user.designation}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
                   {user.attendance.length} record{user.attendance.length !== 1 ? "s" : ""}
@@ -153,7 +165,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
       {selectedUser && (
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-2">
-            Attendance Details for User ID: {selectedUser.userId}
+            Attendance Details for User ID: {selectedUser.user.userId}
           </h3>
           {selectedUser.attendance.length === 0 ? (
             <p className="text-gray-500 italic">No attendance records available.</p>

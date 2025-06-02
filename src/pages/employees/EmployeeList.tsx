@@ -341,7 +341,7 @@ const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
               {employees.map(employee => (
                 <tr key={employee._id} className="hover:bg-neutral-50">
                   <td>
-                    <span className="text-sm font-medium">{employee._id.slice(0, 8)}</span>
+                    <span className="text-sm font-medium">{employee.userId}</span>
                   </td>
                   <td>
                     <div className="flex items-center">

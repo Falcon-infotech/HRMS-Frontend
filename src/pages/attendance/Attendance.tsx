@@ -25,6 +25,9 @@ const Attendance: React.FC = () => {
   };
   // today all user attendance data
   const [todayattendanceData, setTodayAttendanceData] = useState<any[]>([]);
+  const [allattendanceData, setAllAttendanceData] = useState<any[]>([]);
+  const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);// for calender daily attendance data
+
 
   useEffect(() => {
     const todayAttendance = async () => {
@@ -44,6 +47,64 @@ const Attendance: React.FC = () => {
     todayAttendance();
 
   }, [])
+
+  useEffect(() => {
+    const allUserAttendanceHistory = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+          }
+        });
+        const data = response.data.data;
+        setAllAttendanceData(data);
+      } catch (error) {
+        console.error('Error fetching all user attendance history:', error);
+
+      }
+    }
+    allUserAttendanceHistory();
+  }, [])
+
+
+  useEffect(() => {
+    if (selectedDate && allattendanceData.length > 0) {
+      const filtered = thatday(selectedDate);
+      setDailyAttendance(filtered);
+    }
+  }, [selectedDate, allattendanceData]);
+
+
+
+  const thatday = (date) => {
+    const dateStr = format(new Date(date), 'yyyy-MM-dd');
+
+    const day = allattendanceData?.flatMap((item) => {
+      return item?.attendance
+        ?.filter((record) => record.date === dateStr)
+        ?.map((record) => ({
+          date: record.date,
+          employeeId: item.user._id,
+          employeeName: `${item.user.first_name} ${item.user.last_name}`,
+          email: item.user.email,
+          phone: item.user.phone,
+          role: item.user.role,
+          designation: item.user.designation,
+          status: record.status,
+          checkIn: record.inTime || '-',
+          checkOut: record.outTime || '-',
+          workHours: record.duration || '-',
+          notes: record.notes || '-',
+        }));
+    }) || [];
+
+    return day;
+  };
+
+  // Example usage:
+  // const current = thatday("2025-05-31");
+  // console.log("current", current);
+
 
 
   // Get employee attendance data
@@ -137,7 +198,7 @@ const Attendance: React.FC = () => {
   };
 
   // Get the selected date's attendance data
-  const selectedDateAttendance = getAttendanceForDate(selectedDate);
+  // const selectedDateAttendance = getAttendanceForDate(selectedDate);
 
   // Calculate attendance stats for the month
   const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
@@ -333,9 +394,9 @@ const Attendance: React.FC = () => {
               </h3>
             </div>
 
-            {Array.isArray(selectedDateAttendance) ? (
+            {Array.isArray(dailyAttendance) ? (
               // Multiple employees for the selected date
-              selectedDateAttendance.length > 0 ? (
+              dailyAttendance.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="table">
                     <thead>
@@ -349,7 +410,7 @@ const Attendance: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedDateAttendance.map((record) => (
+                      {dailyAttendance.map((record) => (
                         <tr key={record.id}>
                           <td>{record.employeeName}</td>
                           <td>
