@@ -8,7 +8,9 @@ import { addDays, addWeeks, endOfWeek, format, isSameDay, startOfWeek, subWeeks 
 
 
 import DatePicker from 'react-datepicker';
-import { CalendarHeart } from 'lucide-react';
+import { CalendarHeart, Edit2, PlusCircle, Trash2 } from 'lucide-react';
+import HolidayForm from '../../components/HolidayForm';
+
 
 
 // checkin response
@@ -61,7 +63,17 @@ const UserDashboard = () => {
   //
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  const [holidays, setHolidays] = useState<any[]>([]);
 
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedHoliday, setSelectedHoliday] = useState(null);
+
+
+
+
+  const { user: Users } = useSelector((state: RootState) => state.auth);
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 }); // Sunday
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 0 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -107,6 +119,39 @@ const UserDashboard = () => {
     { date: '2025-11-06', name: 'Chhath Puja' },
     { date: '2025-12-25', name: 'Christmas Day' }
   ];
+  const fetchHolidays = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/holidays/all_holidays`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        }
+      });
+
+
+      const data = await response.json();
+      // console.log(data.data)
+      setHolidays(data.data || [])
+    } catch (error) {
+      console.error('Error fetching holidays', error);
+    }
+  }
+
+  const handleDeleteHoliday = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        }
+      });
+      fetchHolidays();
+    } catch (error) {
+      console.error("Error deleting holiday:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHolidays();
+  }, [])
   const today = new Date();
   const currentMonth = today.getMonth()
   const currentYear = today.getFullYear();
@@ -164,13 +209,13 @@ const UserDashboard = () => {
 
     return week;
   };
-  useEffect(() => {
-    console.log(
-      "first",
-      format(weekStart, 'dd-MM-yyyy'),
-      format(weekEnd, 'dd-MM-yyyy')
-    );
-  })
+  // useEffect(() => {
+  //   console.log(
+  //     "first",
+  //     format(weekStart, 'dd-MM-yyyy'),
+  //     format(weekEnd, 'dd-MM-yyyy')
+  //   );
+  // })
 
 
   useEffect(() => {
@@ -181,7 +226,8 @@ const UserDashboard = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
-        const records = res.data?.data?.records || [];
+        const records = res.data?.data?.attendance || [];
+        console.log(records, "records")
 
         const mapped = {};
         records.forEach((record) => {
@@ -209,28 +255,34 @@ const UserDashboard = () => {
   //   year: 'numeric',
   // })}`;
 
-  const calculateLateBy = (inTime) => {
-    if (!inTime) return '--';
-    const sep = inTime.split(" ")[0]
+  // const calculateLateBy = (inTime) => {
+  //   console.log(inTime)
+  //   if (!inTime) return '--';
+  //   const sep = inTime.split(" ")[0]
 
-    const [hours, minutes] = sep.split(':').map(Number);
-    console.log(hours, minutes)
-    const inDate = new Date();
-    inDate.setHours(hours, minutes);
+  //   const [hours, minutes] = sep.split(':').map(Number);
+  //   console.log(hours, minutes)
+  //   const inDate = new Date();
+  //   inDate.setHours(hours, minutes);
 
-    const expected = new Date();
-    expected.setHours(9, 0); // 09:00 AM
+  //   const expected = new Date();
+  //   expected.setHours(9, 0); // 09:00 AM
 
-    if (inDate <= expected) return '00:00';
+  //   if (inDate <= expected) return '00:00';
 
-    const diffMs = inDate - expected;
-    const diffMins = Math.floor(diffMs / 60000);
-    const h = Math.floor(diffMins / 60);
-    const m = diffMins % 60;
+  //   const diffMs = inDate - expected;
+  //   const diffMins = Math.floor(diffMs / 60000);
+  //   const h = Math.floor(diffMins / 60);
+  //   const m = diffMins % 60;
 
-    return `${h}h ${m}m`;
-  };
-
+  //   return `${h}h ${m}m`;
+  // };
+  function extractHourAndMinute(isoString) {
+    const date = new Date(isoString);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -239,15 +291,14 @@ const UserDashboard = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
-        console.log(res.data.data.records)
-        setUser(res.data.data.records);
+        // console.log(res.data.data)
+        setUser(res.data.data.attendance);
       } catch (error) {
         console.error('Failed to fetch user', error);
       }
     };
     fetchUser();
   }, [])
-
 
 
 
@@ -268,13 +319,13 @@ const UserDashboard = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
-        // console.log(res)
+
+        // console.log(res.data.attendance)
         if (res.data.attendance.inTime) {
           setCheckInTime(res.data.attendance.inTime);
         }
         if (res.data.attendance.outTime) {
           setCheckOutTime(res.data.attendance.outTime);
-
           setHasCheckedOut(true);
         }
       } catch (error) {
@@ -317,7 +368,7 @@ const UserDashboard = () => {
   const handleCheckIn = async () => {
 
     const token = localStorage.getItem('tokenId');
-    console.log(token)
+    // console.log(token)
     try {
       const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, {}, {
         headers: {
@@ -698,17 +749,17 @@ const UserDashboard = () => {
                   <div className="w-9 text-center">Date</div>
                   <div className="w-20 text-center">Check-in</div>
                   <div className="w-20 text-center">Check-out</div>
-                  <div className="w-20 text-center">Late By</div>
+                  <div className="w-20 text-center">Status</div>
                   <div className="w-24 text-center">Hours Worked</div>
                 </div>
                 {days.map((day, index) => {
                   const isToday = isSameDay(day, new Date());
                   const isWeekend = format(day, 'EEE') === 'Sun' || format(day, 'EEE') === 'Sat';
-                  const record = user.find(
+                  const record = user?.find(
                     (rec) => rec.date === format(day, 'yyyy-MM-dd')
                   ) || [];
 
-                  // console.log("user", user)
+                  // console.log(record.inTime)
 
                   return (
                     <div
@@ -728,16 +779,19 @@ const UserDashboard = () => {
 
                       {/* Check-out */}
                       <div className="text-xs text-gray-600 w-20 text-center">
-                        {record?.inTime ?? '--'}
+                        {record?.inTime && extractHourAndMinute(record?.inTime) || '--'}
                       </div>
                       {/* Check-in */}
                       <div className="text-xs text-gray-600 w-20 text-center">
-                        {record?.outTime ?? '--'}
+                        {record?.outTime && extractHourAndMinute(record?.outTime) || '--'}
                       </div>
-
+                      <div className="text-xs text-gray-600 w-20 text-center">
+                        {record?.status ?? '--'}
+                      </div>
+                      {/* 
                       <div className="text-xs text-red-500 w-20 text-center">
                         {record ? calculateLateBy(record.inTime) : '--'}
-                      </div>
+                      </div> */}
 
                       <div className="text-xs text-green-600 w-24 text-center">
                         {record?.duration ?? '00:00'}
@@ -753,12 +807,30 @@ const UserDashboard = () => {
         {
           activeTab === "All-Holidays" && (
             <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <span className="text-blue-600">🎉</span> All Holidays
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-blue-600 text-3xl">🎉</span>
+                  <p>All Holidays</p>
+                </div>
+
+                {(Users?.role === 'admin' || Users?.role === 'hr') && (
+                  <button
+                    onClick={() => {
+                      setSelectedHoliday(null);
+                      setIsEditMode(false);
+                      setIsFormOpen(true);
+                    }}
+                    className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition duration-200"
+                  >
+                    <PlusCircle className="w-5 h-5" />
+                    <span>Add</span>
+                  </button>
+                )}
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {indianHolidays2025.map((holiday) => {
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                {holidays.map((holiday) => {
                   const dateObj = new Date(holiday.date);
                   const day = dateObj.getDate();
                   const month = dateObj.toLocaleString('default', { month: 'short' });
@@ -767,16 +839,78 @@ const UserDashboard = () => {
                   return (
                     <div
                       key={holiday.date}
-                      className="bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition duration-300"
+                      className="bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition duration-300 flex justify-between items-center"
                     >
-                      <p className="text-gray-500 text-sm mb-1">
-                        {`${day} - ${month}, ${weekday}`}
-                      </p>
-                      <h3 className="text-lg font-semibold text-gray-800">{holiday.name}</h3>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800">{holiday.reason}</h3>
+
+                        <p className="text-gray-500 text-sm mb-1">
+                          {`${day} - ${month}, ${weekday}`}
+                        </p>
+                      </div>
+                      <div>
+                        {(Users?.role === 'admin' || Users?.role === 'hr') && (
+                          <div className="flex gap-3 items-center">
+                            <button
+                              title="Delete"
+                              onClick={() => handleDeleteHoliday(holiday._id)}
+                              className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transition duration-200"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+
+                            <button
+                              title="Edit"
+                              onClick={() => {
+                                setSelectedHoliday(holiday);
+                                setIsEditMode(true);
+                                setIsFormOpen(true);
+                              }}
+                              className="p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 hover:text-blue-700 transition duration-200"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+
+
+                      </div>
                     </div>
                   );
+
                 })}
               </div>
+              {isFormOpen && (
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                  onClick={() => setIsFormOpen(false)}
+                >
+                  <div
+                    className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <HolidayForm
+                      isEdit={isEditMode}
+                      holidayId={selectedHoliday?._id}
+                      existingData={selectedHoliday}
+                      onSuccess={() => {
+                        setIsFormOpen(false);
+                        fetchHolidays();
+                      }}
+                    />
+                    {/* Cancel button below form or top right */}
+                    <button
+                      onClick={() => setIsFormOpen(false)}
+                      className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                      aria-label="Cancel"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              )}
+
+
             </div>
           )
         }

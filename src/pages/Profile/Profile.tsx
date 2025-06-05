@@ -281,11 +281,7 @@ import {
   Edit, Mail, Phone, MapPin, Briefcase, Calendar, Clock, UserCheck, FileText,
   DollarSign, Clipboard, ChevronDown, Download
 } from 'lucide-react';
-// import employeesData from '../../data/employeeData';
-// import { getEmployeeAttendance } from '../../data/attendanceData';
-// import { getEmployeeLeaveRequests, getEmployeeLeaveBalance } from '../../data/leaveData';
-// import { getEmployeePayrolls } from '../../data/payrollData';
-// import { getEmployeePerformanceReviews, getEmployeeAverageRating } from '../../data/performanceData';
+
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
@@ -311,7 +307,7 @@ const id=user?._id;
           },
         });
 
-        // console.log('API response:', response.data.data);
+        console.log('API response:', response.data.data);
 
         setEmployees(response.data.data);
       } catch (error) {
@@ -320,15 +316,60 @@ const id=user?._id;
         setIsLoading(false);
       }
     };
-
     fetchEmployees();
   }, []);
+
+  const [status,setStatus] = useState<any>("null");
+  useEffect(() => {
+    const fetchStatus = async () => {
+      console.log("starrt")
+      try {
+        const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+          }
+        });
+
+        setStatus(res.data.attendance)
+    
+      } catch (error) {
+        console.error('Failed to fetch status', error);
+      }
+    };
+    fetchStatus();
+  }, []);
+
+
+  const [leaveBalance, setLeaveBalance] = useState<any>(0);
+
+  useEffect(() => {
+    const Alluseleaves = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+          }
+        });
+        // console.log(response.data.count)
+        if (response.status === 200) {
+          setLeaveBalance(response.data.count);
+        }
+      } catch (error) {
+        console.error('Error fetching leave balance:', error);
+        // toast.error('Failed to   fetch leave balance. Please try again later.');
+      }
+    }
+
+    Alluseleaves();
+  },[])
 
   if (isLoading) {
     return (
       <Loading />
     );
   }
+
+
 
   if (!employee) {
     return (
@@ -375,11 +416,11 @@ const id=user?._id;
                 <img src={employee.avatar} alt={`${employee.first_name} ${employee.last_name}`} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-3xl font-bold">
-                  {employee.role==="admin" ? employee.name[0]: employee.first_name[0]}
+                  {employee.role==="admin" ? employee.first_name[0]: employee.first_name[0]}
                 </div>
               )}
             </div>
-            <h1 className="text-xl font-bold text-neutral-800 text-center">{employee.first_Name || employee.name} {employee.last_Name}</h1>
+            <h1 className="text-xl font-bold text-neutral-800 text-center">{employee.first_name || employee.name} {employee.last_name}</h1>
             <p className="text-neutral-600 mt-1 text-center">{employee.designation}</p>
             <div className="mt-3">
               <span className={`badge ${employee.status === 'active' ? 'badge-success' :
@@ -447,6 +488,7 @@ const id=user?._id;
                   <div>
                     <p className="text-sm text-neutral-500">Attendance</p>
                     {/* <p className="text-lg font-semibold">{attendanceRate}%</p> */}
+                    {status.status}
                   </div>
                 </div>
               </div>
@@ -474,6 +516,7 @@ const id=user?._id;
                     <p className="text-sm text-neutral-500">Leave Balance</p>
                     <p className="text-lg font-semibold">
                       {/* {leaveBalance ? leaveBalance.sick.available + leaveBalance.casual.available + leaveBalance.annual.available : 0} days */}
+                      {leaveBalance}
                     </p>
                   </div>
                 </div>
@@ -487,6 +530,7 @@ const id=user?._id;
                   <div>
                     <p className="text-sm text-neutral-500">Performance</p>
                     {/* <p className="text-lg font-semibold">{averageRating.toFixed(1)}/5.0</p> */}
+                    Good
                   </div>
                 </div>
               </div>
@@ -576,7 +620,7 @@ const id=user?._id;
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-neutral-500">Employee ID</p>
-                        <p className="text-sm font-medium">{employee?._id}</p>
+                        <p className="text-sm font-medium">{employee?.userId}</p>
                       </div>
                       <div>
                         <p className="text-sm text-neutral-500">Department</p>

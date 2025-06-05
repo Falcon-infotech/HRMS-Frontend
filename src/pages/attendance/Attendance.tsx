@@ -38,7 +38,7 @@ const Attendance: React.FC = () => {
           }
         })
         const data = response.data.data
-        // console.log(data[0])
+        // console.log(data)
         setTodayAttendanceData(data);
       } catch (error) {
         console.error('Error fetching today\'s attendance:', error);
@@ -57,6 +57,7 @@ const Attendance: React.FC = () => {
           }
         });
         const data = response.data.data;
+        // console.log(data, "attendcatotaldata")
         setAllAttendanceData(data);
       } catch (error) {
         console.error('Error fetching all user attendance history:', error);
@@ -67,12 +68,6 @@ const Attendance: React.FC = () => {
   }, [])
 
 
-  useEffect(() => {
-    if (selectedDate && allattendanceData.length > 0) {
-      const filtered = thatday(selectedDate);
-      setDailyAttendance(filtered);
-    }
-  }, [selectedDate, allattendanceData]);
 
 
 
@@ -80,16 +75,16 @@ const Attendance: React.FC = () => {
     const dateStr = format(new Date(date), 'yyyy-MM-dd');
 
     const day = allattendanceData?.flatMap((item) => {
-      return item?.attendance
+      return item?.attendanceHistory
         ?.filter((record) => record.date === dateStr)
         ?.map((record) => ({
           date: record.date,
-          employeeId: item.user._id,
-          employeeName: `${item.user.first_name} ${item.user.last_name}`,
-          email: item.user.email,
-          phone: item.user.phone,
-          role: item.user.role,
-          designation: item.user.designation,
+          employeeId: item.userId,
+          employeeName: item.userName || '-',
+          email: item.userEmail || '-',
+          phone: item.userPhone || '-',
+          role: item.role || '-',
+          designation: item.designation || '-',
           status: record.status,
           checkIn: record.inTime || '-',
           checkOut: record.outTime || '-',
@@ -100,6 +95,49 @@ const Attendance: React.FC = () => {
 
     return day;
   };
+
+  //   const day = allattendanceData?.flatMap((item) => {
+  //     return item?.attendance  // attendace change to attendance history in backend by faisal
+  //       ?.filter((record) => record.date === dateStr)
+  //       ?.map((record) => ({
+  //         date: record.date,
+  //         employeeId: item.user._id,
+  //         employeeName: `${item.userName}`,
+  //         // employeeName: `${item.user.first_name} ${item.user.last_name}`,//   changew in name in backend by faisal causing error
+  //         email: item.user.email,
+  //         phone: item.user.phone,
+  //         role: item.user.role,
+  //         designation: item.user.designation,
+  //         status: record.status,
+  //         checkIn: record.inTime || '-',
+  //         checkOut: record.outTime || '-',
+  //         workHours: record.duration || '-',
+  //         notes: record.notes || '-',
+  //       }));
+  //   }) || [];
+
+  //   return day;
+  // };
+
+  function extractHourAndMinute(isoString) {
+    if (!isoString) return '--';
+
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return '--';
+
+    const hours = String(date.getHours()).padStart(2, '0');      // local time
+    const minutes = String(date.getMinutes()).padStart(2, '0');  // local time
+    return `${hours}:${minutes}`;
+  }
+
+
+  useEffect(() => {
+    if (selectedDate && allattendanceData.length > 0) {
+      const filtered = thatday(selectedDate);
+      // console.log(filtered, " filtered")
+      setDailyAttendance(filtered);
+    }
+  }, [selectedDate, allattendanceData]);
 
   // Example usage:
   // const current = thatday("2025-05-31");
@@ -406,12 +444,12 @@ const Attendance: React.FC = () => {
                         <th>Check In</th>
                         <th>Check Out</th>
                         <th>Working Hours</th>
-                        <th>Notes</th>
+                        {/* <th>Notes</th> */}
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody >
                       {dailyAttendance.map((record) => (
-                        <tr key={record.id}>
+                        <tr key={record._id || `${record.employeeId}-${record.date}`}>
                           <td>{record.employeeName}</td>
                           <td>
                             <span className={`badge ${record.status === 'present' ? 'badge-success' :
@@ -422,10 +460,11 @@ const Attendance: React.FC = () => {
                               {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                             </span>
                           </td>
-                          <td>{record.checkIn || '-'}</td>
-                          <td>{record.checkOut || '-'}</td>
-                          <td>{record.workHours ? `${record.workHours} hrs` : '-'}</td>
-                          <td>{record.notes || '-'}</td>
+                          <td>{record.checkIn ? extractHourAndMinute(record.checkIn) : '--'}</td>
+                          <td>{record.checkOut ? extractHourAndMinute(record.checkOut) : '--'}</td>
+                          <td>{record.workHours ? `${record.workHours} hrs` : '--'}</td>
+
+                          {/* <td>{record.notes || '-'}</td> */}
                         </tr>
                       ))}
                     </tbody>
@@ -566,7 +605,6 @@ const Attendance: React.FC = () => {
 
           <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
             <h3 className="text-lg font-semibold mb-4">Today's Attendance</h3>
-
             <div className="space-y-3">
               {/* {employeesData.slice(0, 5).map(employee => {
                 const today = format(new Date(), 'yyyy-MM-dd');
@@ -609,14 +647,14 @@ const Attendance: React.FC = () => {
 
               {todayattendanceData.slice(0, 5).map((item) => {
                 // console.log(item)
-                const { user, date, inTime, todayStatus } = item;
+                const { user, date, inTime, status } = item;
                 const email = user.email;
                 const emailFirstLetter = email?.charAt(0).toUpperCase();
-                const status = todayStatus?.toLowerCase();
+                // const status = todayStatus?.toLowerCase();
 
                 return (
                   <div
-                    key={user._id}
+                    key={user.userId}
                     className="flex items-center justify-between p-2 border-b border-neutral-100"
                   >
                     <div className="flex items-center">
@@ -630,20 +668,20 @@ const Attendance: React.FC = () => {
                     </div>
                     <div>
                       <span
-                        className={`badge ${status === 'present'
+                        className={`badge ${status === 'Present'
                           ? 'bg-green-100 text-green-800'
-                          : status === 'absent'
+                          : status === 'Absent'
                             ? 'bg-red-100 text-red-800'
-                            : status === 'half-day'
+                            : status === 'Half-day'
                               ? 'bg-yellow-100 text-yellow-800'
-                              : status === 'leave'
+                              : status === 'Leave'
                                 ? 'bg-blue-100 text-blue-800'
-                                : status === 'holiday'
+                                : status === 'Holiday'
                                   ? 'bg-purple-100 text-purple-800'
                                   : 'bg-neutral-100 text-neutral-800'
                           } px-2 py-1 rounded text-xs font-medium`}
                       >
-                        {todayStatus}
+                        {status}
                       </span>
                     </div>
                   </div>
@@ -661,7 +699,7 @@ const Attendance: React.FC = () => {
           </div>
         </div>
       </div>
-
+      {/* 
       <style jsx>{`
         .attendance-calendar .react-calendar {
           width: 100%;
@@ -707,6 +745,54 @@ const Attendance: React.FC = () => {
       `}</style>
     </div>
   );
-};
+}; */}
+
+
+      <style>{`
+  .attendance-calendar .react-calendar {
+    width: 100%;
+    border: none;
+    font-family: inherit;
+  }
+
+  .attendance-calendar .react-calendar__tile {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .attendance-calendar .react-calendar__tile--now {
+    background: none;
+  }
+
+  .attendance-calendar .react-calendar__tile--now abbr {
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .attendance-calendar .react-calendar__tile:enabled:hover,
+  .attendance-calendar .react-calendar__tile:enabled:focus {
+    background: none;
+  }
+
+  .attendance-calendar .react-calendar__tile--active:enabled {
+    background: none;
+    color: inherit;
+  }
+
+  .attendance-calendar .react-calendar__tile--active:enabled abbr {
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .attendance-calendar .react-calendar__month-view__days__day--weekend {
+    color: inherit;
+  }
+`}</style>
+    </div>
+  );
+}
 
 export default Attendance;

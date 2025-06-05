@@ -9,9 +9,8 @@ import { BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
 
 const ApplyLeave: React.FC = () => {
-  const { user } = useAuth();
   // const leaveBalance = user ? getEmployeeLeaveBalance(user.id) : null;
-  const [leaveBalance, setLeaveBalance] = useState<any>(null);
+  const [leaveBalance, setLeaveBalance] = useState<any>(0);
 
   useEffect(() => {
     const Alluseleaves = async () => {
@@ -21,20 +20,19 @@ const ApplyLeave: React.FC = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
+        // console.log(response.data.count)
         if (response.status === 200) {
-          setLeaveBalance(response.data);
+          setLeaveBalance(response.data.count);
         }
       } catch (error) {
         console.error('Error fetching leave balance:', error);
-        toast.error('Failed to fetch leave balance. Please try again later.');
+        // toast.error('Failed to   fetch leave balance. Please try again later.');
       }
     }
 
     Alluseleaves();
   },[])
-  useEffect(() => {
-    console.log(leaveBalance)
-  }, [])
+ 
   const [formData, setFormData] = useState({
     leaveType: '',
     fromDate: '',
@@ -253,7 +251,7 @@ const ApplyLeave: React.FC = () => {
 
     <div className="space-y-4">
       {/* Sick Leave */}
-      <div>
+      {/* <div>
         <div className="flex justify-between mb-1">
           <span className="text-sm text-neutral-600">Sick Leave</span>
           <span className="text-sm font-medium">4 / 5</span>
@@ -267,7 +265,7 @@ const ApplyLeave: React.FC = () => {
       </div>
 
       {/* Casual Leave */}
-      <div>
+      {/* <div>
         <div className="flex justify-between mb-1">
           <span className="text-sm text-neutral-600">Casual Leave</span>
           <span className="text-sm font-medium">5 / 5</span>
@@ -278,10 +276,10 @@ const ApplyLeave: React.FC = () => {
             style={{ width: `${(5 / 5) * 100}%` }}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Annual Leave */}
-      <div>
+      {/* <div>
         <div className="flex justify-between mb-1">
           <span className="text-sm text-neutral-600">Annual Leave</span>
           <span className="text-sm font-medium">2 / 4</span>
@@ -292,7 +290,12 @@ const ApplyLeave: React.FC = () => {
             style={{ width: `${(2 / 4) * 100}%` }}
           />
         </div>
-      </div>
+      </div>  */}
+      <div className="bg-white p-4 rounded-lg shadow-md border mb-4">
+  <h2 className="text-lg font-semibold text-gray-800 mb-2 text-center">Total Leave Balance</h2>
+  <p className="text-3xl font-bold text-blue-600 text-center">{leaveBalance}</p> 
+</div>
+
     </div>
   </div>
 

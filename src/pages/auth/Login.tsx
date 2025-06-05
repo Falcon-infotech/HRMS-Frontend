@@ -11,7 +11,6 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [errors, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const dispatch = useDispatch<AppDispatch>(); // ✅ correct spelling

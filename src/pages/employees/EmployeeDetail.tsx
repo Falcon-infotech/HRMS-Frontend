@@ -29,7 +29,7 @@ const EmployeeDetail: React.FC = () => {
           },
         });
 
-        console.log('API response:', response.data);
+        // console.log('API response:', response.data);
 
         setEmployees(response.data.data.users);
       } catch (error) {

@@ -4,6 +4,7 @@ import { ArrowLeft, Upload, Plus, Trash2 } from 'lucide-react';
 import employeesData, { Employee, departments, designations } from '../../data/employeeData';
 import axios from 'axios';
 import { API, BASE_URL } from '../../constants/api';
+import toast from 'react-hot-toast';
 
 const EmployeeForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -217,14 +218,14 @@ const EmployeeForm: React.FC = () => {
               'Authorization': `Bearer ${token}`,
             }
           });
-          alert("Employee updated successfully")
+          toast.success("Employee updated successfully")
         } else {
           const response = await axios.post(`${BASE_URL}/api/auth/register`, payload, {
             headers: {
               "Authorization": `Bearer ${token}`
             }
           });
-          alert("Employee created successfully")
+          toast.success("Employee created successfully")
         }
         // const successMessage = isEditMode
         //   ? `Employee ${employee.first_Name} ${employee.last_Name} updated successfully!`
@@ -235,7 +236,7 @@ const EmployeeForm: React.FC = () => {
         navigate('/employees');
       } catch (error) {
         console.error("Error submitting employee data:", error);
-        alert("Something went wrong while submitting the employee data.");
+        toast.error("Something went wrong while submitting the employee data.");
       }
     } else {
       // Scroll to the first error

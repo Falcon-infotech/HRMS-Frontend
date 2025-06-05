@@ -62,33 +62,33 @@ export const leaveTypes = [
     color: '#f59e0b', // amber
   },
   {
-    id: 'annual',
-    name: 'Annual Leave',
+    id: 'LOP',
+    name: 'LOP Leave',
     description: 'Paid time off work granted as a benefit',
     maxDays: 20,
     color: '#3b82f6', // blue
   },
   {
-    id: 'maternity',
-    name: 'Maternity Leave',
+    id: 'vacation',
+    name: 'Vacation Leave',
     description: 'Leave granted to mothers during and after pregnancy',
     maxDays: 90,
     color: '#ec4899', // pink
   },
-  {
-    id: 'paternity',
-    name: 'Paternity Leave',
-    description: 'Leave granted to fathers after childbirth',
-    maxDays: 10,
-    color: '#8b5cf6', // violet
-  },
-  {
-    id: 'unpaid',
-    name: 'Unpaid Leave',
-    description: 'Leave without pay',
-    maxDays: 30,
-    color: '#6b7280', // gray
-  },
+  // {
+  //   id: 'paternity',
+  //   name: 'Paternity Leave',
+  //   description: 'Leave granted to fathers after childbirth',
+  //   maxDays: 10,
+  //   color: '#8b5cf6', // violet
+  // },
+  // {
+  //   id: 'unpaid',
+  //   name: 'Unpaid Leave',
+  //   description: 'Leave without pay',
+  //   maxDays: 30,
+  //   color: '#6b7280', // gray
+  // },
 ];
 
 // Generate mock leave requests
