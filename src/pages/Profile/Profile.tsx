@@ -488,7 +488,7 @@ const id=user?._id;
                   <div>
                     <p className="text-sm text-neutral-500">Attendance</p>
                     {/* <p className="text-lg font-semibold">{attendanceRate}%</p> */}
-                    {status.status}
+                    {status ? status.status:"Absent"}
                   </div>
                 </div>
               </div>

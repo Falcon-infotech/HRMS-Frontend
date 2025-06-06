@@ -155,7 +155,7 @@ const UserDashboard = () => {
   const today = new Date();
   const currentMonth = today.getMonth()
   const currentYear = today.getFullYear();
-  const holidatsThisMonth = indianHolidays2025.filter(holiday => {
+  const holidatsThisMonth = holidays.filter(holiday => {
     const date = new Date(holiday.date)
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear
   })
@@ -227,7 +227,7 @@ const UserDashboard = () => {
           }
         });
         const records = res.data?.data?.attendance || [];
-        console.log(records, "records")
+        // console.log(records, "records")
 
         const mapped = {};
         records.forEach((record) => {
@@ -312,7 +312,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const fetchStatus = async () => {
-      console.log("starrt")
+      // console.log("starrt")
       try {
         const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
           headers: {
@@ -321,11 +321,11 @@ const UserDashboard = () => {
         });
 
         // console.log(res.data.attendance)
-        if (res.data.attendance.inTime) {
-          setCheckInTime(res.data.attendance.inTime);
+        if (res?.data?.attendance?.inTime) {
+          setCheckInTime(res.data.attendance?.inTime);
         }
-        if (res.data.attendance.outTime) {
-          setCheckOutTime(res.data.attendance.outTime);
+        if (res?.data?.attendance?.outTime) {
+          setCheckOutTime(res.data.attendance?.outTime);
           setHasCheckedOut(true);
         }
       } catch (error) {
@@ -477,7 +477,7 @@ const UserDashboard = () => {
                     key={holiday.date}
                     className="border border-blue-500 text-blue-600 rounded-lg p-4 w-full sm:w-1/3"
                   >
-                    <p className="font-semibold">{holiday.name}</p>
+                    <p className="font-semibold">{holiday.reason}</p>
                     <p className="text-sm text-gray-500">
                       {`${day} - ${month}, ${weekday}`}
                     </p>
@@ -524,7 +524,7 @@ const UserDashboard = () => {
 
 
             <p className="text-sm text-gray-400">{userDetails?.email}</p>
-            <p className="text-lg text-gray-600 mt-1 font-bold">{userDetails?.role}</p>
+            <p className="text-lg text-gray-600 mt-1 font-bold">{userDetails?.designation}</p>
             {!checkInTime && (
               <p className="text-red-500 font-semibold mt-2">Yet to check In </p>
             )}
