@@ -10,6 +10,7 @@ import { addDays, addWeeks, endOfWeek, format, isSameDay, startOfWeek, subWeeks 
 import DatePicker from 'react-datepicker';
 import { CalendarHeart, Edit2, PlusCircle, Trash2 } from 'lucide-react';
 import HolidayForm from '../../components/HolidayForm';
+import Calendar from '../../components/Calendar';
 
 
 
@@ -58,7 +59,7 @@ const UserDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const userDetails = useSelector((state: RootState) => state.auth.user)
 
-  const [attendanceData, setAttendanceData] = useState({});
+  const [attendanceData, setAttendanceData] = useState<any>({});
 
   //
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -136,7 +137,7 @@ const UserDashboard = () => {
     }
   }
 
-  const handleDeleteHoliday = async (id) => {
+  const handleDeleteHoliday = async (id:string) => {
     try {
       await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`, {
         headers: {
@@ -229,8 +230,8 @@ const UserDashboard = () => {
         const records = res.data?.data?.attendance || [];
         // console.log(records, "records")
 
-        const mapped = {};
-        records.forEach((record) => {
+        const mapped:any = {};
+        records.forEach((record:any) => {
           mapped[record.date] = record.status;
         });
         setAttendanceData(mapped);
@@ -243,6 +244,23 @@ const UserDashboard = () => {
   }, []);
 
   const weekData = getCurrentWeekDates();
+
+  const getStatusColor = (status, isBorder = false) => {
+    switch (status) {
+      case 'Absent':
+        return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
+      case 'Weekend':
+        return isBorder ? 'text-yellow-600 border border-yellow-400 bg-yellow-50' : 'bg-yellow-400';
+      case 'Active':
+      case 'Present':
+        return isBorder ? 'text-green-600 border border-green-400 bg-green-50' : 'bg-green-400';
+      case 'Leave':
+        return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
+      default:
+        return isBorder ? 'text-purple-500 border border-gray-300 bg-gray-100' : 'bg-gray-300';
+    }
+  };
+
 
 
   // const weekRange = `${weekData[0]?.fullDate?.toLocaleDateString('en-GB', {
@@ -407,6 +425,7 @@ const UserDashboard = () => {
     "Attendance",
     "Time Logs",
     "All-Holidays",
+    "Monthly-Attendance"
   ];
 
 
@@ -547,16 +566,17 @@ const UserDashboard = () => {
             {!checkInTime ? (
               <button
                 onClick={handleCheckIn}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
+                className="bg-green-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
               >
                 Check In
               </button>
             ) : (
               <button
                 onClick={handleCheckOut}
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
+                className={`${hasCheckedOut ? "bg-blue-500" : "bg-red-500"} hover:bg-blue-400 text-white px-6 py-2 rounded-lg shadow transition duration-300`}
+                disabled={hasCheckedOut}
               >
-                Check Out
+                {hasCheckedOut ? 'Checked Out' : 'Check Out'}
               </button>
             )}
           </div>
@@ -762,47 +782,77 @@ const UserDashboard = () => {
                   // console.log(record.inTime)
 
                   return (
-                    <div
-                      key={index}
-                      className={`flex items-center justify-between bg-white shadow rounded-lg px-4 py-3 ${isToday ? 'border-2 border-blue-500' : ''
-                        }`}
-                    >
-                      {/* Day Name */}
-                      <div className="text-sm font-medium w-16 text-gray-800">
-                        {format(day, 'EEE')}
-                      </div>
+                    <>
+                      <div
+                        key={index}
+                        className={`flex flex-col bg-white shadow rounded-lg px-4 py-5 ${isToday ? 'border-2 border-blue-500' : ''
+                          }`}
+                      >
+                        {/* Main Row Content */}
+                        <div className="flex items-center justify-between">
+                          {/* Day Name */}
+                          <div className="text-sm font-medium w-16 text-gray-800">
+                            {format(day, 'EEE')}
+                          </div>
 
-                      {/* Date in Circle */}
-                      <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-800">
-                        {format(day, 'dd')}
-                      </div>
+                          {/* Date in Circle */}
+                          <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-800">
+                            {format(day, 'dd')}
+                          </div>
 
-                      {/* Check-out */}
-                      <div className="text-xs text-gray-600 w-20 text-center">
-                        {record?.inTime && extractHourAndMinute(record?.inTime) || '--'}
-                      </div>
-                      {/* Check-in */}
-                      <div className="text-xs text-gray-600 w-20 text-center">
-                        {record?.outTime && extractHourAndMinute(record?.outTime) || '--'}
-                      </div>
-                      <div className="text-xs text-gray-600 w-20 text-center">
-                        {record?.status ?? '--'}
-                      </div>
-                      {/* 
-                      <div className="text-xs text-red-500 w-20 text-center">
-                        {record ? calculateLateBy(record.inTime) : '--'}
-                      </div> */}
+                          {/* In Time */}
+                          <div className="text-xs text-gray-600 w-20 text-center">
+                            {record?.inTime ? extractHourAndMinute(record?.inTime) : '--'}
+                          </div>
 
-                      <div className="text-xs text-green-600 w-24 text-center">
-                        {record?.duration ?? '00:00'}
+                          {/* Out Time */}
+                          <div className="text-xs text-gray-600 w-20 text-center">
+                            {record?.outTime ? extractHourAndMinute(record?.outTime) : '--'}
+                          </div>
+
+                          {/* Status */}
+                          <div className="text-xs text-gray-600 w-20 text-center">
+                            {record?.status ?? '--'}
+                          </div>
+
+                          {/* Duration */}
+                          <div className="text-xs text-green-600 w-24 text-center">
+                            {record?.duration ?? '00:00'}
+                          </div>
+                        </div>
+
+                        {/* Horizontal Attendance Line (Inside Box) */}
+                        <div className="flex items-center justify-between mt-3 px-1 relative">
+                          {/* Left dot */}
+                          <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+
+                          {/* Line */}
+                          <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`}></div>
+
+                          {/* Right dot */}
+                          <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+
+                          {/* Centered Status Label */}
+                          <span
+                            className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-0.5 rounded-full border ${getStatusColor(
+                              record?.status,
+                              true
+                            )}`}
+                          >
+                            {record?.status ?? 'No Status'}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </>
+
+
                   );
                 })}
               </div>
             </>
           )
         }
+       
 
         {
           activeTab === "All-Holidays" && (
@@ -923,6 +973,12 @@ const UserDashboard = () => {
               <p className="text-gray-500">No time logs available yet.</p>
             </div>
           )
+        }
+
+         {
+          activeTab ==="Monthly-Attendance" && (
+            <Calendar />)
+              
         }
 
 

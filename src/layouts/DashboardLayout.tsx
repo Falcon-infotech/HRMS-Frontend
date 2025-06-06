@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu, X, ChevronDown, Bell, User, Home, Users, Calendar, FileText,
@@ -21,9 +21,23 @@ const DashboardLayout: React.FC = () => {
   // const { user } = useAuth();
   const { user } = useSelector((state: RootState) => state.auth)
 
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef();
+
   const { notifications } = useNotification();
   const unreadNotifications = notifications.filter(n => !n.read).length;
   const dispatch = useDispatch()
+
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   // console.log(user?.role)
   // Close sidebar when route changes on mobile
   useEffect(() => {
@@ -218,7 +232,7 @@ const DashboardLayout: React.FC = () => {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-neutral-200">
+        {sidebarOpen && <div className="p-4 border-t border-neutral-200">
           <div className="flex items-center">
             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
 
@@ -236,7 +250,7 @@ const DashboardLayout: React.FC = () => {
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </button>
-        </div>
+        </div>}
       </aside>
 
       {/* Main Content */}
@@ -289,17 +303,50 @@ const DashboardLayout: React.FC = () => {
 
               {/* Theme toggle */}
               <button
-                className="ml-2 p-2 rounded-md text-neutral-600 hover:bg-neutral-100"
+                className="max-md:hidden ml-2 p-2 rounded-md text-neutral-600 hover:bg-neutral-100"
                 onClick={() => setDarkMode(!darkMode)}
               >
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
 
               {/* User Menu */}
-              <div className="hidden md:ml-3 md:flex md:items-center">
+              {/* <div className=" md:ml-3 md:flex md:items-center">
                 <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
                   <Link to={'/profile'}><span className="text-primary-600 font-medium">{user?.name?.[0] || user?.first_name[0]}</span></Link>
                 </div>
+              </div> */}
+
+
+              <div className="relative md:ml-3" ref={menuRef}>
+                <div
+                  className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center cursor-pointer"
+                  onClick={() => setOpen(!open)}
+                >
+                  <span className="text-primary-600 font-medium">
+                    {user?.name?.[0] || user?.first_name?.[0]}
+                  </span>
+                </div>
+
+                {open && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-10">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => {
+                        setOpen(false);
+                        dispatch(logout())
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

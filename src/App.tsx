@@ -50,7 +50,7 @@ function App() {
 
             {/* Dashboard Routes - Protected */}
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-              <Route path="/dashboard" element={<Dashboard />} />
+              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
               <Route path="/home" element={<UserDashboard />} />
 
               {/* Employee Management
@@ -60,11 +60,13 @@ function App() {
               <Route path="/employees/edit/:id" element={<EmployeeForm />} />
                */}
               {/* Attendance */}
-              <Route path="/attendance" element={<Attendance />} />
-              <Route path="/attendance/log" element={<AttendanceLog />} />
+              {/* <Route path="/attendance" element={<Attendance />} />
+              <Route path="/attendance/log" element={<AttendanceLog />} /> */}
+
+
 
               {/* Leave */}
-              <Route path="/leave" element={<LeaveManagement />} />
+              {/* <Route path="/leave" element={<LeaveManagement />} /> */}
               <Route path="/leave/apply" element={<ApplyLeave />} />
 
               {/* Payroll */}
@@ -88,11 +90,19 @@ function App() {
               <Route path="/profile" element={<Profile />} />
             </Route>
 
-            <Route element={<ProtectedRoute requiredRoles={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>
+            <Route element={<ProtectedRoute requiredRole={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>
               <Route path="/employees" element={<EmployeeList />} />
               <Route path="/employees/:id" element={<EmployeeDetail />} />
               <Route path="/employees/new" element={<EmployeeForm />} />
               <Route path="/employees/edit/:id" element={<EmployeeForm />} />
+            </Route>
+
+            <Route element={<ProtectedRoute requiredRole={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>
+              <Route path="/attendance" element={<Attendance />} />
+              <Route path="/attendance/log" element={<AttendanceLog />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/leave" element={<LeaveManagement />} />
+
             </Route>
 
             {/* Default redirect */}

@@ -451,16 +451,16 @@ const id=user?._id;
               </div>
               <div className="flex items-center text-sm text-neutral-600">
                 <Calendar size={16} className="mr-2 text-neutral-400" />
-                <span>Joined {new Date(employee.joiningDate).toLocaleDateString()}</span>
+                <span>Joined- {new Date(employee.joining_date).toLocaleDateString()}</span>
               </div>
             </div>
 
-            <div className="mt-8 w-full">
+            {user?.role !=="employee" &&<div className="mt-8 w-full">
               <Link to={`/employees/edit/${employee._id}`} className="btn btn-primary w-full flex items-center justify-center">
                 <Edit size={16} className="mr-2" />
                 Edit Profile
               </Link>
-            </div>
+            </div>}
           </div>
 
           <div className="md:w-2/3 lg:w-3/4 p-6">
@@ -548,7 +548,7 @@ const id=user?._id;
                 >
                   Personal Info
                 </button>
-                <button
+                {/* <button
                   className={`pb-3 text-sm font-medium border-b-2 ${activeTab === 'attendance'
                     ? 'border-primary-600 text-primary-600'
                     : 'border-transparent text-neutral-500 hover:text-neutral-700'
@@ -583,7 +583,7 @@ const id=user?._id;
                   onClick={() => setActiveTab('performance')}
                 >
                   Performance
-                </button>
+                </button> */}
               </nav>
             </div>
 

@@ -24,10 +24,16 @@ const EmployeeList: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
   const { user } = useSelector((state: RootState) => state.auth)
-  const [allEmployees, setAllEmployees] = useState([]); 
+  const [allEmployees, setAllEmployees] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const employeesPerPage = 10;
+  const indexOfLastEmployee = currentPage * employeesPerPage;
+  const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
+  const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
 
+  const totalPages = Math.ceil(employees.length / employeesPerPage);
 
   // console.log(user.role)
 
@@ -338,7 +344,7 @@ const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
               </tr>
             </thead>
             <tbody>
-              {employees.map(employee => (
+              {currentEmployees.map(employee => (
                 <tr key={employee._id} className="hover:bg-neutral-50">
                   <td>
                     <span className="text-sm font-medium">{employee.userId}</span>
@@ -466,23 +472,40 @@ const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
         {/* Pagination */}
         <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
           <div className="text-sm text-neutral-500">
-            Showing <span className="font-medium">{employees.length}</span> of <span className="font-medium">{employeesData.length}</span> employees
+            Showing <span className="font-medium">{currentEmployees.length}</span> of <span className="font-medium">{employees.length}</span> employees
           </div>
           <div className="flex space-x-2">
-            <button className="px-3 py-1 border border-neutral-300 rounded-md text-neutral-700 text-sm hover:bg-neutral-50">
+            <button
+              className="px-3 py-1 border border-neutral-300 rounded-md text-neutral-700 text-sm hover:bg-neutral-50"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
               Previous
             </button>
-            <button className="px-3 py-1 bg-primary-50 border border-primary-300 rounded-md text-primary-700 text-sm font-medium">
-              1
-            </button>
-            <button className="px-3 py-1 border border-neutral-300 rounded-md text-neutral-700 text-sm hover:bg-neutral-50">
-              2
-            </button>
-            <button className="px-3 py-1 border border-neutral-300 rounded-md text-neutral-700 text-sm hover:bg-neutral-50">
+
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`px-3 py-1 border rounded-md text-sm ${currentPage === index + 1
+                    ? "bg-primary-50 border-primary-300 text-primary-700 font-medium"
+                    : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
+                  }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+
+            <button
+              className="px-3 py-1 border border-neutral-300 rounded-md text-neutral-700 text-sm hover:bg-neutral-50"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
               Next
             </button>
           </div>
         </div>
+
       </div>
       {/* <div>
         {!data || data.length === 0 ? (

@@ -183,7 +183,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
             ${currentPage === 1 ? "cursor-not-allowed bg-gray-100 text-gray-400" : "hover:bg-gray-200"}`}
           aria-label="Previous Page"
         >
-          ← Previous
+           Previous
         </button>
 
         {/* Page Numbers */}
@@ -196,7 +196,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
               onClick={() => handlePageSelect(page)}
               className={`px-3 py-1 rounded border text-sm transition-colors duration-150
                 ${isActive
-                  ? "bg-gray-800 border-gray-800 text-white cursor-default"
+                  ? "bg-blue-500 text-white border-blue-500"
                   : "border-gray-300 text-gray-700 hover:bg-gray-200"
                 }`}
               aria-current={isActive ? "page" : undefined}
@@ -214,7 +214,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
             ${currentPage === totalPages ? "cursor-not-allowed bg-gray-100 text-gray-400" : "hover:bg-gray-200"}`}
           aria-label="Next Page"
         >
-          Next →
+          Next 
         </button>
       </div>
 

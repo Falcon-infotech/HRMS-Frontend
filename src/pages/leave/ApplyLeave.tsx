@@ -22,7 +22,7 @@ const ApplyLeave: React.FC = () => {
         });
         // console.log(response.data.count)
         if (response.status === 200) {
-          setLeaveBalance(response.data.count);
+          setLeaveBalance(response.data.leaveBalance);
         }
       } catch (error) {
         console.error('Error fetching leave balance:', error);
@@ -251,7 +251,7 @@ const ApplyLeave: React.FC = () => {
 
     <div className="space-y-4">
       {/* Sick Leave */}
-      {/* <div>
+       <div>
         <div className="flex justify-between mb-1">
           <span className="text-sm text-neutral-600">Sick Leave</span>
           <span className="text-sm font-medium">4 / 5</span>
@@ -265,7 +265,7 @@ const ApplyLeave: React.FC = () => {
       </div>
 
       {/* Casual Leave */}
-      {/* <div>
+      <div>
         <div className="flex justify-between mb-1">
           <span className="text-sm text-neutral-600">Casual Leave</span>
           <span className="text-sm font-medium">5 / 5</span>
@@ -276,10 +276,10 @@ const ApplyLeave: React.FC = () => {
             style={{ width: `${(5 / 5) * 100}%` }}
           />
         </div>
-      </div> */}
+      </div>
 
       {/* Annual Leave */}
-      {/* <div>
+      <div>
         <div className="flex justify-between mb-1">
           <span className="text-sm text-neutral-600">Annual Leave</span>
           <span className="text-sm font-medium">2 / 4</span>
@@ -290,7 +290,7 @@ const ApplyLeave: React.FC = () => {
             style={{ width: `${(2 / 4) * 100}%` }}
           />
         </div>
-      </div>  */}
+      </div> 
       <div className="bg-white p-4 rounded-lg shadow-md border mb-4">
   <h2 className="text-lg font-semibold text-gray-800 mb-2 text-center">Total Leave Balance</h2>
   <p className="text-3xl font-bold text-blue-600 text-center">{leaveBalance}</p> 
