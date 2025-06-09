@@ -353,7 +353,7 @@ const LeaveManagement: React.FC = () => {
                         {request.status === 'pending' && (
                           <>
                             <button
-                              onClick={() => updateLeaveStatus(request, 'approved')}
+                              onClick={() => updateLeaveStatus(request._id, 'approved')}
                               className="text-sm text-success-600 hover:text-success-700 font-medium"
                               disabled={updatingId?.id === request._id && updatingId?.action === 'approved'}
                             >

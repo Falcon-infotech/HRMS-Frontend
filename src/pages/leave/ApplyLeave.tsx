@@ -11,16 +11,14 @@ import toast from 'react-hot-toast';
 const ApplyLeave: React.FC = () => {
   // const leaveBalance = user ? getEmployeeLeaveBalance(user.id) : null;
   const [leaveBalance, setLeaveBalance] = useState<any>(0);
-
-  useEffect(() => {
-    const Alluseleaves = async () => {
+ const Alluseleaves = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
-        // console.log(response.data.count)
+        console.log(response.data.leaveBalance)
         if (response.status === 200) {
           setLeaveBalance(response.data.leaveBalance);
         }
@@ -30,6 +28,8 @@ const ApplyLeave: React.FC = () => {
       }
     }
 
+  useEffect(() => {
+   
     Alluseleaves();
   },[])
  
@@ -93,7 +93,9 @@ const ApplyLeave: React.FC = () => {
           });
           setErrors({});
           toast.success('Leave request submitted successfully!');
+          Alluseleaves()
         }
+
       } catch (error) {
         console.error('Error submitting leave request:', error);
         toast.error('Failed to submit leave request. Please try again.');
