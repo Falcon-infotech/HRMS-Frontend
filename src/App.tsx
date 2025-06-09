@@ -35,6 +35,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Profile from './pages/Profile/Profile';
 import UserDashboard from './pages/dashboard/UserDashboard';
 import 'react-datepicker/dist/react-datepicker.css';
+import LeaveDetails from './components/LeaveDetails';
 
 function App() {
   return (
@@ -102,6 +103,8 @@ function App() {
               <Route path="/attendance/log" element={<AttendanceLog />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/leave" element={<LeaveManagement />} />
+              <Route path="/leave/:id" element={<LeaveDetails />} />
+
 
             </Route>
 

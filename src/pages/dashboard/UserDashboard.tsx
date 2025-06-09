@@ -54,6 +54,8 @@ const UserDashboard = () => {
 
   const [elapsed, setElapsed] = useState('00:00:00');
   const [activeTab, setActiveTab] = useState('Activities');
+  const [selected, setSelected] = useState(null);
+
 
   const [hasCheckedOut, setHasCheckedOut] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -93,33 +95,7 @@ const UserDashboard = () => {
   };
 
   //
-  const indianHolidays2025 = [
-    { date: '2025-01-01', name: 'New Year\'s Day' },
-    { date: '2025-01-14', name: 'Makar Sankranti / Pongal' },
-    { date: '2025-01-26', name: 'Republic Day' },
-    { date: '2025-03-01', name: 'Maha Shivratri' },
-    { date: '2025-03-17', name: 'Holi' },
-    { date: '2025-03-30', name: 'Good Friday' },
-    { date: '2025-04-10', name: 'Ram Navami' },
-    { date: '2025-04-13', name: 'Mahavir Jayanti' },
-    { date: '2025-04-14', name: 'Dr. Ambedkar Jayanti' },
-    { date: '2025-04-18', name: 'Good Friday' },
-    { date: '2025-05-01', name: 'Labour Day / Maharashtra Day' },
-    { date: '2025-05-12', name: 'Buddha Purnima' },
-    { date: '2025-06-06', name: 'Bakrid / Eid al-Adha' },
-    { date: '2025-07-30', name: 'Muharram' },
-    { date: '2025-08-15', name: 'Independence Day' },
-    { date: '2025-08-17', name: 'Parsi New Year (Navroz)' },
-    { date: '2025-08-27', name: 'Janmashtami' },
-    { date: '2025-10-02', name: 'Gandhi Jayanti' },
-    { date: '2025-10-02', name: 'Mahatma Gandhi Jayanti' },
-    { date: '2025-10-21', name: 'Dussehra / Vijaya Dashami' },
-    { date: '2025-10-31', name: 'Diwali / Deepavali' },
-    { date: '2025-11-01', name: 'Govardhan Puja' },
-    { date: '2025-11-03', name: 'Bhai Dooj' },
-    { date: '2025-11-06', name: 'Chhath Puja' },
-    { date: '2025-12-25', name: 'Christmas Day' }
-  ];
+
   const fetchHolidays = async () => {
     try {
       const response = await fetch(`${BASE_URL}/api/holidays/all_holidays`, {
@@ -137,7 +113,7 @@ const UserDashboard = () => {
     }
   }
 
-  const handleDeleteHoliday = async (id:string) => {
+  const handleDeleteHoliday = async (id: string) => {
     try {
       await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`, {
         headers: {
@@ -230,8 +206,8 @@ const UserDashboard = () => {
         const records = res.data?.data?.attendance || [];
         // console.log(records, "records")
 
-        const mapped:any = {};
-        records.forEach((record:any) => {
+        const mapped: any = {};
+        records.forEach((record: any) => {
           mapped[record.date] = record.status;
         });
         setAttendanceData(mapped);
@@ -326,30 +302,30 @@ const UserDashboard = () => {
 
 
 
+  const fetchStatus = async () => {
+    // console.log("starrt")
+    try {
+      const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        }
+      });
 
+      // console.log(res.data.attendance)
+      if (res?.data?.attendance?.inTime) {
+        setCheckInTime(res.data.attendance?.inTime);
+      }
+      if (res?.data?.attendance?.outTime) {
+        setCheckOutTime(res.data.attendance?.outTime);
+        setHasCheckedOut(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch status', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchStatus = async () => {
-      // console.log("starrt")
-      try {
-        const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          }
-        });
 
-        // console.log(res.data.attendance)
-        if (res?.data?.attendance?.inTime) {
-          setCheckInTime(res.data.attendance?.inTime);
-        }
-        if (res?.data?.attendance?.outTime) {
-          setCheckOutTime(res.data.attendance?.outTime);
-          setHasCheckedOut(true);
-        }
-      } catch (error) {
-        console.error('Failed to fetch status', error);
-      }
-    };
     fetchStatus();
   }, []);
 
@@ -381,7 +357,7 @@ const UserDashboard = () => {
     return () => clearInterval(timer);
   }, [checkInTime, hasCheckedOut, checkOutTime]);
 
-
+  // made changes here for attendence statas update
 
   const handleCheckIn = async () => {
 
@@ -395,6 +371,7 @@ const UserDashboard = () => {
       })
       setCheckInTime(response.data.attendance.inTime);
       toast.success('Checked in successfully');
+      fetchStatus();
     } catch (error) {
       toast.error('Error checking in');
 
@@ -785,7 +762,12 @@ const UserDashboard = () => {
                     <>
                       <div
                         key={index}
-                        className={`flex flex-col bg-white shadow rounded-lg px-4 py-5 ${isToday ? 'border-2 border-blue-500' : ''
+                        onClick={() => setSelected(format(day, 'yyyy-MM-dd'))}
+
+                        className={`flex flex-col bg-white shadow rounded-lg px-4 py-5 
+                            ${isToday || selected === format(day, 'yyyy-MM-dd')
+                            ? 'border-2 border-blue-500'
+                            : ''
                           }`}
                       >
                         {/* Main Row Content */}
@@ -852,7 +834,7 @@ const UserDashboard = () => {
             </>
           )
         }
-       
+
 
         {
           activeTab === "All-Holidays" && (
@@ -879,56 +861,58 @@ const UserDashboard = () => {
               </h2>
 
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                {holidays.map((holiday) => {
-                  const dateObj = new Date(holiday.date);
-                  const day = dateObj.getDate();
-                  const month = dateObj.toLocaleString('default', { month: 'short' });
-                  const weekday = dateObj.toLocaleString('default', { weekday: 'long' });
+              <div className="relative h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {holidays.map((holiday) => {
+                    const dateObj = new Date(holiday.date);
+                    const day = dateObj.getDate();
+                    const month = dateObj.toLocaleString('default', { month: 'short' });
+                    const weekday = dateObj.toLocaleString('default', { weekday: 'long' });
 
-                  return (
-                    <div
-                      key={holiday.date}
-                      className="bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition duration-300 flex justify-between items-center"
-                    >
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-800">{holiday.reason}</h3>
+                    return (
+                      <div
+                        key={holiday.date}
+                        className="bg-white border border-gray-200 rounded-2xl p-5 shadow hover:shadow-lg transition duration-300 flex flex-col justify-between relative"
+                      >
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-800 mb-1">{holiday.reason}</h3>
 
-                        <p className="text-gray-500 text-sm mb-1">
-                          {`${day} - ${month}, ${weekday}`}
-                        </p>
+                          <p className="text-gray-500 text-sm mb-1">
+                            {`${day} - ${month}, ${weekday}`}
+                          </p>
+                        </div>
+                        <div>
+                          {(Users?.role === 'admin' || Users?.role === 'hr') && (
+                            <div className="absolute top-3 right-3 flex flex-col gap-2 items-center">
+                              <button
+                                title="Delete"
+                                onClick={() => handleDeleteHoliday(holiday._id)}
+                                className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transition duration-200"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+
+                              <button
+                                title="Edit"
+                                onClick={() => {
+                                  setSelectedHoliday(holiday);
+                                  setIsEditMode(true);
+                                  setIsFormOpen(true);
+                                }}
+                                className="p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 hover:text-blue-700 transition duration-200"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+
+
+                        </div>
                       </div>
-                      <div>
-                        {(Users?.role === 'admin' || Users?.role === 'hr') && (
-                          <div className="flex gap-3 items-center">
-                            <button
-                              title="Delete"
-                              onClick={() => handleDeleteHoliday(holiday._id)}
-                              className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transition duration-200"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                    );
 
-                            <button
-                              title="Edit"
-                              onClick={() => {
-                                setSelectedHoliday(holiday);
-                                setIsEditMode(true);
-                                setIsFormOpen(true);
-                              }}
-                              className="p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 hover:text-blue-700 transition duration-200"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
-
-
-                      </div>
-                    </div>
-                  );
-
-                })}
+                  })}
+                </div>
               </div>
               {isFormOpen && (
                 <div
@@ -975,10 +959,10 @@ const UserDashboard = () => {
           )
         }
 
-         {
-          activeTab ==="Monthly-Attendance" && (
-            <Calendar />)
-              
+        {
+          activeTab === "Monthly-Attendance" && (
+            <Calendar attendanceData={attendanceData} />)
+
         }
 
 

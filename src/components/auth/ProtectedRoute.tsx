@@ -15,7 +15,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { isAuthenticated, user } = useSelector((state:RootState)=>state.auth);
   const location = useLocation();
-  console.log(user?.role)
+  // console.log(user?.role)
 
   if (!isAuthenticated) {
     // Redirect to login page if not authenticated

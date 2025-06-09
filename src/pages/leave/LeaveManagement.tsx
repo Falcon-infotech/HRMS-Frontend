@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, Filter, Plus, ArrowUpDown, Download, RefreshCw } from 'lucide-react';
 import { leaveRequests, leaveBalances, leaveTypes } from '../../data/leaveData';
 import employeesData from '../../data/employeeData';
@@ -85,8 +85,12 @@ const LeaveManagement: React.FC = () => {
 
 
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const navigate = useNavigate();
 
 
+  const viewLeaveDetails = (LeaveId: string) => {
+    navigate(`/leave/${LeaveId}`);
+  };
 
 
   return (
@@ -233,7 +237,7 @@ const LeaveManagement: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
         <div className="p-4 border-b border-neutral-200 flex justify-between">
           <h2 className="text-lg font-semibold">Leave Requests</h2>
-          <span className="text-sm text-neutral-500">{allLeaveRequests.length} requests</span>
+          {/* <span className="text-sm text-neutral-500">{allLeaveRequests.length} requests</span> */}
         </div>
 
         <div className="overflow-x-auto">
@@ -311,21 +315,21 @@ const LeaveManagement: React.FC = () => {
                           className="w-2 h-2 rounded-full mr-2"
                           style={{ backgroundColor: leaveType?.color }}
                         />
-                        <span className="text-sm capitalize">{request.leaveType}</span>
+                        <span className="text-sm capitalize">{request?.leaveType}</span>
                       </span>
                     </td>
                     <td>
                       <span className="text-sm">
-                        {new Date(request.fromDate).toLocaleDateString()}
+                        {new Date(request?.fromDate).toLocaleDateString()}
                       </span>
                     </td>
                     <td>
                       <span className="text-sm">
-                        {new Date(request.toDate).toLocaleDateString()}
+                        {new Date(request?.toDate).toLocaleDateString()}
                       </span>
                     </td>
                     <td>
-                      <span className="text-sm font-medium">{request.leaveTaken}</span>
+                      <span className="text-sm font-medium">{request?.leaveTaken}</span>
                     </td>
                     <td>
                       <span className={`badge ${request.status === 'approved' ? 'badge-success' :
@@ -333,7 +337,7 @@ const LeaveManagement: React.FC = () => {
                           request.status === 'pending' ? 'badge-warning' :
                             'badge-info'
                         }`}>
-                        {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                        {request?.status.charAt(0).toUpperCase() + request?.status.slice(1)}
                       </span>
                     </td>
                     <td>
@@ -343,13 +347,13 @@ const LeaveManagement: React.FC = () => {
                     </td>
                     <td>
                       <div className="flex items-center space-x-2">
-                        <button className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                        <button className="text-sm text-primary-600 hover:text-primary-700 font-medium" onClick={() => viewLeaveDetails(request?.userId)}>
                           View
                         </button>
                         {request.status === 'pending' && (
                           <>
                             <button
-                              onClick={() => updateLeaveStatus(request._id, 'approved')}
+                              onClick={() => updateLeaveStatus(request, 'approved')}
                               className="text-sm text-success-600 hover:text-success-700 font-medium"
                               disabled={updatingId?.id === request._id && updatingId?.action === 'approved'}
                             >
