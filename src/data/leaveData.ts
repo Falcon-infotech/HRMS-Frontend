@@ -62,8 +62,8 @@ export const leaveTypes = [
     color: '#f59e0b', // amber
   },
   {
-    id: 'LOP',
-    name: 'LOP Leave',
+    id: 'unpaid',
+    name: 'Unpaid Leave',
     description: 'Paid time off work granted as a benefit',
     maxDays: 20,
     color: '#3b82f6', // blue
