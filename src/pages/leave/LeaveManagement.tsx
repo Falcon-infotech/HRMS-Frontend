@@ -20,6 +20,7 @@ const LeaveManagement: React.FC = () => {
 
   const [loadingList, setLoadingList] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  // const [leaveCardOpen, setLeaveCardOpen] = useState(false);
 
   const handleAllusers = async (showGlobalLoader = true) => {
     try {
@@ -31,7 +32,7 @@ const LeaveManagement: React.FC = () => {
           Authorization: `Bearer ${localStorage.getItem('tokenId')}`
         }
       })
-      console.log(response.data.data)
+      // console.log(response.data.data)
       setAllLeaveRequests(response.data.data)
     } catch (error) {
       console.error(error);
@@ -41,6 +42,10 @@ const LeaveManagement: React.FC = () => {
 
     }
   }
+ 
+
+
+
 
   const updateLeaveStatus = async (leaveId: string, status: 'approved' | 'rejected') => {
     try {

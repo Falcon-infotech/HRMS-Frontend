@@ -18,7 +18,7 @@ const ApplyLeave: React.FC = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
-        console.log(response.data.leaveBalance)
+        // console.log(response.data.leaveBalance)
         if (response.status === 200) {
           setLeaveBalance(response.data.leaveBalance);
         }
@@ -128,7 +128,7 @@ const ApplyLeave: React.FC = () => {
         title="Apply for Leave"
         description="Submit a new leave request"
         breadcrumbs={[
-          { name: 'Leave Management', href: '/leave' },
+          // { name: 'Leave Management', href: '/leave' },
           { name: 'Apply Leave' }
         ]}
       />
