@@ -101,33 +101,44 @@ const DashboardLayout: React.FC = () => {
   };
 
 
-  const filteredNavigation = navigation.filter(item => {
-    if (user?.role === "employee" && item.name === "Employees") {
-      return false;
-    } else if (user?.role === "employee" && item.name === "Attendance") {
-      return false;
-    } else if (user?.role === "employee" && item.name === "Recruitment") {
-      return false;
-    } else if (user?.role === "employee" && item.name === "Recruitment") {
-      return false;
-    }
-    return true;
-  }).map(item => {
-    if (user?.role === "employee" && item.name === "Dashboard") {
-      return {
-        ...item, name: 'Home', href: '/home'
-      }
+  const filteredNavigation =
+    // navigation.filter(item => {
+    // if (user?.role === "employee" && item.name === "Employees") {
+    //   return false;
+    // } else if (user?.role === "employee" && item.name === "Attendance") {
+    //   return false;
+    // } else if (user?.role === "employee" && item.name === "Recruitment") {
+    //   return false;
+    // } else if (user?.role === "employee" && item.name === "Recruitment") {
+    //   return false;
+    // }
+    // return true;
 
-    }
+    navigation
+      .filter(item => {
+        if (user?.role === "employee") {
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance"];
+          return !restrictedSections.includes(item.name);
+        }
+        return true;
 
-    if (user?.role === "employee" && item.name === "Leave" && item.children) {
-      return {
-        ...item,
-        children: item.children.filter(child => child.name !== "Leave Dashboard")
-      };
-    }
-    return item
-  })
+
+      }).map(item => {
+        if (user?.role === "employee" && item.name === "Dashboard") {
+          return {
+            ...item, name: 'Home', href: '/home'
+          }
+
+        }
+
+        if (user?.role === "employee" && item.name === "Leave" && item.children) {
+          return {
+            ...item,
+            children: item.children.filter(child => child.name !== "Leave Dashboard")
+          };
+        }
+        return item
+      })
 
 
 
@@ -335,8 +346,8 @@ const DashboardLayout: React.FC = () => {
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setOpen(false)}
                     >
-                      <p className='flex gap-4'><span><User className='text-sky-500'/></span>
-                      Profile</p>
+                      <p className='flex gap-4'><span><User className='text-sky-500' /></span>
+                        Profile</p>
                     </Link>
                     <button
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -345,8 +356,8 @@ const DashboardLayout: React.FC = () => {
                         dispatch(logout())
                       }}
                     >
-                     <p className='flex gap-4'> <span><LogOutIcon className='text-sky-500' /></span>
-                      Logout</p>
+                      <p className='flex gap-4'> <span><LogOutIcon className='text-sky-500' /></span>
+                        Logout</p>
                     </button>
                   </div>
                 )}
