@@ -838,9 +838,14 @@ const EmployeeForm: React.FC = () => {
                   <Link to="/employees" className="btn btn-secondary">
                     Cancel
                   </Link>
+                   <button
+                    type="button" className="btn btn-primary" onClick={() => setActiveTab('basic')}>
+                    Previous
+                  </button>
                   <button type="button" onClick={handleSubmit} className="btn btn-primary">
                     {isEditMode ? 'Update Employee' : 'Add Employee'}
                   </button>
+                 
                 </>
               ) : (
                 <>

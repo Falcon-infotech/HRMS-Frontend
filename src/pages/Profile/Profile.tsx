@@ -467,14 +467,14 @@ const id=user?._id;
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-bold text-neutral-800">Employee Information</h2>
               <div className="flex space-x-2">
-                <button className="btn btn-secondary flex items-center">
+                {/* <button className="btn btn-secondary flex items-center">
                   <FileText size={16} className="mr-1" />
                   Reports
                 </button>
                 <button className="btn btn-secondary flex items-center">
                   <Download size={16} className="mr-1" />
                   Export
-                </button>
+                </button> */}
               </div>
             </div>
 

@@ -67,7 +67,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
     );
   }
 
-  console.log(selectedUser, "selectedUserId");
+  // console.log(selectedUser, "selectedUserId");
 
 
 

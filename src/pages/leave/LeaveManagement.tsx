@@ -17,6 +17,7 @@ const LeaveManagement: React.FC = () => {
     endDate: ''
   });
   const [allLeaveRequests, setAllLeaveRequests] = useState([]);
+  const [filteredRequests, setFilteredRequests] = useState([]);
 
   const [loadingList, setLoadingList] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -34,6 +35,7 @@ const LeaveManagement: React.FC = () => {
       })
       // console.log(response.data.data)
       setAllLeaveRequests(response.data.data)
+      setFilteredRequests(response.data.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -42,7 +44,7 @@ const LeaveManagement: React.FC = () => {
 
     }
   }
- 
+
 
 
 
@@ -81,11 +83,11 @@ const LeaveManagement: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const paginatedRequests = allLeaveRequests.slice(
+  const paginatedRequests = filteredRequests.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
+  const [searchTerm, setSearchTerm] = useState('')
   const totalPages = Math.ceil(leaveRequests.length / itemsPerPage);
 
 
@@ -96,6 +98,51 @@ const LeaveManagement: React.FC = () => {
   const viewLeaveDetails = (LeaveId: string) => {
     navigate(`/leave/${LeaveId}`);
   };
+
+
+
+  useEffect(() => {
+    let filtereddate = [...allLeaveRequests];
+
+    // 1. Search filter
+    if (searchTerm) {
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      filtereddate = filtereddate.filter((record) => {
+        const fullName = `${record?.employee?.first_name || ''} ${record?.employee?.last_name || ''}`.toLowerCase();
+        return (
+          fullName.includes(lowerSearchTerm) ||
+          record?.employee?.email?.toLowerCase().includes(lowerSearchTerm) ||
+          record?.userId?.toLowerCase().includes(lowerSearchTerm)
+        );
+      });
+    }
+
+    // 2. Leave type filter
+    if (selectedType) {
+      filtereddate = filtereddate.filter((record) => record?.leaveType === selectedType);
+    }
+
+    // 3. Status filter
+    if (selectedStatus) {
+      filtereddate = filtereddate.filter((record) => record?.status === selectedStatus);
+    }
+
+    // 4. Date range filter
+    if (dateRange.startDate && dateRange.endDate) {
+      const start = new Date(dateRange.startDate);
+      const end = new Date(dateRange.endDate);
+
+      filtereddate = filtereddate.filter((record) => {
+        const from = new Date(record.fromDate);
+        const to = new Date(record.toDate);
+        return (
+          (from >= start && from <= end) || (to >= start && to <= end)
+        );
+      });
+    }
+
+    setFilteredRequests(filtereddate);
+  }, [searchTerm, selectedType, selectedStatus, dateRange, allLeaveRequests]);
 
 
   return (
@@ -118,7 +165,7 @@ const LeaveManagement: React.FC = () => {
       />
 
       {/* Leave Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {leaveTypes.slice(0, 4).map(type => {
           const totalRequests = leaveRequests.filter(req => req.leaveType === type.id).length;
           const pendingRequests = leaveRequests.filter(req =>
@@ -145,7 +192,7 @@ const LeaveManagement: React.FC = () => {
             </div>
           );
         })}
-      </div>
+      </div> */}
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-4 mb-6">
@@ -155,6 +202,8 @@ const LeaveManagement: React.FC = () => {
               type="text"
               className="form-input"
               placeholder="Search leave requests..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
@@ -177,7 +226,7 @@ const LeaveManagement: React.FC = () => {
 
         {filterOpen && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-neutral-200">
-            <div>
+            {/* <div>
               <label className="form-label">Department</label>
               <select
                 className="form-select"
@@ -189,7 +238,7 @@ const LeaveManagement: React.FC = () => {
                   <option key={dept} value={dept}>{dept}</option>
                 ))}
               </select>
-            </div>
+            </div> */}
             <div>
               <label className="form-label">Leave Type</label>
               <select

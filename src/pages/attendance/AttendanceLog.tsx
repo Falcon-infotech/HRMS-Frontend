@@ -25,6 +25,7 @@ const AttendanceLog: React.FC = () => {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState(user?.role === 'employee' ? user.id : '');
+  const [filterdemployees, setFilteredEmployees] = useState([]);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,8 +50,9 @@ const AttendanceLog: React.FC = () => {
         });
 
         const data = response.data?.data ?? [];
-        console.log("data", data);
+        // console.log("data", data);
         setAllEmployees(data);
+        setFilteredEmployees(data);
       } catch (error) {
         console.error("Error fetching attendance:", error);
       } finally {
@@ -63,64 +65,57 @@ const AttendanceLog: React.FC = () => {
 
 
   useEffect(() => {
-    let filtered = [...attendanceData];
+    let filtered = [...allEmployees]
 
-    // Filter by date range
-    filtered = filtered.filter((record) =>
-      record.date >= dateRange.startDate &&
-      record.date <= dateRange.endDate
-    );
+    // Search filter
 
-    // Filter by employee
-    if (selectedEmployee) {
-      filtered = filtered.filter((record) => record.employeeId === selectedEmployee);
-    }
-
-    // Filter by department
-    if (selectedDepartment) {
-      const employeeIds = employeesData
-        .filter((emp) => emp.department === selectedDepartment)
-        .map((emp) => emp.id);
-
-      filtered = filtered.filter((record) => employeeIds.includes(record.employeeId));
-    }
-
-    // Filter by status
-    if (selectedStatus) {
-      filtered = filtered.filter((record) => record.status === selectedStatus);
-    }
-
-    // Search
     if (searchTerm) {
       filtered = filtered.filter((record) =>
-        record.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
+        record?.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record?.userId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record?.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(record?.userPhone || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
+
+    if (selectedDepartment) {
+      filtered = filtered.filter((record) =>
+        record?.department?.toLowerCase() === selectedDepartment.toLowerCase()
+      );
+    }
+
+    if (selectedStatus) {
+      filtered = filtered.filter((record) =>
+        record?.status?.toLowerCase() === selectedStatus.toLowerCase()
+      );
+    }
+
+    if (selectedEmployee) {
+      filtered = filtered.filter((record) =>
+        record?.employee_id?.toLowerCase() === selectedEmployee.toLowerCase()
+      );
+    }
     // Sort
-    filtered.sort((a, b) => {
-      let aValue = a[sortConfig.key as keyof typeof a];
-      let bValue = b[sortConfig.key as keyof typeof b];
+    if (sortConfig.key) {
+      filtered.sort((a, b) => {
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
 
-      // Handle date comparison
-      if (sortConfig.key === 'date') {
-        aValue = new Date(aValue as string).getTime();
-        bValue = new Date(bValue as string).getTime();
-      }
+        if (aValue < bValue) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    // console.log("filtered", filtered);
+    setFilteredEmployees(filtered);
+  }, [searchTerm, selectedStatus, allEmployees]);
 
-      if (aValue < bValue) {
-        return sortConfig.direction === 'ascending' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === 'ascending' ? 1 : -1;
-      }
-      return 0;
-    });
 
-    setRecords(filtered);
-    setCurrentPage(1);
-  }, [dateRange, selectedDepartment, selectedStatus, selectedEmployee, searchTerm, sortConfig]);
 
   const requestSort = (key: string) => {
     let direction: 'ascending' | 'descending' = 'ascending';
@@ -195,7 +190,7 @@ const AttendanceLog: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
+          {/* <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
             <button
               className="btn btn-secondary flex items-center justify-center"
               onClick={() => setFilterOpen(!filterOpen)}
@@ -210,7 +205,7 @@ const AttendanceLog: React.FC = () => {
               <RefreshCw size={16} className="mr-1" />
               Reset
             </button>
-          </div>
+          </div> */}
         </div>
 
         {filterOpen && (
@@ -270,9 +265,9 @@ const AttendanceLog: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden mb-6">
         <div className="p-4 border-b border-neutral-200 flex justify-between">
           <h2 className="text-lg font-semibold">Attendance Records</h2>
-          <span className="text-sm text-neutral-500">{allEmployees.length} records found</span>
+          <span className="text-sm text-neutral-500">{filterdemployees.length} records found</span>
         </div>
-        <AllUserAttendance attendanceData={allEmployees} isLoading={loading} />
+        <AllUserAttendance attendanceData={filterdemployees} isLoading={loading} />
 
 
         {/* <div className="overflow-x-auto">
@@ -488,9 +483,9 @@ const AttendanceLog: React.FC = () => {
               <div className="mt-2 w-full bg-neutral-200 rounded-full h-1.5">
                 <div
                   className={`h-1.5 rounded-full ${status === 'present' ? 'bg-green-500' :
-                      status === 'absent' ? 'bg-red-500' :
-                        status === 'half-day' ? 'bg-yellow-500' :
-                          'bg-purple-500'
+                    status === 'absent' ? 'bg-red-500' :
+                      status === 'half-day' ? 'bg-yellow-500' :
+                        'bg-purple-500'
                     }`}
                   style={{ width: `${percentage}%` }}
                 ></div>
@@ -554,8 +549,8 @@ const AttendanceLog: React.FC = () => {
                         <div className="w-24 bg-neutral-200 rounded-full h-1.5">
                           <div
                             className={`h-1.5 rounded-full ${attendanceRate >= 90 ? 'bg-green-500' :
-                                attendanceRate >= 75 ? 'bg-yellow-500' :
-                                  'bg-red-500'
+                              attendanceRate >= 75 ? 'bg-yellow-500' :
+                                'bg-red-500'
                               }`}
                             style={{ width: `${attendanceRate}%` }}
                           ></div>

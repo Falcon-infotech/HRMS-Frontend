@@ -117,7 +117,7 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Payroll", "Settings"];
           return !restrictedSections.includes(item.name);
         }
         return true;
@@ -281,7 +281,7 @@ const DashboardLayout: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center flex-1 px-4 lg:max-w-lg">
-              <div className="w-full relative">
+              {/* <div className="w-full relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Search className="h-5 w-5 text-neutral-400" />
                 </div>
@@ -290,7 +290,7 @@ const DashboardLayout: React.FC = () => {
                   placeholder="Search..."
                   type="search"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center md:ml-6">
@@ -303,7 +303,7 @@ const DashboardLayout: React.FC = () => {
               </button>
 
               {/* Notifications */}
-              <button
+              {/* <button
                 className="p-2 rounded-md text-neutral-600 hover:bg-neutral-100 relative"
                 onClick={() => setNotificationOpen(true)}
               >
@@ -311,15 +311,15 @@ const DashboardLayout: React.FC = () => {
                 {unreadNotifications > 0 && (
                   <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-error-500"></span>
                 )}
-              </button>
+              </button> */}
 
               {/* Theme toggle */}
-              <button
+              {/* <button
                 className="max-md:hidden ml-2 p-2 rounded-md text-neutral-600 hover:bg-neutral-100"
                 onClick={() => setDarkMode(!darkMode)}
               >
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
+              </button> */}
 
               {/* User Menu */}
               {/* <div className=" md:ml-3 md:flex md:items-center">

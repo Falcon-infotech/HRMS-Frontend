@@ -201,14 +201,14 @@ const EmployeeList: React.FC = () => {
             <Plus size={16} className="mr-1" />
             Add Employee
           </Link>
-          <button className="btn btn-secondary flex items-center justify-center">
+          {/* <button className="btn btn-secondary flex items-center justify-center">
             <Upload size={16} className="mr-1" />
             Import
           </button>
           <button className="btn btn-secondary flex items-center justify-center">
             <Download size={16} className="mr-1" />
             Export
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -377,7 +377,7 @@ const EmployeeList: React.FC = () => {
                     <span className="text-sm">{employee.designation}</span>
                   </td>
                   <td>
-                    <span className="text-sm">{new Date(employee.joiningDate).toLocaleDateString()}</span>
+                    <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
                   </td>
                   <td>
                     <span className={`badge ${getStatusColor(employee.status)}`}>
