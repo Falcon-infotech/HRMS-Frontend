@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu, X, ChevronDown, Bell, User, Home, Users, Calendar, FileText,
-  DollarSign, Award, Briefcase, BarChart2, Settings, LogOut, Search, Sun, Moon
+  DollarSign, Award, Briefcase, BarChart2, Settings, LogOut, Search, Sun, Moon,
+  LogOutIcon
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -334,7 +335,8 @@ const DashboardLayout: React.FC = () => {
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setOpen(false)}
                     >
-                      Profile
+                      <p className='flex gap-4'><span><User className='text-sky-500'/></span>
+                      Profile</p>
                     </Link>
                     <button
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -343,7 +345,8 @@ const DashboardLayout: React.FC = () => {
                         dispatch(logout())
                       }}
                     >
-                      Logout
+                     <p className='flex gap-4'> <span><LogOutIcon className='text-sky-500' /></span>
+                      Logout</p>
                     </button>
                   </div>
                 )}
