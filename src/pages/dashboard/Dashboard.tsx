@@ -41,25 +41,63 @@ const Dashboard: React.FC = () => {
   const COLORS = ['#2563eb', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
   const { user } = useSelector((state: RootState) => state.auth)
   // console.log(user)
-
-  useEffect(()=>{
-    const handlefetch=async()=>{
+  const [holidays, setHolidays] = useState([])
+  useEffect(() => {
+    const handlefetch = async () => {
       try {
-        const tokon= localStorage.getItem('tokenId')
-      const response=await axios.get(`${BASE_URL}/api/employee`,{
-        headers:{
-          Authorization:`Bearer ${tokon}`
+        const tokon = localStorage.getItem('tokenId')
+        const response = await axios.get(`${BASE_URL}/api/employee`, {
+          headers: {
+            Authorization: `Bearer ${tokon}`
           }
-      })
-      const data=response.data
-      // console.log(data.data.users.role)
-      setCount(data.data.count)
+        })
+        const data = response.data
+        // console.log(data.data.users.role)
+        setCount(data.data.count)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    handlefetch()
+  }, [])
+
+
+  const fetchHolidays = async () => {
+    console.log("first")
+    try {
+      const response = await fetch(`${BASE_URL}/api/holidays/all_holidays`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        }
+      });
+
+
+      const data = await response.json();
+      // console.log(data.data)
+      setHolidays(data.data || [])
     } catch (error) {
-       console.error(error);
+      console.error('Error fetching holidays', error);
     }
-    }
-   handlefetch() 
-  },[])
+  }
+
+  useEffect(() => {
+
+    fetchHolidays();
+  }, [])
+
+
+  const today = new Date();
+
+  const upcomingHolidays = holidays?.filter(holiday => {
+    const date = new Date(holiday.date);
+    return date > today;
+  });
+
+  console.log(upcomingHolidays)
+
+
+
+
 
   const OverviewCard = ({
     title,
@@ -84,7 +122,7 @@ const Dashboard: React.FC = () => {
 
           {change && (
             <div className={`flex items-center mt-2 text-sm ${changeType === 'positive' ? 'text-success-500' :
-                changeType === 'negative' ? 'text-error-500' : 'text-neutral-500'
+              changeType === 'negative' ? 'text-error-500' : 'text-neutral-500'
               }`}>
               {changeType === 'positive' ? <TrendingUp size={16} className="mr-1" /> :
                 changeType === 'negative' ? <TrendingDown size={16} className="mr-1" /> : null}
@@ -266,56 +304,31 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Upcoming */}
-        <div className="card">
+        <div className="card h-96 overflow-hidden"> 
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Upcoming Events</h3>
-            <Link to="#" className="text-primary-600 text-sm font-medium">View calendar</Link>
+            <h3 className="text-lg font-semibold">Upcoming Holidays</h3>
           </div>
-          <div className="space-y-4">
-            {[
-              {
-                date: { day: '15', month: 'MAY' },
-                title: 'Company all-hands meeting',
-                time: '10:00 AM - 11:30 AM',
-                location: 'Main Conference Room'
-              },
-              {
-                date: { day: '18', month: 'MAY' },
-                title: 'New hire orientation',
-                time: '9:00 AM - 1:00 PM',
-                location: 'Training Room'
-              },
-              {
-                date: { day: '20', month: 'MAY' },
-                title: 'Product team sprint planning',
-                time: '2:00 PM - 4:00 PM',
-                location: 'Meeting Room B'
-              },
-              {
-                date: { day: '25', month: 'MAY' },
-                title: 'Employee birthday celebration',
-                time: '4:00 PM - 5:00 PM',
-                location: 'Break Room'
-              },
-              {
-                date: { day: '28', month: 'MAY' },
-                title: 'Quarterly performance reviews due',
-                time: 'All day',
-                location: 'Online'
-              }
-            ].map((event, index) => (
-              <div key={index} className="flex">
-                <div className="flex-shrink-0 flex flex-col items-center justify-center h-14 w-14 rounded bg-primary-50 text-primary-600 mr-3">
-                  <span className="text-xs font-medium">{event.date.month}</span>
-                  <span className="text-lg font-bold">{event.date.day}</span>
+          <div className="space-y-4 overflow-y-auto h-full pb-4"> 
+            {upcomingHolidays?.map((event, index) => {
+              const dateObj = new Date(event.date);
+              const month = dateObj.toLocaleString('default', { month: 'short' });
+              const day = dateObj.getDate();
+
+              const time = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+              return (
+                <div key={index} className="flex">
+                  <div className="flex-shrink-0 flex flex-col items-center justify-center h-14 w-14 rounded bg-primary-50 text-primary-600 mr-3">
+                    <span className="text-xs font-medium">{month}</span>
+                    <span className="text-lg font-bold">{day}</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-neutral-800">{event.reason}</p>
+                    <p className="text-xs text-neutral-500 mt-1">{time}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-neutral-800">{event.title}</p>
-                  <p className="text-xs text-neutral-500 mt-1">{event.time}</p>
-                  <p className="text-xs text-neutral-500">{event.location}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
