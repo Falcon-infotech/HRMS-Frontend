@@ -69,30 +69,30 @@ const UserDashboard = () => {
   const [holidays, setHolidays] = useState<any[]>([]);
 
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedHoliday, setSelectedHoliday] = useState(null);
+  // const [isFormOpen, setIsFormOpen] = useState(false);
+  // const [isEditMode, setIsEditMode] = useState(false);
+  // const [selectedHoliday, setSelectedHoliday] = useState(null);
 
 
 
 
-  const { user: Users } = useSelector((state: RootState) => state.auth);
-  const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 }); // Sunday
-  const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 0 });
-  const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  // const { user: Users } = useSelector((state: RootState) => state.auth);
+  // const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 }); // Sunday
+  // const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 0 });
+  // const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
-  const handlePrevWeek = () => {
-    setSelectedDate(prev => subWeeks(prev, 1));
-  };
+  // const handlePrevWeek = () => {
+  //   setSelectedDate(prev => subWeeks(prev, 1));
+  // };
 
-  const handleNextWeek = () => {
-    setSelectedDate(prev => addWeeks(prev, 1));
-  };
+  // const handleNextWeek = () => {
+  //   setSelectedDate(prev => addWeeks(prev, 1));
+  // };
 
-  const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
-    setShowCalendar(false);
-  };
+  // const handleDateChange = (date: Date) => {
+  //   setSelectedDate(date);
+  //   setShowCalendar(false);
+  // };
 
   //
 
@@ -113,18 +113,18 @@ const UserDashboard = () => {
     }
   }
 
-  const handleDeleteHoliday = async (id: string) => {
-    try {
-      await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-        }
-      });
-      fetchHolidays();
-    } catch (error) {
-      console.error("Error deleting holiday:", error);
-    }
-  };
+  // const handleDeleteHoliday = async (id: string) => {
+  //   try {
+  //     await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+  //       }
+  //     });
+  //     fetchHolidays();
+  //   } catch (error) {
+  //     console.error("Error deleting holiday:", error);
+  //   }
+  // };
 
   useEffect(() => {
     fetchHolidays();
@@ -221,21 +221,21 @@ const UserDashboard = () => {
 
   const weekData = getCurrentWeekDates();
 
-  const getStatusColor = (status, isBorder = false) => {
-    switch (status) {
-      case 'Absent':
-        return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
-      case 'Weekend':
-        return isBorder ? 'text-yellow-600 border border-yellow-400 bg-yellow-50' : 'bg-yellow-400';
-      case 'Active':
-      case 'Present':
-        return isBorder ? 'text-green-600 border border-green-400 bg-green-50' : 'bg-green-400';
-      case 'Leave':
-        return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
-      default:
-        return isBorder ? 'text-purple-500 border border-gray-300 bg-gray-100' : 'bg-gray-300';
-    }
-  };
+  // const getStatusColor = (status, isBorder = false) => {
+  //   switch (status) {
+  //     case 'Absent':
+  //       return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
+  //     case 'Weekend':
+  //       return isBorder ? 'text-yellow-600 border border-yellow-400 bg-yellow-50' : 'bg-yellow-400';
+  //     case 'Active':
+  //     case 'Present':
+  //       return isBorder ? 'text-green-600 border border-green-400 bg-green-50' : 'bg-green-400';
+  //     case 'Leave':
+  //       return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
+  //     default:
+  //       return isBorder ? 'text-purple-500 border border-gray-300 bg-gray-100' : 'bg-gray-300';
+  //   }
+  // };
 
 
 
@@ -271,12 +271,12 @@ const UserDashboard = () => {
 
   //   return `${h}h ${m}m`;
   // };
-  function extractHourAndMinute(isoString) {
-    const date = new Date(isoString);
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
+  // function extractHourAndMinute(isoString) {
+  //   const date = new Date(isoString);
+  //   const hours = String(date.getUTCHours()).padStart(2, '0');
+  //   const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  //   return `${hours}:${minutes}`;
+  // }
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -400,8 +400,8 @@ const UserDashboard = () => {
   const menuItems = [
     "Activities",
     "Attendance",
-    "Time Logs",
-    "All-Holidays",
+    // "Time Logs",
+    // "All-Holidays",
     "Monthly-Attendance"
   ];
 
@@ -654,189 +654,189 @@ const UserDashboard = () => {
           // )
 
 
-          activeTab === "Attendance" && (
-            <>
-              <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <button
-                    onClick={handlePrevWeek}
-                    className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-                  >
-                    ← Prev
-                  </button>
+          // activeTab === "Attendance" && (
+          //   <>
+          //     <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
+          //       {/* Header */}
+          //       <div className="flex items-center justify-between mb-4">
+          //         <button
+          //           onClick={handlePrevWeek}
+          //           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
+          //         >
+          //           ← Prev
+          //         </button>
 
-                  <div className="font-semibold text-lg cursor-pointer relative flex gap-4"><span onClick={() => setShowCalendar(!showCalendar)}><CalendarHeart /></span>
-                    <span>
-                      {format(weekStart, 'dd MMM')} – {format(weekEnd, 'dd MMM yyyy')}
-                    </span>
+          //         <div className="font-semibold text-lg cursor-pointer relative flex gap-4"><span onClick={() => setShowCalendar(!showCalendar)}><CalendarHeart /></span>
+          //           <span>
+          //             {format(weekStart, 'dd MMM')} – {format(weekEnd, 'dd MMM yyyy')}
+          //           </span>
 
-                    {showCalendar && (
-                      <div className="absolute z-10 mt-2 ">
-                        <DatePicker
-                          selected={selectedDate}
-                          onChange={handleDateChange}
-                          inline
-                        />
-                      </div>
-                    )}
-                  </div>
+          //           {showCalendar && (
+          //             <div className="absolute z-10 mt-2 ">
+          //               <DatePicker
+          //                 selected={selectedDate}
+          //                 onChange={handleDateChange}
+          //                 inline
+          //               />
+          //             </div>
+          //           )}
+          //         </div>
 
-                  <button
-                    onClick={handleNextWeek}
-                    className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-                  >
-                    Next →
-                  </button>
-                </div>
+          //         <button
+          //           onClick={handleNextWeek}
+          //           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
+          //         >
+          //           Next →
+          //         </button>
+          //       </div>
 
-                {/* Week Grid */}
-                <div className="grid grid-cols-7 gap-2 text-center text-sm">
-                  {days.map((day, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 rounded-lg cursor-pointer 
-              ${isSameDay(day, new Date()) ? 'border border-blue-500' : ''}
-              bg-blue-100 text-blue-800 hover:bg-blue-200`}
-                    >
-                      <div className="font-semibold">{format(day, 'EEE')}</div>
-                      <div>{format(day, 'dd')}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="w-full bg-white p-4 rounded-lg shadow mt-6 flex items-center justify-between">
-                <p className="text-gray-600 text-lg m-2">
-                  General [ 09:00 AM - 6:00 PM ]
-                </p>
+          //       {/* Week Grid */}
+          //       <div className="grid grid-cols-7 gap-2 text-center text-sm">
+          //         {days.map((day, index) => (
+          //           <div
+          //             key={index}
+          //             className={`p-3 rounded-lg cursor-pointer 
+          //     ${isSameDay(day, new Date()) ? 'border border-blue-500' : ''}
+          //     bg-blue-100 text-blue-800 hover:bg-blue-200`}
+          //           >
+          //             <div className="font-semibold">{format(day, 'EEE')}</div>
+          //             <div>{format(day, 'dd')}</div>
+          //           </div>
+          //         ))}
+          //       </div>
+          //     </div>
+          //     <div className="w-full bg-white p-4 rounded-lg shadow mt-6 flex items-center justify-between">
+          //       <p className="text-gray-600 text-lg m-2">
+          //         General [ 09:00 AM - 6:00 PM ]
+          //       </p>
 
-                <div className="flex items-center gap-2">
-                  {/* Check-in Badge */}
-                  <div className="flex flex-col bg-green-500 text-white px-4 py-2 rounded-lg shadow">
-                    <span className="text-sm font-bold">Check-in</span>
-                    <div className="flex items-center text-white font-boldmono text-lg font-bold">
-                      {elapsed.split(':').map((value, index) => (
-                        <React.Fragment key={index}>
-                          <span>{value}</span>
-                          {index < 2 && <span className="mx-1 text-white">:</span>}
-                        </React.Fragment>
-                      ))}
-                      <span className="ml-1 text-sm font-bold">Hrs</span>
-                    </div>
-                  </div>
+          //       <div className="flex items-center gap-2">
+          //         {/* Check-in Badge */}
+          //         <div className="flex flex-col bg-green-500 text-white px-4 py-2 rounded-lg shadow">
+          //           <span className="text-sm font-bold">Check-in</span>
+          //           <div className="flex items-center text-white font-boldmono text-lg font-bold">
+          //             {elapsed.split(':').map((value, index) => (
+          //               <React.Fragment key={index}>
+          //                 <span>{value}</span>
+          //                 {index < 2 && <span className="mx-1 text-white">:</span>}
+          //               </React.Fragment>
+          //             ))}
+          //             <span className="ml-1 text-sm font-bold">Hrs</span>
+          //           </div>
+          //         </div>
 
-                  {/* Clock Icon Button */}
-                  <button className="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-green-500 -mx-5">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m4-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              {/* Weekly Attendance Summary (Styled Row Cards) */}
-              <div className="space-y-4 mt-6">
-                <div className="flex items-center justify-between px-4 text-md font-semibold text-sky-500 text-nowrap">
-                  <div className="w-16">Day</div>
-                  <div className="w-9 text-center">Date</div>
-                  <div className="w-20 text-center">Check-in</div>
-                  <div className="w-20 text-center">Check-out</div>
-                  <div className="w-20 text-center">Status</div>
-                  <div className="w-24 text-center">Hours Worked</div>
-                </div>
-                {days.map((day, index) => {
-                  const isToday = isSameDay(day, new Date());
-                  const isWeekend = format(day, 'EEE') === 'Sun' || format(day, 'EEE') === 'Sat';
-                  const record = user?.find(
-                    (rec) => rec.date === format(day, 'yyyy-MM-dd')
-                  ) || [];
+          //         {/* Clock Icon Button */}
+          //         <button className="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-green-500 -mx-5">
+          //           <svg
+          //             xmlns="http://www.w3.org/2000/svg"
+          //             className="h-4 w-4"
+          //             fill="none"
+          //             viewBox="0 0 24 24"
+          //             stroke="currentColor"
+          //           >
+          //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m4-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          //           </svg>
+          //         </button>
+          //       </div>
+          //     </div>
+          //     {/* Weekly Attendance Summary (Styled Row Cards) */}
+          //     <div className="space-y-4 mt-6">
+          //       <div className="flex items-center justify-between px-4 text-md font-semibold text-sky-500 text-nowrap">
+          //         <div className="w-16">Day</div>
+          //         <div className="w-9 text-center">Date</div>
+          //         <div className="w-20 text-center">Check-in</div>
+          //         <div className="w-20 text-center">Check-out</div>
+          //         <div className="w-20 text-center">Status</div>
+          //         <div className="w-24 text-center">Hours Worked</div>
+          //       </div>
+          //       {days.map((day, index) => {
+          //         const isToday = isSameDay(day, new Date());
+          //         const isWeekend = format(day, 'EEE') === 'Sun' || format(day, 'EEE') === 'Sat';
+          //         const record = user?.find(
+          //           (rec) => rec.date === format(day, 'yyyy-MM-dd')
+          //         ) || [];
 
-                  // console.log(record.inTime)
+          //         // console.log(record.inTime)
 
-                  return (
-                    <>
-                      <div
-                        key={index}
-                        onClick={() => setSelected(format(day, 'yyyy-MM-dd'))}
+          //         return (
+          //           <>
+          //             <div
+          //               key={index}
+          //               onClick={() => setSelected(format(day, 'yyyy-MM-dd'))}
 
-                        className={`flex flex-col bg-white shadow rounded-lg px-4 py-5 
-                            ${isToday || selected === format(day, 'yyyy-MM-dd')
-                            ? 'border-2 border-blue-500'
-                            : ''
-                          }`}
-                      >
-                        {/* Main Row Content */}
-                        <div className="flex items-center justify-between">
-                          {/* Day Name */}
-                          <div className="text-sm font-medium w-16 text-gray-800">
-                            {format(day, 'EEE')}
-                          </div>
+          //               className={`flex flex-col bg-white shadow rounded-lg px-4 py-5 
+          //                   ${isToday || selected === format(day, 'yyyy-MM-dd')
+          //                   ? 'border-2 border-blue-500'
+          //                   : ''
+          //                 }`}
+          //             >
+          //               {/* Main Row Content */}
+          //               <div className="flex items-center justify-between">
+          //                 {/* Day Name */}
+          //                 <div className="text-sm font-medium w-16 text-gray-800">
+          //                   {format(day, 'EEE')}
+          //                 </div>
 
-                          {/* Date in Circle */}
-                          <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-800">
-                            {format(day, 'dd')}
-                          </div>
+          //                 {/* Date in Circle */}
+          //                 <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-800">
+          //                   {format(day, 'dd')}
+          //                 </div>
 
-                          {/* In Time */}
-                          <div className="text-xs text-gray-600 w-20 text-center">
-                            {record?.inTime ? extractHourAndMinute(record?.inTime) : '--'}
-                          </div>
+          //                 {/* In Time */}
+          //                 <div className="text-xs text-gray-600 w-20 text-center">
+          //                   {record?.inTime ? extractHourAndMinute(record?.inTime) : '--'}
+          //                 </div>
 
-                          {/* Out Time */}
-                          <div className="text-xs text-gray-600 w-20 text-center">
-                            {record?.outTime ? extractHourAndMinute(record?.outTime) : '--'}
-                          </div>
+          //                 {/* Out Time */}
+          //                 <div className="text-xs text-gray-600 w-20 text-center">
+          //                   {record?.outTime ? extractHourAndMinute(record?.outTime) : '--'}
+          //                 </div>
 
-                          {/* Status */}
-                          <div className="text-xs text-gray-600 w-20 text-center">
-                            {record?.status ?? '--'}
-                          </div>
+          //                 {/* Status */}
+          //                 <div className="text-xs text-gray-600 w-20 text-center">
+          //                   {record?.status ?? '--'}
+          //                 </div>
 
-                          {/* Duration */}
-                          <div className="text-xs text-green-600 w-24 text-center">
-                            {record?.duration ?? '00:00'}
-                          </div>
-                        </div>
+          //                 {/* Duration */}
+          //                 <div className="text-xs text-green-600 w-24 text-center">
+          //                   {record?.duration ?? '00:00'}
+          //                 </div>
+          //               </div>
 
-                        {/* Horizontal Attendance Line (Inside Box) */}
-                        <div className="flex items-center justify-between mt-3 px-1 relative">
-                          {/* Left dot */}
-                          <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+          //               {/* Horizontal Attendance Line (Inside Box) */}
+          //               <div className="flex items-center justify-between mt-3 px-1 relative">
+          //                 {/* Left dot */}
+          //                 <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
 
-                          {/* Line */}
-                          <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`}></div>
+          //                 {/* Line */}
+          //                 <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`}></div>
 
-                          {/* Right dot */}
-                          <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+          //                 {/* Right dot */}
+          //                 <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
 
-                          {/* Centered Status Label */}
-                          <span
-                            className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-0.5 rounded-full border ${getStatusColor(
-                              record?.status,
-                              true
-                            )}`}
-                          >
-                            {record?.status ?? 'No Status'}
-                          </span>
-                        </div>
-                      </div>
-                    </>
+          //                 {/* Centered Status Label */}
+          //                 <span
+          //                   className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-0.5 rounded-full border ${getStatusColor(
+          //                     record?.status,
+          //                     true
+          //                   )}`}
+          //                 >
+          //                   {record?.status ?? 'No Status'}
+          //                 </span>
+          //               </div>
+          //             </div>
+          //           </>
 
 
-                  );
-                })}
-              </div>
-            </>
-          )
+          //         );
+          //       })}
+          //     </div>
+          //   </>
+          // )
         }
 
 
-        {
+        {/* {
           activeTab === "All-Holidays" && (
             <div className="p-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center justify-between">
@@ -933,7 +933,7 @@ const UserDashboard = () => {
                       }}
                     />
                     {/* Cancel button below form or top right */}
-                    <button
+                    {/* <button
                       onClick={() => setIsFormOpen(false)}
                       className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
                       aria-label="Cancel"
@@ -941,14 +941,17 @@ const UserDashboard = () => {
                       ✕
                     </button>
                   </div>
-                </div>
-              )}
+        //         </div> */}
+        {/* //       )} */}
 
 
-            </div>
-          )
-        }
-        {
+        {/* //     </div> */}
+        {/* //   ) */}
+        {/* // } */} 
+
+
+
+        {/* {
           activeTab === 'Time Logs' && (
             <div className="p-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
@@ -957,7 +960,7 @@ const UserDashboard = () => {
               <p className="text-gray-500">No time logs available yet.</p>
             </div>
           )
-        }
+        } */}
 
         {
           activeTab === "Monthly-Attendance" && (

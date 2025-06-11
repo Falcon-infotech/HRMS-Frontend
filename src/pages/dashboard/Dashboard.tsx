@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
 
 
   const fetchHolidays = async () => {
-    console.log("first")
+    // console.log("first")
     try {
       const response = await fetch(`${BASE_URL}/api/holidays/all_holidays`, {
         headers: {
@@ -93,7 +93,7 @@ const Dashboard: React.FC = () => {
     return date > today;
   });
 
-  console.log(upcomingHolidays)
+  // console.log(upcomingHolidays)
 
 
 
@@ -304,17 +304,20 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Upcoming */}
-        <div className="card h-96 overflow-hidden"> 
+        <div className="card h-96 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Upcoming Holidays</h3>
           </div>
-          <div className="space-y-4 overflow-y-auto h-full pb-4"> 
+          <div className="space-y-4 overflow-y-auto h-full pb-4">
             {upcomingHolidays?.map((event, index) => {
               const dateObj = new Date(event.date);
               const month = dateObj.toLocaleString('default', { month: 'short' });
               const day = dateObj.getDate();
-
-              const time = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+              const time = dateObj.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+              });
 
               return (
                 <div key={index} className="flex">
@@ -331,8 +334,8 @@ const Dashboard: React.FC = () => {
             })}
           </div>
         </div>
-      </div>
-      {/* <div className="max-w-md mx-auto mt-10">
+
+        {/* <div className="max-w-md mx-auto mt-10">
       <div className="flex border-b border-gray-300">
         <button
           className={`flex-1 p-2 ${
@@ -362,11 +365,11 @@ const Dashboard: React.FC = () => {
       <div className="border border-t-0 border-gray-300">
         {renderTabContent()}
       </div>
-    </div> */}
+    // </div> */}
 
-
+      </div>
     </div>
   );
-};
+}
 
 export default Dashboard;

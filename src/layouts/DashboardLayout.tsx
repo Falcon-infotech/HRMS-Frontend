@@ -3,7 +3,9 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu, X, ChevronDown, Bell, User, Home, Users, Calendar, FileText,
   DollarSign, Award, Briefcase, BarChart2, Settings, LogOut, Search, Sun, Moon,
-  LogOutIcon
+  LogOutIcon,
+  PartyPopper,
+  CalendarCheck
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -75,18 +77,20 @@ const DashboardLayout: React.FC = () => {
         { name: 'Apply Leave', href: '/leave/apply' }
       ]
     },
+    { name: 'AttendanceStatus', href: '/attendancestatus', icon: CalendarCheck  },
     { name: 'Payroll', href: '/payroll', icon: DollarSign },
     { name: 'Performance', href: '/performance', icon: Award },
-    {
-      name: 'Recruitment',
-      href: '/recruitment/jobs',
-      icon: Briefcase,
-      children: [
-        { name: 'Job Postings', href: '/recruitment/jobs' },
-        { name: 'Candidates', href: '/recruitment/candidates' },
-        { name: 'Interview Schedule', href: '/recruitment/schedule' }
-      ]
-    },
+    { name: 'Holidays', href: '/holidays', icon: PartyPopper  },
+    // {
+    //   name: 'Recruitment',
+    //   href: '/recruitment/jobs',
+    //   icon: Briefcase,
+    //   children: [
+    //     { name: 'Job Postings', href: '/recruitment/jobs' },
+    //     { name: 'Candidates', href: '/recruitment/candidates' },
+    //     { name: 'Interview Schedule', href: '/recruitment/schedule' }
+    //   ]
+    // },
     { name: 'Reports', href: '/reports', icon: BarChart2 },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
@@ -145,6 +149,7 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50 lg:flex overflow-x-hidden">
+      
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div

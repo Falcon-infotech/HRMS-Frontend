@@ -11,28 +11,41 @@ import toast from 'react-hot-toast';
 const ApplyLeave: React.FC = () => {
   // const leaveBalance = user ? getEmployeeLeaveBalance(user.id) : null;
   const [leaveBalance, setLeaveBalance] = useState<any>(0);
- const Alluseleaves = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          }
-        });
-        // console.log(response.data.leaveBalance)
-        if (response.status === 200) {
-          setLeaveBalance(response.data.leaveBalance);
+  const [leaveCount, setLeaveCount] = useState<any>([])
+  const Alluseleaves = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
         }
-      } catch (error) {
-        console.error('Error fetching leave balance:', error);
-        // toast.error('Failed to   fetch leave balance. Please try again later.');
+      });
+      // console.log(response.data)
+
+      const totalLeaveCount = response.data.data.reduce((acc, leave) => {
+        let leaveType = leave.leaveType;
+        acc[leaveType] = (acc[leaveType] || 0) + 1;
+        return acc
+      }, {})
+
+      setLeaveCount(totalLeaveCount);
+
+
+      if (response.status === 200 && response?.data?.data?.length > 0) {
+        let maxLeave = Math.min(...response?.data?.data?.map((leave: any) => leave?.maximumLeave || 0))
+        setLeaveBalance(maxLeave);
       }
+    } catch (error) {
+      console.error('Error fetching leave balance:', error);
+      // toast.error('Failed to   fetch leave balance. Please try again later.');
     }
+  }
 
   useEffect(() => {
-   
+
     Alluseleaves();
-  },[])
- 
+    console.log(leaveCount)
+  }, [])
+
   const [formData, setFormData] = useState({
     leaveType: '',
     fromDate: '',
@@ -248,82 +261,71 @@ const ApplyLeave: React.FC = () => {
 
         {/* Leave Balance Card */}
         <div className="space-y-6">
-  <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
-    <h3 className="text-lg font-semibold mb-4">Leave Balance</h3>
-
-    <div className="space-y-4">
-      {/* Sick Leave */}
-       <div>
-        <div className="flex justify-between mb-1">
-          <span className="text-sm text-neutral-600">Sick Leave</span>
-          <span className="text-sm font-medium">4 / 5</span>
-        </div>
-        <div className="w-full bg-neutral-200 rounded-full h-2">
-          <div
-            className="bg-primary-600 h-2 rounded-full"
-            style={{ width: `${(4 / 5) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Casual Leave */}
-      <div>
-        <div className="flex justify-between mb-1">
-          <span className="text-sm text-neutral-600">Casual Leave</span>
-          <span className="text-sm font-medium">5 / 5</span>
-        </div>
-        <div className="w-full bg-neutral-200 rounded-full h-2">
-          <div
-            className="bg-warning-500 h-2 rounded-full"
-            style={{ width: `${(5 / 5) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Annual Leave */}
-      <div>
-        <div className="flex justify-between mb-1">
-          <span className="text-sm text-neutral-600">Annual Leave</span>
-          <span className="text-sm font-medium">2 / 4</span>
-        </div>
-        <div className="w-full bg-neutral-200 rounded-full h-2">
-          <div
-            className="bg-accent-500 h-2 rounded-full"
-            style={{ width: `${(2 / 4) * 100}%` }}
-          />
-        </div>
-      </div> 
-      <div className="bg-white p-4 rounded-lg shadow-md border mb-4">
-  <h2 className="text-lg font-semibold text-gray-800 mb-2 text-center">Total Leave Balance</h2>
-  <p className="text-3xl font-bold text-blue-600 text-center">{leaveBalance}</p> 
-</div>
-
-    </div>
+         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8 space-y-6">
+  {/* Header */}
+  <div className="flex items-center justify-between border-b pb-4">
+    <h3 className="text-2xl font-semibold text-gray-800">Leave Report</h3>
+    {/* 
+    <p className="text-base font-bold text-blue-600">
+      {leaveCount?.casual + leaveCount?.sick + leaveCount?.unpaid + leaveCount?.vacation}/{leaveBalance}
+    </p> 
+    */}
   </div>
 
-  {/* Leave Policy Section */}
-  <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
-    <h3 className="text-lg font-semibold mb-4">Leave Policy</h3>
-    <div className="space-y-4 text-sm text-neutral-600">
-      <div>
-        <h4 className="font-medium text-neutral-800 mb-1">Application Timeline</h4>
-        <p>Leave requests should be submitted at least 3 working days in advance.</p>
-      </div>
-      <div>
-        <h4 className="font-medium text-neutral-800 mb-1">Documentation</h4>
-        <p>Medical certificates are required for sick leave exceeding 2 days.</p>
-      </div>
-      <div>
-        <h4 className="font-medium text-neutral-800 mb-1">Cancellation</h4>
-        <p>Leave can be cancelled up to 24 hours before the start date.</p>
-      </div>
-      <div>
-        <h4 className="font-medium text-neutral-800 mb-1">Half Day Leave</h4>
-        <p>Half day leaves can be taken either in the first or second half of the working day.</p>
-      </div>
+  {/* Leave Entries */}
+  <div className="grid gap-4 text-sm text-gray-700">
+    {/* Sick Leave */}
+    <div className="flex items-center justify-between">
+      <span className="text-gray-600">Sick Leave Taken</span>
+      <span className="font-semibold text-gray-900">{leaveCount?.sick ?? 0}</span>
+    </div>
+
+    {/* Casual Leave */}
+    <div className="flex items-center justify-between">
+      <span className="text-gray-600">Casual Leave Taken</span>
+      <span className="font-semibold text-gray-900">
+        {leaveCount?.casual ?? 0} / {leaveBalance ?? 0}
+      </span>
+    </div>
+
+    {/* Unpaid Leave */}
+    <div className="flex items-center justify-between">
+      <span className="text-gray-600">Unpaid Leave Taken</span>
+      <span className="font-semibold text-gray-900">{leaveCount?.unpaid ?? 0}</span>
+    </div>
+
+    {/* Vacation Leave */}
+    <div className="flex items-center justify-between">
+      <span className="text-gray-600">Vacation Leave Taken</span>
+      <span className="font-semibold text-gray-900">{leaveCount?.vacation ?? 0}</span>
     </div>
   </div>
 </div>
+
+
+          {/* Leave Policy Section */}
+          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+            <h3 className="text-lg font-semibold mb-4">Leave Policy</h3>
+            <div className="space-y-4 text-sm text-neutral-600">
+              <div>
+                <h4 className="font-medium text-neutral-800 mb-1">Application Timeline</h4>
+                <p>Leave requests should be submitted at least 3 working days in advance.</p>
+              </div>
+              <div>
+                <h4 className="font-medium text-neutral-800 mb-1">Documentation</h4>
+                <p>Medical certificates are required for sick leave exceeding 2 days.</p>
+              </div>
+              <div>
+                <h4 className="font-medium text-neutral-800 mb-1">Cancellation</h4>
+                <p>Leave can be cancelled up to 24 hours before the start date.</p>
+              </div>
+              <div>
+                <h4 className="font-medium text-neutral-800 mb-1">Half Day Leave</h4>
+                <p>Half day leaves can be taken either in the first or second half of the working day.</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>

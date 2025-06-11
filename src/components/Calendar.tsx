@@ -6,7 +6,7 @@ const Calendar = ({ attendanceData }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
 
-
+  console.log(attendanceData)
   const renderHeader = () => (
     <div className="flex items-center justify-between mb-6">
       <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="text-gray-600 hover:text-gray-800">&lt;</button>
@@ -24,13 +24,13 @@ const Calendar = ({ attendanceData }) => {
 
     for (let i = 0; i < 7; i++) {
       days.push(
-        <div key={i} className="text-sm font-medium text-center text-gray-500 uppercase">
+        <div key={i} className="  text-sm sm:text-base lg:text-lg font-medium text-center text-gray-500 uppercase">
           {format(addDays(weekStart, i), 'EEE')}
         </div>
       );
     }
 
-    return <div className="grid grid-cols-7 mb-2">{days}</div>;
+    return <div className="grid grid-cols-7 mb-2 ">{days}</div>;
   };
 
   const renderCells = () => {
@@ -49,7 +49,9 @@ const Calendar = ({ attendanceData }) => {
         const isCurrentMonth = isSameMonth(day, monthStart);
         const isToday = isSameDay(day, today);
         const formattedDate = format(day, 'yyyy-MM-dd');
-        const status = attendanceData?.[formattedDate]
+        const record = attendanceData?.[formattedDate];
+        const status = record?.status;
+        const duration = record?.duration;
         const isSunday = day.getDay() === 0;
 
 
@@ -69,23 +71,27 @@ const Calendar = ({ attendanceData }) => {
         };
 
         days.push(
-        <div
-          key={day.toString()}
-          className={`h-20 p-1 text-sm border rounded-lg flex flex-col items-center justify-start relative ${
-            isToday ? 'bg-blue-100 text-blue-600 font-semibold' : isCurrentMonth ? 'text-gray-800' : 'text-gray-400'
-          }
-          
-          ${isSunday ? 'bg-red-100' : ''}`}
-          
-        >
-          <div className="text-sm">{format(day, 'd')}</div>
-          {status && (
-            <div className={`text-[11px] mt-1 font-medium absolute bottom-0 ${getStatusColor(status)}`}>
-              {status} 
-            </div>
-          )}
-        </div>
-      );
+  <div
+    key={day.toString()}
+    className={`sm:h-20 h-12 p-1 border rounded-lg flex flex-col items-center justify-start relative
+      ${isToday ? 'bg-blue-100 text-blue-600 font-semibold' : isCurrentMonth ? 'text-gray-800' : 'text-gray-400'}
+      ${isSunday ? 'bg-red-100' : ''}`}
+  >
+    {/* Updated: Date number with larger text on bigger screens */}
+    <div className="text-sm sm:text-base lg:text-lg">{format(day, 'd')}</div>
+
+    {/* Status and Duration stay the same */}
+    <div className="absolute bottom-1 flex flex-col items-center text-nowrap leading-tight">
+      <div className={`text-[11px] max-sm:text-[7px] font-medium ${getStatusColor(status || '')}`}>
+        {status || '--'}
+      </div>
+      <div className={`text-[10px] max-sm:text-[6px] ${getStatusColor(status || '')}`}>
+        {duration ? duration.slice(0, 5) : '--'}
+      </div>
+    </div>
+  </div>
+);
+
         day = addDays(day, 1);
       }
 
@@ -101,7 +107,7 @@ const Calendar = ({ attendanceData }) => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg">
+    <div className="max-w-full mx-auto p-6 bg-white rounded-xl shadow-lg">
       {renderHeader()}
       {renderDays()}
       {renderCells()}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
@@ -36,8 +36,59 @@ import Profile from './pages/Profile/Profile';
 import UserDashboard from './pages/dashboard/UserDashboard';
 import 'react-datepicker/dist/react-datepicker.css';
 import LeaveDetails from './components/LeaveDetails';
+import Holiday from './pages/Holidays/Holiday';
+import AttendanceStatus from './pages/attendance/AttendanceStatus';
 
 function App() {
+  function clearSelectedLocalStorageAt1159PM(timeZone: any) {
+    const now = new Date();
+
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+
+    const [{ value: year }, , { value: month }, , { value: day }] = formatter.formatToParts(now);
+    const targetTime = new Date(`${year}-${month}-${day}T23:59:00`);
+    const utcTarget = new Date(targetTime.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const userTarget = new Date(utcTarget.toLocaleString('en-US', { timeZone }));
+
+    if (now > userTarget) {
+      userTarget.setDate(userTarget.getDate() + 1);
+    }
+
+    const delay = userTarget.getTime() - now.getTime();
+
+    setTimeout(() => {
+      localStorage.removeItem('hrms_notifications');
+      localStorage.removeItem('tokenId');
+      localStorage.removeItem('userData');
+      localStorage.setItem('lastCleared', new Date().toLocaleDateString("en-US", { timeZone }));
+
+      console.log("Selected localStorage items cleared at 11:59 PM:", timeZone);
+
+      clearSelectedLocalStorageAt1159PM(timeZone); // reschedule
+    }, delay);
+  }
+
+
+  useEffect(() => {
+    const timeZone = "Asia/Kolkata";
+
+    const lastCleared = localStorage.getItem('lastCleared');
+    const today = new Date().toLocaleDateString("en-US", { timeZone });
+
+    if (lastCleared !== today) {
+      localStorage.removeItem('hrms_notifications');
+      localStorage.removeItem('tokenId');
+      localStorage.removeItem('userData');
+      localStorage.setItem('lastCleared', today);
+    }
+
+    clearSelectedLocalStorageAt1159PM(timeZone);
+  }, []);
   return (
     <Router>
       <AuthProvider>
@@ -89,6 +140,9 @@ function App() {
               {/* Settings */}
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/holidays" element={<Holiday />} />
+              <Route path="/attendancestatus" element={<AttendanceStatus />} />
+
             </Route>
 
             <Route element={<ProtectedRoute requiredRole={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>

@@ -45,7 +45,7 @@ const EmployeeDetail: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Loading />
+      <Loading  text={"Loading employee data..."} />
     );
   }
 
