@@ -1,10 +1,14 @@
 // Calendar.tsx
 import React, { useState } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameMonth, isSameDay } from 'date-fns';
+import { RootState } from '../store/store';
+import { useSelector } from 'react-redux';
 
 const Calendar = ({ attendanceData }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const joiningDate = user?.joining_date ? new Date(user.joining_date) : null;
 
   // console.log(attendanceData)
   const renderHeader = () => (
@@ -78,13 +82,24 @@ const Calendar = ({ attendanceData }) => {
           >
             <div className="text-sm sm:text-base lg:text-lg">{format(cloneDay, 'd')}</div>
             <div className="absolute bottom-1 flex flex-col items-center text-nowrap leading-tight">
-              <div className={`text-[11px] max-sm:text-[7px] font-medium ${getStatusColor(status || '')}`}>
-                {day <= today ? (status || (isSunday ? '' : '--')) : ''}
+              {/* Status */}
+              <div
+                className={`text-[11px] max-sm:text-[7px] font-medium ${getStatusColor(status || (day <= today && !isSunday ? 'Absent' : ''))}`}
+              >
+                {joiningDate && day >= joiningDate && day <= today
+                  ? status || (isSunday ? '' : 'Absent')
+                  : ''}
+
               </div>
-              <div className={`text-[10px] max-sm:text-[6px] ${getStatusColor(status || '')}`}>
-                {day <= today ? (duration ? duration.slice(0, 5) : (isSunday ? '' : '--')) : ''}
+
+              {/* Duration */}
+              <div
+                className={`text-[10px] max-sm:text-[6px] ${getStatusColor(status || (day <= today && !isSunday ? 'Absent' : ''))}`}
+              >
+                {day <= today ? (duration ? duration.slice(0, 5) : (isSunday ? '' : '')) : ''}
               </div>
             </div>
+
           </div>
         );
 

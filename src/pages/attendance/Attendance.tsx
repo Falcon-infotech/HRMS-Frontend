@@ -66,8 +66,27 @@ const Attendance: React.FC = () => {
     }
     allUserAttendanceHistory();
   }, [])
+  const [allUsers, setAllUsers] = useState<any[]>([]);
 
 
+
+  useEffect(() => {
+    const fetchAllUsers = async (): Promise<any> => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/employee`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+          }
+        });
+        const data = response.data
+        setAllUsers(data.data.users)
+        console.log(data.data.users)
+      } catch (error) {
+        console.error('Error fetching all users:', error);
+      }
+    }
+    fetchAllUsers();
+  }, [])
 
 
 
@@ -236,7 +255,7 @@ const Attendance: React.FC = () => {
   };
 
   // Get the selected date's attendance data
-  // const selectedDateAttendance = getAttendanceForDate(selectedDate);
+  const selectedDateAttendance = getAttendanceForDate(selectedDate);
 
   // Calculate attendance stats for the month
   const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
@@ -368,7 +387,7 @@ const Attendance: React.FC = () => {
               </div>
             </div>
 
-            <div className="border-b border-neutral-200 p-4">
+            <div className="border-b border-neutral-200 p-4 ">
               <div className="md:w-1/2">
                 <label htmlFor="employeeSelect" className="form-label">Select Employee</label>
                 <select
@@ -377,11 +396,15 @@ const Attendance: React.FC = () => {
                   value={selectedEmployee}
                   onChange={(e) => setSelectedEmployee(e.target.value)}
                   disabled={user?.role === 'employee'}
+                  onClick={(e)=>{
+                    e.stopPropagation(); // Prevent calendar from closing when clicking on select
+                    console.log(e.target.value, "selected employee")
+                  }}
                 >
                   <option value="">All Employees</option>
-                  {employeesData.map(employee => (
+                  {allUsers.map(employee => (
                     <option key={employee.id} value={employee.id}>
-                      {employee.firstName} {employee.lastName} ({employee.id})
+                      {employee.first_name} {employee.last_name} ({employee.userId})
                     </option>
                   ))}
                 </select>
@@ -452,10 +475,10 @@ const Attendance: React.FC = () => {
                         <tr key={record._id || `${record.employeeId}-${record.date}`}>
                           <td>{record.employeeName}</td>
                           <td>
-                            <span className={`badge ${record.status === 'present' ? 'badge-success' :
-                              record.status === 'absent' ? 'badge-danger' :
-                                record.status === 'half-day' ? 'badge-warning' :
-                                  record.status === 'leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
+                            <span className={`badge ${record.status === 'Present' ? 'badge-success' :
+                              record.status === 'Absent' ? 'badge-danger' :
+                                record.status === 'Half-day' ? 'badge-warning' :
+                                  record.status === 'Leave' ? 'badge-info' : 'bg-neutral-100 text-neutral-800'
                               }`}>
                               {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                             </span>
@@ -534,7 +557,7 @@ const Attendance: React.FC = () => {
         </div>
 
         {/* Right Column: Stats */}
-        <div>
+        <div className=''>
           <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6 mb-6">
             <h3 className="text-lg font-semibold mb-4">Monthly Summary</h3>
             <div className="space-y-6">
@@ -603,7 +626,7 @@ const Attendance: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-x-auto">
             <h3 className="text-lg font-semibold mb-4">Today's Attendance</h3>
             <div className="space-y-3">
               {/* {employeesData.slice(0, 5).map(employee => {
@@ -655,7 +678,7 @@ const Attendance: React.FC = () => {
                 return (
                   <div
                     key={user.userId}
-                    className="flex items-center justify-between p-2 border-b border-neutral-100"
+                    className="flex items-center justify-between p-2 border-b border-neutral-100 min-w-[300px]"
                   >
                     <div className="flex items-center">
                       <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-neutral-200 mr-3 text-sm font-medium text-white bg-blue-500">

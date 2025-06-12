@@ -9,6 +9,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import Loading from '../../components/Loading';
 
 const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -36,9 +37,10 @@ const EmployeeList: React.FC = () => {
   const totalPages = Math.ceil(employees.length / employeesPerPage);
 
   // console.log(user.role)
-
+  const [loading, setLoading] = useState(true);
   const call = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem('tokenId');
 
       const response = await axios.get(`${BASE_URL}/api/employee`, {
@@ -54,6 +56,8 @@ const EmployeeList: React.FC = () => {
 
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -343,129 +347,140 @@ const EmployeeList: React.FC = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {currentEmployees.map(employee => (
-                <tr key={employee._id} className="hover:bg-neutral-50">
-                  <td>
-                    <span className="text-sm font-medium">{employee.userId}</span>
-                  </td>
-                  <td>
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-neutral-200 overflow-hidden">
-                        {employee.avatar ? (
-                          <img src={employee.avatar} alt={`${employee.first_name} ${employee.last_name}`} className="h-full w-full object-cover" />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 font-medium">
-                            {employee.first_name[0]}{employee.last_name[0]}
-                          </div>
-                        )}
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-neutral-800">{employee.first_name} {employee.last_name}</p>
-                        <p className="text-xs text-neutral-500">{employee.employeeType}</p>
-                      </div>
+            {
+              loading ? (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="flex justify-center items-center py-10">
+                      <Loading text="Loading Employee Data..." />
                     </div>
                   </td>
-                  <td>
-                    <p className="text-sm text-neutral-800">{employee.email}</p>
-                    <p className="text-xs text-neutral-500">{employee.phone}</p>
-                  </td>
-                  <td>
-                    <span className="text-sm">{employee.department}</span>
-                  </td>
-                  <td>
-                    <span className="text-sm">{employee.designation}</span>
-                  </td>
-                  <td>
-                    <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
-                  </td>
-                  <td>
-                    <span className={`badge ${getStatusColor(employee.status)}`}>
-                      {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="flex items-center space-x-2">
-                      <Link to={`/employees/${employee._id}`} className="text-neutral-500 hover:text-primary-600" title="View">
-                        <Eye size={18} />
-                      </Link>
-                      <Link to={`/employees/edit/${employee._id}`} className="text-neutral-500 hover:text-warning-500" title="Edit">
-                        <Edit size={18} />
-                      </Link>
-                      <button className="text-neutral-500 hover:text-error-500" title="Delete" onClick={() => {
-                        setSelectedEmployeeId(employee._id);
-                        setShowDeleteModal(true);
-                      }}>
-                        <Trash2 size={18} />
-                      </button>
-                      <div className="relative inline-block text-left">
-                        <div className="relative inline-block text-left">
-                          <button
-                            onClick={() => toggleDropdown(employee._id)}
-                            className="text-neutral-500 hover:text-primary-600"
-                            title="More"
-                          >
-                            <MoreHorizontal size={18} />
-                          </button>
-
-                          {
-                            user?.role === "admin" && dropdownOpenId === employee._id && (
-                              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10 p-2">
-                                <label className="block text-sm text-gray-700 mb-1">Role:</label>
-                                <select
-                                  value={employee.role}
-                                  onChange={(e) => handleRoleChange(employee._id, e.target.value)}
-                                  className="w-full p-1 text-sm border border-gray-300 rounded"
-                                >
-                                  <option value="employee">Employee</option>
-                                  <option value="hr">Hr</option>
-                                </select>
-                              </div>
-                            )
-                          }
-
+                </tr>
+              ) : <tbody >
+                {currentEmployees.map(employee => (
+                  <tr key={employee._id} className="hover:bg-neutral-50">
+                    <td>
+                      <span className="text-sm font-medium">{employee.userId}</span>
+                    </td>
+                    <td>
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-neutral-200 overflow-hidden">
+                          {employee.avatar ? (
+                            <img src={employee.avatar} alt={`${employee.first_name} ${employee.last_name}`} className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 font-medium">
+                              {employee.first_name[0]}{employee.last_name[0]}
+                            </div>
+                          )}
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm font-medium text-neutral-800">{employee.first_name} {employee.last_name}</p>
+                          <p className="text-xs text-neutral-500">{employee.employeeType}</p>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {showDeleteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                  <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-                    <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
-                    <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this employee?</p>
-                    <div className="flex justify-end space-x-4">
-                      <button
-                        className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                        onClick={() => setShowDeleteModal(false)}
-                      >
-                        No
-                      </button>
-                      <button
-                        className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-                        onClick={() => {
-                          handleDelete(selectedEmployeeId);
-                          setShowDeleteModal(false);
-                        }}
-                      >
-                        Yes
-                      </button>
+                    </td>
+                    <td>
+                      <p className="text-sm text-neutral-800">{employee.email}</p>
+                      <p className="text-xs text-neutral-500">{employee.phone}</p>
+                    </td>
+                    <td>
+                      <span className="text-sm">{employee.department}</span>
+                    </td>
+                    <td>
+                      <span className="text-sm">{employee.designation}</span>
+                    </td>
+                    <td>
+                      <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
+                    </td>
+                    <td>
+                      <span className={`badge ${getStatusColor(employee.status)}`}>
+                        {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="flex items-center space-x-2">
+                        <Link to={`/employees/${employee._id}`} className="text-neutral-500 hover:text-primary-600" title="View">
+                          <Eye size={18} />
+                        </Link>
+                        <Link to={`/employees/edit/${employee._id}`} className="text-neutral-500 hover:text-warning-500" title="Edit">
+                          <Edit size={18} />
+                        </Link>
+                        <button className="text-neutral-500 hover:text-error-500" title="Delete" onClick={() => {
+                          setSelectedEmployeeId(employee._id);
+                          setShowDeleteModal(true);
+                        }}>
+                          <Trash2 size={18} />
+                        </button>
+                        <div className="relative inline-block text-left">
+                          <div className="relative inline-block text-left">
+                            <button
+                              onClick={() => toggleDropdown(employee._id)}
+                              className="text-neutral-500 hover:text-primary-600"
+                              title="More"
+                            >
+                              <MoreHorizontal size={18} />
+                            </button>
+
+                            {
+                              user?.role === "admin" && dropdownOpenId === employee._id && (
+                                <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10 p-2">
+                                  <label className="block text-sm text-gray-700 mb-1">Role:</label>
+                                  <select
+                                    value={employee.role}
+                                    onChange={(e) => handleRoleChange(employee._id, e.target.value)}
+                                    className="w-full p-1 text-sm border border-gray-300 rounded"
+                                  >
+                                    <option value="employee">Employee</option>
+                                    <option value="hr">Hr</option>
+                                  </select>
+                                </div>
+                              )
+                            }
+
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {showDeleteModal && (
+                  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                      <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
+                      <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this employee?</p>
+                      <div className="flex justify-end space-x-4">
+                        <button
+                          className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                          onClick={() => setShowDeleteModal(false)}
+                        >
+                          No
+                        </button>
+                        <button
+                          className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                          onClick={() => {
+                            handleDelete(selectedEmployeeId);
+                            setShowDeleteModal(false);
+                          }}
+                        >
+                          Yes
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
 
-              {employees.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="text-center py-8 text-neutral-500">
-                    {/* No employees found matching your search criteria */}
-                    searching employees...
-                  </td>
-                </tr>
-              )}
-            </tbody>
+                {!loading && employees.length === 0 && (
+                  <tr>
+                    <td colSpan={8} className="text-center py-8 text-neutral-500">
+                      {/* No employees found matching your search criteria */}
+                      No employees Found...
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            }
+
           </table>
         </div>
 
@@ -488,8 +503,8 @@ const EmployeeList: React.FC = () => {
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
                 className={`px-3 py-1 border rounded-md text-sm ${currentPage === index + 1
-                    ? "bg-blue-500 border-primary-300 text-white font-medium"
-                    : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
+                  ? "bg-blue-500 border-primary-300 text-white font-medium"
+                  : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
                   }`}
               >
                 {index + 1}

@@ -1,8 +1,27 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      keyframes: {
+        dash: {
+          '0%': { backgroundPosition: '0 0' },
+          '100%': { backgroundPosition: '100% 0' },
+        },
+        fadeIn: {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
+        slideIn: {
+          from: { transform: 'translateY(10px)', opacity: 0 },
+          to: { transform: 'translateY(0)', opacity: 1 },
+        },
+      },
+      animation: {
+        dash: 'dash 1s linear infinite',
+        'fade-in': 'fadeIn 0.3s ease-in-out',
+        'slide-in': 'slideIn 0.3s ease-in-out',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
       colors: {
         primary: {
           50: 'var(--primary-50)',
@@ -53,13 +72,8 @@ export default {
         '80': '20rem',
         '96': '24rem',
       },
-      animation: {
-        'fade-in': 'fadeIn 0.3s ease-in-out',
-        'slide-in': 'slideIn 0.3s ease-in-out',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      },
       boxShadow: {
-        'card': '0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)',
+        card: '0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)',
       },
     },
   },

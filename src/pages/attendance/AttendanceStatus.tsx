@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker';
 import { BASE_URL } from '../../constants/api';
 import Calendar from '../../components/Calendar';
+import { RootState } from '../../store/store';
+import { useSelector } from 'react-redux';
 
 const AttendanceStatus = () => {
 
@@ -15,6 +17,9 @@ const AttendanceStatus = () => {
 
     const [attendanceData, setAttendanceData] = useState<any>({});
 
+    const { user: userDetails } = useSelector((state: RootState) => state.auth);
+    const joiningDate = userDetails?.joining_date ? new Date(userDetails.joining_date) : null;
+    const today = new Date();
 
 
     const [user, setUser] = useState<any>(null);
@@ -35,9 +40,12 @@ const AttendanceStatus = () => {
             case 'Present':
                 return isBorder ? 'text-green-600 border border-green-400 bg-green-50' : 'bg-green-400';
             case 'Leave':
-                return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
-            default:
+                return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-orange-500';
+            case 'Half Day':
                 return isBorder ? 'text-purple-500 border border-gray-300 bg-gray-100' : 'bg-gray-300';
+            default:
+                return isBorder ? 'text-red-500 border border-red-300 bg-red-50' : 'bg-red-400';
+
         }
     };
 
@@ -255,16 +263,21 @@ const AttendanceStatus = () => {
                                             </div>
 
                                             {/* Status Line */}
-                                            {day <= new Date() && (
+                                            {joiningDate && day >= joiningDate && day <= today && (
                                                 <div className="flex items-center justify-between mt-3 px-1 relative">
                                                     <span className="w-2 h-2 bg-gray-400 rounded-full" />
-                                                    <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`} />
+                                                    {/* <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`} /> */}
+
+                                                    <div className="flex-1 mx-2 h-0.5 relative overflow-hidden">
+                                                        <div className="absolute inset-0 animate-dash bg-[linear-gradient(to_right,gray_50%_50%,transparent_0)] [background-size:8px_1px] [background-repeat:repeat-x]" />
+                                                    </div>
                                                     <span className="w-2 h-2 bg-gray-400 rounded-full" />
                                                     <span className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-1 rounded-full border ${getStatusColor(record?.status, true)}`}>
-                                                        {record?.status ?? 'No Status'}
+                                                        {record?.status ?? 'Absent'}
                                                     </span>
                                                 </div>
                                             )}
+
 
                                         </div>
                                     );

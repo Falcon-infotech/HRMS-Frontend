@@ -249,7 +249,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
                       <td className="px-6 py-4 text-gray-600">{att.duration || "--"}</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full text-white ${att.status === "Absent"
+                          className={`inline-block px-2 py-1 text-xs text-nowrap font-medium rounded-full text-white ${att.status === "Absent"
                               ? "bg-red-500"
                               : att.status === "Half Day"
                                 ? "bg-yellow-400 text-gray-800"
