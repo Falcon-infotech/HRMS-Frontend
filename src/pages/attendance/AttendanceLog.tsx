@@ -168,10 +168,10 @@ const AttendanceLog: React.FC = () => {
             <Calendar size={16} className="mr-1" />
             Calendar View
           </Link>
-          <button className="btn btn-secondary flex items-center">
+          {/* <button className="btn btn-secondary flex items-center">
             <Download size={16} className="mr-1" />
             Export
-          </button>
+          </button> */}
         </div>
       </div>
 

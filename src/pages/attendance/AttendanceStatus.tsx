@@ -68,9 +68,9 @@ const AttendanceStatus = () => {
                     }
                 });
                 const records = res.data?.data?.attendance || [];
-                console.log(records, "records")
+                // console.log(records, "records")
 
-        const mapped: Record<string, { status: string; duration: string }> = {};
+                const mapped: Record<string, { status: string; duration: string }> = {};
                 records.forEach((record: any) => {
                     mapped[record.date] = {
                         status: record.status,
@@ -255,14 +255,17 @@ const AttendanceStatus = () => {
                                             </div>
 
                                             {/* Status Line */}
-                                            <div className="flex items-center justify-between mt-3 px-1 relative">
-                                                <span className="w-2 h-2 bg-gray-400 rounded-full" />
-                                                <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`} />
-                                                <span className="w-2 h-2 bg-gray-400 rounded-full" />
-                                                <span className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-1 rounded-full border ${getStatusColor(record?.status, true)}`}>
-                                                    {record?.status ?? 'No Status'}
-                                                </span>
-                                            </div>
+                                            {day <= new Date() && (
+                                                <div className="flex items-center justify-between mt-3 px-1 relative">
+                                                    <span className="w-2 h-2 bg-gray-400 rounded-full" />
+                                                    <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`} />
+                                                    <span className="w-2 h-2 bg-gray-400 rounded-full" />
+                                                    <span className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-1 rounded-full border ${getStatusColor(record?.status, true)}`}>
+                                                        {record?.status ?? 'No Status'}
+                                                    </span>
+                                                </div>
+                                            )}
+
                                         </div>
                                     );
                                 })}

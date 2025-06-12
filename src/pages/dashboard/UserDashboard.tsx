@@ -397,13 +397,13 @@ const UserDashboard = () => {
     }
   };
 
-  const menuItems = [
-    "Activities",
-    "Attendance",
-    // "Time Logs",
-    // "All-Holidays",
-    "Monthly-Attendance"
-  ];
+  // const menuItems = [
+  //   "Activities",
+  //   "Attendance",
+  //   // "Time Logs",
+  //   // "All-Holidays",
+  //   "Monthly-Attendance"
+  // ];
 
 
   const ActivitiesTab = () => {
@@ -564,7 +564,7 @@ const UserDashboard = () => {
       <div className="flex-1 border rounded-xl bg-gray-50 p-4">
         {/* Tabs */}
         <div className="flex flex-wrap border-b mb-4">
-          {menuItems.map((item) => (
+          {["Activities"].map((item) => (
             <button
               key={item}
               onClick={() => setActiveTab(item)}
@@ -962,11 +962,11 @@ const UserDashboard = () => {
           )
         } */}
 
-        {
+        {/* {
           activeTab === "Monthly-Attendance" && (
             <Calendar attendanceData={attendanceData} />)
 
-        }
+        } */}
 
 
       </div>

@@ -6,7 +6,7 @@ const Calendar = ({ attendanceData }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
 
-  console.log(attendanceData)
+  // console.log(attendanceData)
   const renderHeader = () => (
     <div className="flex items-center justify-between mb-6">
       <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="text-gray-600 hover:text-gray-800">&lt;</button>
@@ -54,7 +54,6 @@ const Calendar = ({ attendanceData }) => {
         const duration = record?.duration;
         const isSunday = day.getDay() === 0;
 
-
         const getStatusColor = (status: string) => {
           switch (status) {
             case 'Present':
@@ -71,28 +70,25 @@ const Calendar = ({ attendanceData }) => {
         };
 
         days.push(
-  <div
-    key={day.toString()}
-    className={`sm:h-20 h-12 p-1 border rounded-lg flex flex-col items-center justify-start relative
-      ${isToday ? 'bg-blue-100 text-blue-600 font-semibold' : isCurrentMonth ? 'text-gray-800' : 'text-gray-400'}
-      ${isSunday ? 'bg-red-100' : ''}`}
-  >
-    {/* Updated: Date number with larger text on bigger screens */}
-    <div className="text-sm sm:text-base lg:text-lg">{format(day, 'd')}</div>
+          <div
+            key={cloneDay.toString()}
+            className={`sm:h-20 h-12 p-1 border rounded-lg flex flex-col items-center justify-start relative
+               ${isToday ? 'bg-blue-100 text-blue-600 font-semibold' : isCurrentMonth ? 'text-gray-800' : 'text-gray-400'}
+                ${isSunday ? 'bg-red-100' : ''}`}
+          >
+            <div className="text-sm sm:text-base lg:text-lg">{format(cloneDay, 'd')}</div>
+            <div className="absolute bottom-1 flex flex-col items-center text-nowrap leading-tight">
+              <div className={`text-[11px] max-sm:text-[7px] font-medium ${getStatusColor(status || '')}`}>
+                {day <= today ? (status || (isSunday ? '' : '--')) : ''}
+              </div>
+              <div className={`text-[10px] max-sm:text-[6px] ${getStatusColor(status || '')}`}>
+                {day <= today ? (duration ? duration.slice(0, 5) : (isSunday ? '' : '--')) : ''}
+              </div>
+            </div>
+          </div>
+        );
 
-    {/* Status and Duration stay the same */}
-    <div className="absolute bottom-1 flex flex-col items-center text-nowrap leading-tight">
-      <div className={`text-[11px] max-sm:text-[7px] font-medium ${getStatusColor(status || '')}`}>
-        {status || '--'}
-      </div>
-      <div className={`text-[10px] max-sm:text-[6px] ${getStatusColor(status || '')}`}>
-        {duration ? duration.slice(0, 5) : '--'}
-      </div>
-    </div>
-  </div>
-);
-
-        day = addDays(day, 1);
+        day = addDays(day, 1); // ✅ move to the next day
       }
 
       rows.push(
@@ -100,8 +96,10 @@ const Calendar = ({ attendanceData }) => {
           {days}
         </div>
       );
+
       days = [];
     }
+
 
     return <div className="space-y-1">{rows}</div>;
   };

@@ -325,9 +325,9 @@ const Dashboard: React.FC = () => {
                     <span className="text-xs font-medium">{month}</span>
                     <span className="text-lg font-bold">{day}</span>
                   </div>
-                  <div>
+                  <div className='flex  items-center'>
                     <p className="text-sm font-medium text-neutral-800">{event.reason}</p>
-                    <p className="text-xs text-neutral-500 mt-1">{time}</p>
+                    {/* <p className="text-xs text-neutral-500 mt-1">{time}</p> */}
                   </div>
                 </div>
               );
