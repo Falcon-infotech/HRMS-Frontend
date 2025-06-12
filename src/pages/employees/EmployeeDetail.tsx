@@ -12,12 +12,40 @@ import {
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
+import { useSelector } from 'react-redux';
+import { RootState } from '@reduxjs/toolkit/query';
 
 const EmployeeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState('info');
   const [employees, setEmployees] = useState([])
   const [isLoading, setIsLoading] = useState(true);
+  const{user}=useSelector((state:RootState)=>state.auth)
+  const [leaveBalance, setLeaveBalance] = useState<any>(0);
+
+  
+  useEffect(() => {
+    const Alluseleaves = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+          }
+        });
+        console.log(response.data
+          
+        )
+        if (response.status === 200) {
+          setLeaveBalance(response.data.count);
+        }
+      } catch (error) {
+        console.error('Error fetching leave balance:', error);
+        // toast.error('Failed to   fetch leave balance. Please try again later.');
+      }
+    }
+
+    Alluseleaves();
+  },[])
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -48,6 +76,8 @@ const EmployeeDetail: React.FC = () => {
       <Loading  text={"Loading employee data..."} />
     );
   }
+
+  
 
   if (!employee) {
     return (
@@ -192,7 +222,8 @@ const EmployeeDetail: React.FC = () => {
                   <div>
                     <p className="text-sm text-neutral-500">Leave Balance</p>
                     <p className="text-lg font-semibold">
-                      {/* {leaveBalance ? leaveBalance.sick.available + leaveBalance.casual.available + leaveBalance.annual.available : 0} days */}0
+                      {/* {leaveBalance ? leaveBalance.sick.available + leaveBalance.casual.available + leaveBalance.annual.available : 0} days */}
+                       {leaveBalance}
                     </p>
                   </div>
                 </div>
@@ -223,7 +254,7 @@ const EmployeeDetail: React.FC = () => {
                 >
                   Personal Info
                 </button>
-                <button
+                {/* <button
                   className={`pb-3 text-sm font-medium border-b-2 ${activeTab === 'attendance'
                     ? 'border-primary-600 text-primary-600'
                     : 'border-transparent text-neutral-500 hover:text-neutral-700'
@@ -258,7 +289,7 @@ const EmployeeDetail: React.FC = () => {
                   onClick={() => setActiveTab('performance')}
                 >
                   Performance
-                </button>
+                </button> */}
               </nav>
             </div>
 

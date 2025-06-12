@@ -37,12 +37,14 @@ const ApplyLeave: React.FC = () => {
       setLeaveCount(totalLeaveCount);
 
       // Calculate leave balance
-      if (leaves.length > 0) {
-        const approvedLeaves = leaves.filter((l: any) => l.status === 'approved');
-        const maxLeave = leaves[0]?.maximumLeave || 0;
-        const remainingBalance = Math.max(0, maxLeave - approvedLeaves.length);
-        setLeaveBalance(remainingBalance);
-      }
+      // if (leaves.length > 0) {
+      //   const approvedLeaves = leaves.filter((l: any) => l.status === 'approved');
+      //   const maxLeave = leaves[0]?.maximumLeave || 0;
+      //   const remainingBalance = Math.max(0, maxLeave - approvedLeaves.length);
+      //   setLeaveBalance(remainingBalance);
+      // }
+      console.log(response.data.leaveBalance);
+      setLeaveBalance(response.data.leaveBalance || 0);
     } catch (error) {
       console.error('Error fetching leave balance:', error);
       toast.error('Failed to fetch leave balance. Please try again later.');
@@ -218,8 +220,8 @@ const ApplyLeave: React.FC = () => {
               </Link>
               <button
                 type="submit"
-                className="btn btn-primary"
-                disabled={leaveBalance <= 0}
+                className={`btn btn-primary ${leaveBalance <= 0 ? ' opacity-50 cursor-not-allowed' : ''}`}
+                disabled={leaveBalance == 0}
               >
                 Submit Request
               </button>
@@ -242,7 +244,8 @@ const ApplyLeave: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Casual Leave Taken</span>
                 <span className="font-semibold text-gray-900">
-                  {leaveCount?.casual ?? 0} / {leaveBalance ?? 0}
+                  {leaveCount?.casual ?? 0} / 
+                  {leaveBalance}
                 </span>
               </div>
 
