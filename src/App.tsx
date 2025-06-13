@@ -38,6 +38,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import LeaveDetails from './components/LeaveDetails';
 import Holiday from './pages/Holidays/Holiday';
 import AttendanceStatus from './pages/attendance/AttendanceStatus';
+import MyLeaveStatus from './pages/leave/MyLeaveStatus';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -142,6 +143,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/holidays" element={<Holiday />} />
               <Route path="/attendancestatus" element={<AttendanceStatus />} />
+              <Route path="/leavestatus" element={<MyLeaveStatus />} />
 
             </Route>
 

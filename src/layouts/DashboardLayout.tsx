@@ -74,7 +74,8 @@ const DashboardLayout: React.FC = () => {
       icon: FileText,
       children: [
         { name: 'Leave Dashboard', href: '/leave' },
-        { name: 'Apply Leave', href: '/leave/apply' }
+        { name: 'Apply Leave', href: '/leave/apply' },
+        { name: 'My Leave Status', href: '/leavestatus' },
       ]
     },
     { name: 'AttendanceStatus', href: '/attendancestatus', icon: CalendarCheck  },

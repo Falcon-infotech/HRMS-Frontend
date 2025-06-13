@@ -6,6 +6,7 @@ import employeesData from '../../data/employeeData';
 import PageHeader from '../../components/common/PageHeader';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
+import Loading from '../../components/Loading';
 
 const LeaveManagement: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -335,11 +336,15 @@ const LeaveManagement: React.FC = () => {
             </thead>
             <tbody>
               {loadingList ? (
-                <div className="text-center py-8 flex justify-center items-center space-x-2">
-                  <span className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin inline-block"></span>
-                  <span className="text-gray-500 text-sm">Loading leave requests...</span>
-                </div>
-
+                <tr>
+                  <td colSpan="8">
+                    <div className="py-8 flex justify-center items-center space-x-2">
+                      <Loading text={"Loading leave requests..."} />
+                      {/* <span className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin inline-block"></span>
+                      <span className="text-gray-500 text-sm">Loading leave requests...</span> */}
+                    </div>
+                  </td>
+                </tr>
               ) : paginatedRequests.map(request => {
                 const employee = employeesData.find(emp => emp.id === request.employeeId);
                 const leaveType = leaveTypes.find(type => type.id === request.leaveType);
@@ -422,15 +427,13 @@ const LeaveManagement: React.FC = () => {
                             </button>
                           </>
                         )}
-
-
-
                       </div>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
+
           </table>
         </div>
 

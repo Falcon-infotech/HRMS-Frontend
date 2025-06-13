@@ -117,24 +117,24 @@ const AttendanceLog: React.FC = () => {
 
 
 
-  const requestSort = (key: string) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
+  // const requestSort = (key: string) => {
+  //   let direction: 'ascending' | 'descending' = 'ascending';
+  //   if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+  //     direction = 'descending';
+  //   }
+  //   setSortConfig({ key, direction });
+  // };
 
-  const clearFilters = () => {
-    setDateRange({
-      startDate: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
-      endDate: format(new Date(), 'yyyy-MM-dd'),
-    });
-    setSelectedDepartment('');
-    setSelectedStatus('');
-    setSelectedEmployee(user?.role === 'employee' ? user.id : '');
-    setSearchTerm('');
-  };
+  // const clearFilters = () => {
+  //   setDateRange({
+  //     startDate: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
+  //     endDate: format(new Date(), 'yyyy-MM-dd'),
+  //   });
+  //   setSelectedDepartment('');
+  //   setSelectedStatus('');
+  //   setSelectedEmployee(user?.role === 'employee' ? user.id : '');
+  //   setSearchTerm('');
+  // };
 
   // Get current records
   const indexOfLastRecord = currentPage * recordsPerPage;
@@ -142,19 +142,19 @@ const AttendanceLog: React.FC = () => {
   const currentRecords = records.slice(indexOfFirstRecord, indexOfLastRecord);
 
   // Change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  // const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'present': return 'bg-green-100 text-green-800';
-      case 'absent': return 'bg-red-100 text-red-800';
-      case 'half-day': return 'bg-yellow-100 text-yellow-800';
-      case 'leave': return 'bg-purple-100 text-purple-800';
-      case 'holiday': return 'bg-blue-100 text-blue-800';
-      case 'weekend': return 'bg-neutral-100 text-neutral-600';
-      default: return 'bg-neutral-100 text-neutral-800';
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case 'present': return 'bg-green-100 text-green-800';
+  //     case 'absent': return 'bg-red-100 text-red-800';
+  //     case 'half-day': return 'bg-yellow-100 text-yellow-800';
+  //     case 'leave': return 'bg-purple-100 text-purple-800';
+  //     case 'holiday': return 'bg-blue-100 text-blue-800';
+  //     case 'weekend': return 'bg-neutral-100 text-neutral-600';
+  //     default: return 'bg-neutral-100 text-neutral-800';
+  //   }
+  // };
 
   return (
     <div className="animate-fade-in">

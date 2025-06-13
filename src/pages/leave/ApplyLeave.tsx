@@ -242,10 +242,9 @@ const ApplyLeave: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Casual Leave Taken</span>
+                <span className="text-gray-600">Casual Leave </span>
                 <span className="font-semibold text-gray-900">
-                  {leaveCount?.casual ?? 0} / 
-                  {leaveBalance}
+                  {leaveCount?.casual ?? 0} / 14
                 </span>
               </div>
 
@@ -254,10 +253,10 @@ const ApplyLeave: React.FC = () => {
                 <span className="font-semibold text-gray-900">{leaveCount?.unpaid ?? 0}</span>
               </div>
 
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <span className="text-gray-600">Vacation Leave Taken</span>
                 <span className="font-semibold text-gray-900">{leaveCount?.vacation ?? 0}</span>
-              </div>
+              </div> */}
             </div>
           </div>
 
