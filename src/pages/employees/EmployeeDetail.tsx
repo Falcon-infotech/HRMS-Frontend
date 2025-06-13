@@ -57,7 +57,7 @@ const EmployeeDetail: React.FC = () => {
           },
         });
 
-        // console.log('API response:', response.data);
+        console.log('API response:', response.data);
 
         setEmployees(response.data.data.users);
       } catch (error) {
@@ -326,7 +326,7 @@ const EmployeeDetail: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-neutral-500">Employee ID</p>
-                        <p className="text-sm font-medium">{employee?._id}</p>
+                        <p className="text-sm font-medium">{employee?.userId}</p>
                       </div>
                       <div>
                         <p className="text-sm text-neutral-500">Department</p>
