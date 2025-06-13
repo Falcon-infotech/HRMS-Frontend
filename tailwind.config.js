@@ -17,10 +17,7 @@ export default {
         },
       },
       animation: {
-        dash: 'dash 1s linear infinite',
-        'fade-in': 'fadeIn 0.3s ease-in-out',
-        'slide-in': 'slideIn 0.3s ease-in-out',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        dash: 'dash 2.5s linear infinite',
       },
       colors: {
         primary: {

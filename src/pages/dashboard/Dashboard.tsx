@@ -24,7 +24,6 @@ import { BASE_URL } from '../../constants/api';
 const Dashboard: React.FC = () => {
   // const { user } = useAuth();
   const [dashboardData, setDashboardData] = useState(getDashboardData());
-  const [activteTab, setActiveTab] = useState('home');
   const [count, setCount] = useState(0);
   //  const renderTabContent = () => {
   //     switch (activeTab) {
@@ -42,6 +41,7 @@ const Dashboard: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   // console.log(user)
   const [holidays, setHolidays] = useState([])
+  const [todayStats, setTodayStats] = useState(0);
   useEffect(() => {
     const handlefetch = async () => {
       try {
@@ -81,8 +81,24 @@ const Dashboard: React.FC = () => {
   }
 
   useEffect(() => {
-
     fetchHolidays();
+  }, [])
+
+  useEffect(() => {
+    const todayAttendace = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/attendance/all_users_today_attendance`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+          }
+        })
+        const data = await response.json();
+        setTodayStats(data.totalUsers)
+      } catch (error) {
+        console.error('Error fetching today attendance', error);
+      }
+    }
+    todayAttendace();
   }, [])
 
 
@@ -160,23 +176,28 @@ const Dashboard: React.FC = () => {
           title="Total Employees"
           value={count}
           icon={Users}
-          change="+4% from last month"
+          // change="+4% from last month"
           changeType="positive"
           link="/employees"
         />
         <OverviewCard
           title="Attendance Today"
-          value={`${Math.round((dashboardData.activeEmployees / dashboardData.totalEmployees) * 100)}%`}
+          value={
+            count > 0
+              ? `${Math.round((todayStats / count) * 100)}%`
+              : '0%'
+          }
           icon={Calendar}
-          change="+2% from yesterday"
+          // change="+2% from yesterday"
           changeType="positive"
           link="/attendance"
         />
-        <OverviewCard
+
+        {/* <OverviewCard
           title="Leave Requests"
           value={dashboardData.leaveStats.pending}
           icon={FileText}
-          change="3 new requests"
+          // change="3 new requests"
           changeType="neutral"
           link="/leave"
         />
@@ -184,10 +205,10 @@ const Dashboard: React.FC = () => {
           title="Open Positions"
           value="7"
           icon={Briefcase}
-          change="+2 from last month"
+          // change="+2 from last month"
           changeType="positive"
-          link="/recruitment/jobs"
-        />
+          link="/recruitment/jobs" */}
+        {/* /> */}
       </div>
 
       {/* Charts and Tables */}
@@ -310,7 +331,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="space-y-4 overflow-y-auto h-full pb-4">
             {upcomingHolidays?.map((event, index) => {
-              const dateObj = new Date(event.date);
+              const dateObj = new Date(event?.date);
               const month = dateObj.toLocaleString('default', { month: 'short' });
               const day = dateObj.getDate();
               const time = dateObj.toLocaleTimeString('en-IN', {
@@ -326,7 +347,7 @@ const Dashboard: React.FC = () => {
                     <span className="text-lg font-bold">{day}</span>
                   </div>
                   <div className='flex  items-center'>
-                    <p className="text-sm font-medium text-neutral-800">{event.reason}</p>
+                    <p className="text-sm font-medium text-neutral-800">{event?.reason}</p>
                     {/* <p className="text-xs text-neutral-500 mt-1">{time}</p> */}
                   </div>
                 </div>

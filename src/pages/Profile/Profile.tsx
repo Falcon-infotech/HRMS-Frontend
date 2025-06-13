@@ -352,7 +352,7 @@ const id=user?._id;
         });
         // console.log(response.data.count)
         if (response.status === 200) {
-          setLeaveBalance(response.data.count);
+          setLeaveBalance(response.data.leaveBalance);
         }
       } catch (error) {
         console.error('Error fetching leave balance:', error);

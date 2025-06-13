@@ -195,7 +195,7 @@ const AttendanceStatus = () => {
 
                             <div className="flex items-center gap-2">
                                 {/* Check-in Badge */}
-                                <div className="flex flex-col bg-green-500 text-white px-4 py-2 rounded-lg shadow">
+                                {/* <div className="flex flex-col bg-green-500 text-white px-4 py-2 rounded-lg shadow">
                                     <span className="text-sm font-bold">Check-in</span>
                                     <div className="flex items-center text-white font-boldmono text-lg font-bold">
                                         {elapsed.split(':').map((value, index) => (
@@ -206,10 +206,10 @@ const AttendanceStatus = () => {
                                         ))}
                                         <span className="ml-1 text-sm font-bold">Hrs</span>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {/* Clock Icon Button */}
-                                <button className="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-green-500 -mx-5">
+                                {/* <button className="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-green-500 -mx-5">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="h-4 w-4"
@@ -219,7 +219,7 @@ const AttendanceStatus = () => {
                                     >
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m4-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                         {/* Weekly Attendance Summary (Styled Row Cards) */}
@@ -268,9 +268,15 @@ const AttendanceStatus = () => {
                                                     <span className="w-2 h-2 bg-gray-400 rounded-full" />
                                                     {/* <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`} /> */}
 
-                                                    <div className="flex-1 mx-2 h-0.5 relative overflow-hidden">
-                                                        <div className="absolute inset-0 animate-dash bg-[linear-gradient(to_right,gray_50%_50%,transparent_0)] [background-size:8px_1px] [background-repeat:repeat-x]" />
+                                                    <div className="flex-1 mx-2 h-1 relative overflow-hidden rounded-full">
+                                                        <div
+                                                            className={`absolute inset-0 ${isToday
+                                                                    ? 'animate-dash bg-[linear-gradient(to_right,gray_50%_50%,transparent_0)] bg-repeat-x [background-size:20px_1px] ltr'
+                                                                    : 'bg-gray-300'
+                                                                }`}
+                                                        />
                                                     </div>
+
                                                     <span className="w-2 h-2 bg-gray-400 rounded-full" />
                                                     <span className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-1 rounded-full border ${getStatusColor(record?.status, true)}`}>
                                                         {record?.status ?? 'Absent'}
