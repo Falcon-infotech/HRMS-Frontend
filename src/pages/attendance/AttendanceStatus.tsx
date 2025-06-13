@@ -271,8 +271,8 @@ const AttendanceStatus = () => {
                                                     <div className="flex-1 mx-2 h-1 relative overflow-hidden rounded-full">
                                                         <div
                                                             className={`absolute inset-0 ${isToday
-                                                                    ? 'animate-dash bg-[linear-gradient(to_right,gray_50%_50%,transparent_0)] bg-repeat-x [background-size:20px_1px] ltr'
-                                                                    : 'bg-gray-300'
+                                                                ? 'animate-dash bg-[linear-gradient(to_right,gray_50%_50%,transparent_0)] bg-repeat-x [background-size:20px_1px] ltr'
+                                                                : 'bg-gray-300'
                                                                 }`}
                                                         />
                                                     </div>
