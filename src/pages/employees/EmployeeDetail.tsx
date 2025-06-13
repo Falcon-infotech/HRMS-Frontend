@@ -36,7 +36,7 @@ const EmployeeDetail: React.FC = () => {
           
         )
         if (response.status === 200) {
-          setLeaveBalance(response.data.count);
+          setLeaveBalance(response.data.leaveBalance);
         }
       } catch (error) {
         console.error('Error fetching leave balance:', error);
