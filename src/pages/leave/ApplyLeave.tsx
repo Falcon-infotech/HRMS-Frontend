@@ -17,6 +17,7 @@ const ApplyLeave: React.FC = () => {
     reason: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState(true);
 
   const fetchLeaveData = async () => {
     try {
@@ -48,6 +49,8 @@ const ApplyLeave: React.FC = () => {
     } catch (error) {
       console.error('Error fetching leave balance:', error);
       toast.error('Failed to fetch leave balance. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,7 +133,7 @@ const ApplyLeave: React.FC = () => {
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm border border-neutral-200">
             <div className="p-6 space-y-6">
-              {leaveBalance <= 0 && (
+              {!loading && leaveBalance <= 0 && (
                 <div className="text-red-600 font-medium bg-red-50 p-3 rounded border border-red-200">
                   You currently have no leave balance available. You cannot submit a leave request.
                 </div>

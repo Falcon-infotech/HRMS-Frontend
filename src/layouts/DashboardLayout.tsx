@@ -68,6 +68,8 @@ const DashboardLayout: React.FC = () => {
         { name: 'Home', href: '/home' }
       ]
     },
+    { name: 'AttendanceStatus', href: '/attendancestatus', icon: CalendarCheck },
+
     {
       name: 'Leave',
       href: '/leave',
@@ -78,10 +80,10 @@ const DashboardLayout: React.FC = () => {
         { name: 'My Leave Status', href: '/leavestatus' },
       ]
     },
-    { name: 'AttendanceStatus', href: '/attendancestatus', icon: CalendarCheck  },
+    { name: 'Holidays', href: '/holidays', icon: PartyPopper },
+
     { name: 'Payroll', href: '/payroll', icon: DollarSign },
     { name: 'Performance', href: '/performance', icon: Award },
-    { name: 'Holidays', href: '/holidays', icon: PartyPopper  },
     // {
     //   name: 'Recruitment',
     //   href: '/recruitment/jobs',
@@ -150,7 +152,7 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50 lg:flex overflow-x-hidden">
-      
+
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div

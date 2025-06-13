@@ -340,98 +340,105 @@ const LeaveManagement: React.FC = () => {
                   <td colSpan="8">
                     <div className="py-8 flex justify-center items-center space-x-2">
                       <Loading text={"Loading leave requests..."} />
-                      {/* <span className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin inline-block"></span>
-                      <span className="text-gray-500 text-sm">Loading leave requests...</span> */}
                     </div>
                   </td>
                 </tr>
-              ) : paginatedRequests.map(request => {
-                const employee = employeesData.find(emp => emp.id === request.employeeId);
-                const leaveType = leaveTypes.find(type => type.id === request.leaveType);
+              ) : paginatedRequests.length === 0 ? (
+                <tr>
+                  <td colSpan="8">
+                    <div className="py-10 text-center text-gray-500 text-sm">
+                      No leave requests found.
+                    </div>
+                  </td>
+                </tr>
+              ) :
+                paginatedRequests.map(request => {
+                  const employee = employeesData.find(emp => emp.id === request.employeeId);
+                  const leaveType = leaveTypes.find(type => type.id === request.leaveType);
 
-                return (
-                  <tr key={request._id} className="hover:bg-neutral-50">
-                    <td>
-                      <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center overflow-hidden">
-                          {employee?.avatar ? (
-                            <img src={employee.avatar} alt={request.employeeName} className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-sm font-medium">
-                              {request?.employee?.first_name?.split(' ').map(n => n[0]).join('')}
-                            </div>
+                  return (
+                    <tr key={request._id} className="hover:bg-neutral-50">
+                      <td>
+                        <div className="flex items-center">
+                          <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center overflow-hidden">
+                            {employee?.avatar ? (
+                              <img src={employee.avatar} alt={request.employeeName} className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-sm font-medium">
+                                {request?.employee?.first_name?.split(' ').map(n => n[0]).join('')}
+                              </div>
+                            )}
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium text-neutral-900">{request.employee?.first_name}</p>
+                            <p className="text-xs text-neutral-500">{request.employee?.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="inline-flex items-center">
+                          <span
+                            className="w-2 h-2 rounded-full mr-2"
+                            style={{ backgroundColor: leaveType?.color }}
+                          />
+                          <span className="text-sm capitalize">{request?.leaveType}</span>
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm">
+                          {new Date(request?.fromDate).toLocaleDateString()}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm">
+                          {new Date(request?.toDate).toLocaleDateString()}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm font-medium">{request?.leaveTaken}</span>
+                      </td>
+                      <td>
+                        <span className={`badge ${request.status === 'approved' ? 'badge-success' :
+                          request.status === 'rejected' ? 'badge-danger' :
+                            request.status === 'pending' ? 'badge-warning' :
+                              'badge-info'
+                          }`}>
+                          {request?.status.charAt(0).toUpperCase() + request?.status.slice(1)}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm">
+                          {new Date(request.appliedAt).toLocaleDateString()}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="flex items-center space-x-2">
+                          <button className="text-sm text-primary-600 hover:text-primary-700 font-medium" onClick={() => viewLeaveDetails(request?.userId)}>
+                            View
+                          </button>
+                          {request.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => updateLeaveStatus(request._id, 'approved')}
+                                className="text-sm text-success-600 hover:text-success-700 font-medium"
+                                disabled={updatingId?.id === request._id && updatingId?.action === 'approved'}
+                              >
+                                {updatingId?.id === request._id && updatingId?.action === 'approved' ? 'Approving...' : 'Approve'}
+                              </button>
+                              <button
+                                onClick={() => updateLeaveStatus(request._id, 'rejected')}
+                                className="text-sm text-error-600 hover:text-error-700 font-medium"
+                                disabled={updatingId?.id === request._id && updatingId?.action === 'rejected'}
+                              >
+                                {updatingId?.id === request._id && updatingId?.action === 'rejected' ? 'Rejecting...' : 'Reject'}
+                              </button>
+                            </>
                           )}
                         </div>
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-neutral-900">{request.employee?.first_name}</p>
-                          <p className="text-xs text-neutral-500">{request.employee?.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="inline-flex items-center">
-                        <span
-                          className="w-2 h-2 rounded-full mr-2"
-                          style={{ backgroundColor: leaveType?.color }}
-                        />
-                        <span className="text-sm capitalize">{request?.leaveType}</span>
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-sm">
-                        {new Date(request?.fromDate).toLocaleDateString()}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-sm">
-                        {new Date(request?.toDate).toLocaleDateString()}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-sm font-medium">{request?.leaveTaken}</span>
-                    </td>
-                    <td>
-                      <span className={`badge ${request.status === 'approved' ? 'badge-success' :
-                        request.status === 'rejected' ? 'badge-danger' :
-                          request.status === 'pending' ? 'badge-warning' :
-                            'badge-info'
-                        }`}>
-                        {request?.status.charAt(0).toUpperCase() + request?.status.slice(1)}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-sm">
-                        {new Date(request.appliedAt).toLocaleDateString()}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="flex items-center space-x-2">
-                        <button className="text-sm text-primary-600 hover:text-primary-700 font-medium" onClick={() => viewLeaveDetails(request?.userId)}>
-                          View
-                        </button>
-                        {request.status === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => updateLeaveStatus(request._id, 'approved')}
-                              className="text-sm text-success-600 hover:text-success-700 font-medium"
-                              disabled={updatingId?.id === request._id && updatingId?.action === 'approved'}
-                            >
-                              {updatingId?.id === request._id && updatingId?.action === 'approved' ? 'Approving...' : 'Approve'}
-                            </button>
-                            <button
-                              onClick={() => updateLeaveStatus(request._id, 'rejected')}
-                              className="text-sm text-error-600 hover:text-error-700 font-medium"
-                              disabled={updatingId?.id === request._id && updatingId?.action === 'rejected'}
-                            >
-                              {updatingId?.id === request._id && updatingId?.action === 'rejected' ? 'Rejecting...' : 'Reject'}
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
 
           </table>
