@@ -338,7 +338,7 @@ const EmployeeDetail: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-sm text-neutral-500">Employment Type</p>
-                        <p className="text-sm font-medium">{employee?.employeeType}</p>
+                        <p className="text-sm font-medium">{employee?.role}</p>
                       </div>
                       <div>
                         <p className="text-sm text-neutral-500">Joining Date</p>
