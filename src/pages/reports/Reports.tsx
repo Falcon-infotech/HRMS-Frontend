@@ -637,26 +637,41 @@ const Reports = () => {
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!Validate()) return;
+    const token = localStorage.getItem('tokenId')
     try {
       setLoading(true);
       const response = await axios.get(
         `${BASE_URL}/api/attendance/all_user_attendance_report?startDate=${startDate}&endDate=${endDate}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob'
       }
       );
 
-      const url = response.data;
-      const redirectUrl = url.downloadUrl
-      const fullDownloadUrl = `${BASE_URL}${redirectUrl}`;
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `Attendance_Report_${startDate}_to_${endDate}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setStartDate("")
+      setEndDate("")
+      // const url = response.data;
+      // const redirectUrl = url.downloadUrl
+      // const fullDownloadUrl = `${BASE_URL}${redirectUrl}`;
 
-      console.log(fullDownloadUrl)
-      window.open(`${BASE_URL}/api/attendance${redirectUrl}`, "_blank")
+      // console.log(fullDownloadUrl)
+      // window.open(`${BASE_URL}/api/attendance${redirectUrl}`, "_blank")
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false)
+      
     }
   };
 
@@ -716,11 +731,11 @@ const Reports = () => {
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition transform hover:scale-105 flex items-center justify-center gap-2"
           >
             {loading ? (
-             <>
-             <div className='w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin'>
-             </div>
-             <span>Generating...</span>
-             </>
+              <>
+                <div className='w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin'>
+                </div>
+                <span>Generating...</span>
+              </>
             ) : (
               <>
                 <FiDownload className="text-xl" />
