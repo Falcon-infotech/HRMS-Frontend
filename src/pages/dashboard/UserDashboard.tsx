@@ -4,13 +4,13 @@ import { BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { addDays, addWeeks, endOfWeek, format, isSameDay, startOfWeek, subWeeks } from 'date-fns';
+// import { addDays, addWeeks, endOfWeek, format, isSameDay, startOfWeek, subWeeks } from 'date-fns';
 
 
-import DatePicker from 'react-datepicker';
-import { CalendarHeart, Edit2, PlusCircle, Trash2 } from 'lucide-react';
-import HolidayForm from '../../components/HolidayForm';
-import Calendar from '../../components/Calendar';
+// import DatePicker from 'react-datepicker';
+// import { CalendarHeart, Edit2, PlusCircle, Trash2 } from 'lucide-react';
+// import HolidayForm from '../../components/HolidayForm';
+// import Calendar from '../../components/Calendar';
 
 
 
@@ -54,7 +54,7 @@ const UserDashboard = () => {
 
   const [elapsed, setElapsed] = useState('00:00:00');
   const [activeTab, setActiveTab] = useState('Activities');
-  const [selected, setSelected] = useState(null);
+  // const [selected, setSelected] = useState(null);
 
 
   const [hasCheckedOut, setHasCheckedOut] = useState(false);
@@ -62,10 +62,10 @@ const UserDashboard = () => {
   const userDetails = useSelector((state: RootState) => state.auth.user)
 
   const [attendanceData, setAttendanceData] = useState<any>({});
-
+  const [checkinLoading, setCheckinLoading] = useState(false);
   //
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showCalendar, setShowCalendar] = useState(false);
+  // const [selectedDate, setSelectedDate] = useState(new Date());
+  // const [showCalendar, setShowCalendar] = useState(false);
   const [holidays, setHolidays] = useState<any[]>([]);
 
 
@@ -364,6 +364,7 @@ const UserDashboard = () => {
     const token = localStorage.getItem('tokenId');
     // console.log(token)
     try {
+      setCheckinLoading(true)
       const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -374,7 +375,8 @@ const UserDashboard = () => {
       fetchStatus();
     } catch (error) {
       toast.error('Error checking in');
-
+    } finally {
+      setCheckinLoading(false)
     }
   };
 
@@ -544,8 +546,15 @@ const UserDashboard = () => {
               <button
                 onClick={handleCheckIn}
                 className="bg-green-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
+                disabled={checkinLoading}
               >
-                Check In
+                {checkinLoading ? <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
+                    <span>Checking-In...</span>
+                  </div>
+
+                </> : "Check In"}
               </button>
             ) : (
               <button
@@ -933,7 +942,7 @@ const UserDashboard = () => {
                       }}
                     />
                     {/* Cancel button below form or top right */}
-                    {/* <button
+        {/* <button
                       onClick={() => setIsFormOpen(false)}
                       className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
                       aria-label="Cancel"
@@ -947,7 +956,7 @@ const UserDashboard = () => {
 
         {/* //     </div> */}
         {/* //   ) */}
-        {/* // } */} 
+        {/* // } */}
 
 
 

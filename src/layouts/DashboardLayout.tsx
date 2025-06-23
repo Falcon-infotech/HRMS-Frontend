@@ -34,7 +34,7 @@ const DashboardLayout: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (menuRef.current && !menuRef.current?.contains(event.target)) {
         setOpen(false);
       }
     };
@@ -311,7 +311,7 @@ const DashboardLayout: React.FC = () => {
               </button>
 
               {/* Notifications */}
-              {/* <button
+              <button
                 className="p-2 rounded-md text-neutral-600 hover:bg-neutral-100 relative"
                 onClick={() => setNotificationOpen(true)}
               >
@@ -319,7 +319,7 @@ const DashboardLayout: React.FC = () => {
                 {unreadNotifications > 0 && (
                   <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-error-500"></span>
                 )}
-              </button> */}
+              </button>
 
               {/* Theme toggle */}
               {/* <button
