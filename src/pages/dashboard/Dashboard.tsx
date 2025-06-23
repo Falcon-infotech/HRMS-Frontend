@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
+import { departments } from '../../data/employeeData';
 
 
 
@@ -60,7 +61,7 @@ const Dashboard: React.FC = () => {
     }
     handlefetch()
   }, [])
-
+  console.log(dashboardData)
 
   const fetchHolidays = async () => {
     // console.log("first")
@@ -83,7 +84,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchHolidays();
   }, [])
-
+  let departmentCount;
+  let departmentChartData
+// =[
+  // { department: 'HR', count: 2 },
+  // { department: "Engineering", count: 3 },
+  // { department: 'Sales', count: 1 }
+// ]
   useEffect(() => {
     const todayAttendace = async () => {
       try {
@@ -93,6 +100,17 @@ const Dashboard: React.FC = () => {
           }
         })
         const data = await response.json();
+        departmentCount = data.data.reduce((acc, ele) => {
+          const dept = ele.user.department;
+          acc[dept] = (acc[dept] || 0) + 1;
+          return acc;
+        }, {});
+
+         departmentChartData = Object.entries(departmentCount).map(
+          ([department, count]) => ({ department, count })
+        );
+        console.log(departmentCount)
+     console.log("Chart Data:", departmentChartData);
         setTodayStats(data.totalUsers)
       } catch (error) {
         console.error('Error fetching today attendance', error);
@@ -219,7 +237,7 @@ const Dashboard: React.FC = () => {
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={dashboardData.departmentDistribution}
+                data={departmentChartData}
                 margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />

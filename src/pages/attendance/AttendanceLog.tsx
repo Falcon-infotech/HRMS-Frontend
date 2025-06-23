@@ -466,7 +466,7 @@ const AttendanceLog: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {['present', 'absent', 'half-day', 'leave'].map((status) => {
           const count = records.filter((record) => record.status === status).length;
           const percentage = records.length > 0 ? Math.round((count / records.length) * 100) : 0;
@@ -493,10 +493,10 @@ const AttendanceLog: React.FC = () => {
             </div>
           );
         })}
-      </div>
+      </div> */}
 
       {/* Department-wise Summary */}
-      <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+      {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
         <h3 className="text-lg font-semibold mb-4">Department-wise Attendance Summary</h3>
 
         <div className="overflow-x-auto">
@@ -563,7 +563,7 @@ const AttendanceLog: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

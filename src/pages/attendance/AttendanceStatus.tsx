@@ -121,6 +121,33 @@ const AttendanceStatus = () => {
         "Weeekly Attendance",
         "Monthly Attendance",
     ];
+
+
+     const [todayChekout, setTodayCheckout] = useState(null);
+
+    const fetchStatus = async () => {
+        try {
+            const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+                }
+            });
+
+            // console.log(res.data?.attendance)
+            setTodayCheckout(res.data.attendance)
+
+
+        } catch (error) {
+            console.error('Failed to fetch status', error);
+        }
+    };
+
+
+
+    useEffect(() => {
+        fetchStatus()
+    }, [])
+
     return (
         <>
             {menuItems.map((item) => (
@@ -270,7 +297,7 @@ const AttendanceStatus = () => {
 
                                                     <div className="flex-1 mx-2 h-1 relative overflow-hidden rounded-full">
                                                         <div
-                                                            className={`absolute inset-0 ${isToday
+                                                            className={`absolute inset-0 ${isToday && todayChekout?.inTime && !todayChekout?.outTime
                                                                 ? 'animate-dash bg-[linear-gradient(to_right,gray_50%_50%,transparent_0)] bg-repeat-x [background-size:20px_1px] ltr'
                                                                 : 'bg-gray-300'
                                                                 }`}

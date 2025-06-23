@@ -338,12 +338,12 @@ const EmployeeList: React.FC = () => {
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
-                <th className="cursor-pointer" onClick={() => handleSort('status')}>
+                {/* <th className="cursor-pointer" onClick={() => handleSort('status')}>
                   <div className="flex items-center">
                     Status
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
-                </th>
+                </th> */}
                 <th>Actions</th>
               </tr>
             </thead>
@@ -392,11 +392,11 @@ const EmployeeList: React.FC = () => {
                     <td>
                       <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
                     </td>
-                    <td>
+                    {/* <td>
                       <span className={`badge ${getStatusColor(employee.status)}`}>
                         {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
                       </span>
-                    </td>
+                    </td> */}
                     <td>
                       <div className="flex items-center space-x-2">
                         <Link to={`/employees/${employee._id}`} className="text-neutral-500 hover:text-primary-600" title="View">
