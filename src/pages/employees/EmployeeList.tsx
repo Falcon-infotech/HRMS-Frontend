@@ -10,6 +10,8 @@ import { BASE_URL } from '../../constants/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import Loading from '../../components/Loading';
+import { MdLockReset } from "react-icons/md";
+import toast from 'react-hot-toast';
 
 const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -74,7 +76,7 @@ const EmployeeList: React.FC = () => {
         },
       });
       const datas = response.data;
-      alert(datas.message)
+      toast.success(datas.message)
       setDropdownOpenId(null);
       call();
     } catch (error) {
@@ -399,6 +401,10 @@ const EmployeeList: React.FC = () => {
                     </td> */}
                     <td>
                       <div className="flex items-center space-x-2">
+                        {user?.role==="admin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" onClick={() => {
+                        }}>
+                          <MdLockReset size={18} />
+                        </button>}
                         <Link to={`/employees/${employee._id}`} className="text-neutral-500 hover:text-primary-600" title="View">
                           <Eye size={18} />
                         </Link>
