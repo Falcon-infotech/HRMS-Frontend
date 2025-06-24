@@ -56,8 +56,20 @@ const Dashboard: React.FC = () => {
           }
         })
         const data = response.data
-        // console.log(data.data.users.role)
+        console.log(data.data.users)
         setCount(data.data.count)
+         const departmentCount = data.data.users.reduce((acc, ele) => {
+          const dept = ele.department;
+          acc[dept] = (acc[dept] || 0) + 1;
+          return acc;
+        }, {});
+
+        const chartData = Object.entries(departmentCount).map(
+          ([department, count]) => ({ department, count })
+        );
+        // console.log(chartData)
+
+        setDepartmentChartData(chartData);
       } catch (error) {
         console.error(error);
       } finally {
@@ -106,19 +118,8 @@ const Dashboard: React.FC = () => {
         });
 
         const data = await response.json();
-        console.log(data)
-        const departmentCount = data.data.reduce((acc, ele) => {
-          const dept = ele.user.department;
-          acc[dept] = (acc[dept] || 0) + 1;
-          return acc;
-        }, {});
-
-        const chartData = Object.entries(departmentCount).map(
-          ([department, count]) => ({ department, count })
-        );
-        // console.log(chartData)
-
-        setDepartmentChartData(chartData);
+        // console.log(data)
+       
         setTodayStats(data.totalUsers);
 
         const pieChartData = data.data.reduce((acc, ele) => {
