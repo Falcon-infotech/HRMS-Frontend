@@ -29,6 +29,7 @@ const EmployeeList: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const [allEmployees, setAllEmployees] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [resetpasswordModal , setResetpasswordModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const employeesPerPage = 10;
@@ -401,7 +402,8 @@ const EmployeeList: React.FC = () => {
                     </td> */}
                     <td>
                       <div className="flex items-center space-x-2">
-                        {user?.role==="admin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" onClick={() => {
+                        {user?.role==="admin" && <button className="text-neutral-500 hover:text-error-500"  title="Reset-Password" onClick={() => {
+                          setResetpasswordModal(true)
                         }}>
                           <MdLockReset size={18} />
                         </button>}
@@ -474,6 +476,33 @@ const EmployeeList: React.FC = () => {
                     </div>
                   </div>
                 )}
+                {resetpasswordModal && (
+                  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                      <h2 className="text-lg font-semibold mb-4">Confirm Reset Password</h2>
+                      <p className="text-sm text-gray-700 mb-6">Are you sure you want to reset this Password?</p>
+                      <div className="flex justify-end space-x-4">
+                        <button
+                          className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                          onClick={() => setResetpasswordModal(false)}
+                        >
+                          No
+                        </button>
+                        <button
+                          className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                          onClick={() => {
+                            // handleDelete(selectedEmployeeId);
+                            setResetpasswordModal(false);
+                          }}
+                        >
+                          Yes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+                  
+                }
 
 
                 {!loading && employees.length === 0 && (
