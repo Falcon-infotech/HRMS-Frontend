@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Upload, Plus, Trash2 } from 'lucide-react';
-import employeesData, { Employee, departments, designations } from '../../data/employeeData';
+import employeesData, { Employee, country, departments, designations } from '../../data/employeeData';
 import axios from 'axios';
 import { API, BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
@@ -408,16 +408,24 @@ const EmployeeForm: React.FC = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="city" className="form-label">City</label>
-                      <input
-                        type="text"
-                        id="city"
-                        name="city"
+                      <label htmlFor="country" className="form-label">Country</label>
+                      <select
+                        id="country"
+                        name="country"
                         className="form-input"
-                        value={employee.city}
+                        value={employee.country}
                         onChange={handleInputChange}
-                      />
+                      >
+                        <option value="">Select a country</option>
+                        {country.countries.map((c, index) => (
+                          <option key={index} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
                     </div>
+
+
                     <div className="form-group">
                       <label htmlFor="village" className="form-label">Village</label>
                       <input
@@ -452,16 +460,17 @@ const EmployeeForm: React.FC = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="country" className="form-label">Country</label>
+                      <label htmlFor="city" className="form-label">City</label>
                       <input
                         type="text"
-                        id="country"
-                        name="country"
+                        id="city"
+                        name="city"
                         className="form-input"
-                        value={employee.country}
+                        value={employee.city}
                         onChange={handleInputChange}
                       />
                     </div>
+
 
                   </div>
                 </div>
@@ -838,23 +847,23 @@ const EmployeeForm: React.FC = () => {
                   <Link to="/employees" className="btn btn-secondary">
                     Cancel
                   </Link>
-                   <button
+                  <button
                     type="button" className="btn btn-primary" onClick={() => setActiveTab('basic')}>
                     Previous
                   </button>
                   <button type="button" onClick={handleSubmit} className="btn btn-primary">
                     {isEditMode ? 'Update Employee' : 'Add Employee'}
                   </button>
-                 
+
                 </>
               ) : (
                 <>
-                <Link to="/employees" className="btn btn-secondary">
+                  <Link to="/employees" className="btn btn-secondary">
                     Cancel
                   </Link>
-                <button type="button" className="btn btn-primary" onClick={() => setActiveTab('employment')}>
-                  Next
-                </button>
+                  <button type="button" className="btn btn-primary" onClick={() => setActiveTab('employment')}>
+                    Next
+                  </button>
                 </>
               )
             }

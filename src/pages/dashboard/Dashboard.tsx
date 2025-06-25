@@ -25,7 +25,9 @@ import { departments } from '../../data/employeeData';
 const Dashboard: React.FC = () => {
   // const { user } = useAuth();
   const [dashboardData, setDashboardData] = useState(getDashboardData());
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
   //  const renderTabContent = () => {
   //     switch (activeTab) {
   //       case 'home':
@@ -46,6 +48,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const handlefetch = async () => {
       try {
+        setLoading(true)
         const tokon = localStorage.getItem('tokenId')
         const response = await axios.get(`${BASE_URL}/api/employee`, {
           headers: {
@@ -53,15 +56,29 @@ const Dashboard: React.FC = () => {
           }
         })
         const data = response.data
-        // console.log(data.data.users.role)
+        // console.log(data.data.users)
         setCount(data.data.count)
+        const departmentCount = data.data.users.reduce((acc, ele) => {
+          const dept = ele.department;
+          acc[dept] = (acc[dept] || 0) + 1;
+          return acc;
+        }, {});
+
+        const chartData = Object.entries(departmentCount).map(
+          ([department, count]) => ({ department, count })
+        );
+        // console.log(chartData)
+
+        setDepartmentChartData(chartData);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false)
       }
     }
     handlefetch()
   }, [])
-  console.log(dashboardData)
+  // console.log(dashboardData.attendanceSummary)
 
   const fetchHolidays = async () => {
     // console.log("first")
@@ -84,13 +101,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchHolidays();
   }, [])
-  let departmentCount;
-  let departmentChartData
-// =[
-  // { department: 'HR', count: 2 },
-  // { department: "Engineering", count: 3 },
-  // { department: 'Sales', count: 1 }
-// ]
+  const [departmentChartData, setDepartmentChartData] = useState([]);
+  const [todayTotalattencepie, setTodayTotalattencepie] = useState([]);
+  // =[
+  //   { department: 'HR', count: 2 },
+  //   { department: "Engineering", count: 3 },
+  //   { department: 'Sales', count: 1 }
+  // ]
   useEffect(() => {
     const todayAttendace = async () => {
       try {
@@ -98,26 +115,38 @@ const Dashboard: React.FC = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
-        })
-        const data = await response.json();
-        departmentCount = data.data.reduce((acc, ele) => {
-          const dept = ele.user.department;
-          acc[dept] = (acc[dept] || 0) + 1;
-          return acc;
-        }, {});
+        });
 
-         departmentChartData = Object.entries(departmentCount).map(
-          ([department, count]) => ({ department, count })
-        );
-        console.log(departmentCount)
-     console.log("Chart Data:", departmentChartData);
-        setTodayStats(data.totalUsers)
+        const data = await response.json();
+        // console.log(data)
+
+        setTodayStats(data.totalUsers);
+
+        const pieChartData = data.data.reduce((acc, ele) => {
+          const count = ele.status;
+          acc[count] = (acc[count] || 0) + 1
+          return acc;
+        }, {})
+
+        const present = pieChartData['Present']||0
+        const halfday = pieChartData['Half Day']||0
+        // console.log(count)
+        const absentCount = Math.max(0, count - (present + halfday));
+        // console.log(absentCount)   
+        pieChartData.Absent = absentCount
+        const pie: any = Object.entries(pieChartData).map(([status, count]) => ({
+          status,
+          count
+        }));
+        // console.log(pie)
+        setTodayTotalattencepie(pie)
       } catch (error) {
         console.error('Error fetching today attendance', error);
       }
-    }
+    };
+
     todayAttendace();
-  }, [])
+  }, [count]);
 
 
   const today = new Date();
@@ -247,7 +276,7 @@ const Dashboard: React.FC = () => {
                   angle={-45}
                   textAnchor="end"
                 />
-                <YAxis />
+                <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="count" fill="#2563eb" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -259,27 +288,30 @@ const Dashboard: React.FC = () => {
         <div className="card">
           <h3 className="text-lg font-semibold mb-4">Attendance Overview</h3>
           <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dashboardData.attendanceSummary}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="count"
-                  nameKey="status"
-                >
-                  {dashboardData.attendanceSummary.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            {!loading && count !== undefined && todayTotalattencepie.length > 0 && (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={todayTotalattencepie}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="count"
+                    nameKey="status"
+                  >
+                    {todayTotalattencepie.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+
           </div>
         </div>
       </div>

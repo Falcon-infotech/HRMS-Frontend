@@ -13,11 +13,11 @@ const Calendar = ({ attendanceData }) => {
   // console.log(attendanceData)
   const renderHeader = () => (
     <div className="flex items-center justify-between mb-6">
-      <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="text-gray-600 hover:text-gray-800">&lt;</button>
+      <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 sm:text-sm text-nowrap text-xs">  ← Prev </button>
       <h2 className="text-xl font-bold text-gray-800">
         {format(currentMonth, 'MMMM yyyy')}
       </h2>
-      <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="text-gray-600 hover:text-gray-800">&gt;</button>
+      <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 sm:text-sm text-nowrap text-xs">  Next →</button>
     </div>
   );
 
