@@ -25,7 +25,7 @@ import { departments } from '../../data/employeeData';
 const Dashboard: React.FC = () => {
   // const { user } = useAuth();
   const [dashboardData, setDashboardData] = useState(getDashboardData());
-  const [count, setCount] = useState<number|null>(null);
+  const [count, setCount] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   //  const renderTabContent = () => {
@@ -56,9 +56,9 @@ const Dashboard: React.FC = () => {
           }
         })
         const data = response.data
-        console.log(data.data.users)
+        // console.log(data.data.users)
         setCount(data.data.count)
-         const departmentCount = data.data.users.reduce((acc, ele) => {
+        const departmentCount = data.data.users.reduce((acc, ele) => {
           const dept = ele.department;
           acc[dept] = (acc[dept] || 0) + 1;
           return acc;
@@ -119,7 +119,7 @@ const Dashboard: React.FC = () => {
 
         const data = await response.json();
         // console.log(data)
-       
+
         setTodayStats(data.totalUsers);
 
         const pieChartData = data.data.reduce((acc, ele) => {
@@ -127,17 +127,18 @@ const Dashboard: React.FC = () => {
           acc[count] = (acc[count] || 0) + 1
           return acc;
         }, {})
-        // if (count === null) return;
 
-        const present = pieChartData['Present']
-        const halfday = pieChartData['Half Day']
-
-        const absentCount = Math.max(0, count - (present + halfday));        // console.log(count)
+        const present = pieChartData['Present']||0
+        const halfday = pieChartData['Half Day']||0
+        // console.log(count)
+        const absentCount = Math.max(0, count - (present + halfday));
+        // console.log(absentCount)   
         pieChartData.Absent = absentCount
         const pie: any = Object.entries(pieChartData).map(([status, count]) => ({
           status,
           count
         }));
+        // console.log(pie)
         setTodayTotalattencepie(pie)
       } catch (error) {
         console.error('Error fetching today attendance', error);

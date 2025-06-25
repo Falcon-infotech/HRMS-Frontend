@@ -29,7 +29,7 @@ const EmployeeList: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const [allEmployees, setAllEmployees] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [resetpasswordModal , setResetpasswordModal] = useState(false);
+  // const [resetpasswordModal, setResetpasswordModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const employeesPerPage = 10;
@@ -38,6 +38,11 @@ const EmployeeList: React.FC = () => {
   const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
 
   const totalPages = Math.ceil(employees.length / employeesPerPage);
+  const [editpass, setEditPass] = useState(false);
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [updateloading, setUpdateLoading] = useState(false)
 
   // console.log(user.role)
   const [loading, setLoading] = useState(true);
@@ -64,6 +69,38 @@ const EmployeeList: React.FC = () => {
     }
   };
 
+  //update password
+
+
+  const handleUpdatePassword = async (newPassword: string, id: string) => {
+
+    try {
+      setUpdateLoading(true)
+      const response = await axios.put(`${BASE_URL}/api/employee/reset_password/${id}`, {
+        password: newPassword
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+        }
+      })
+
+      if (response.status === 200) {
+        toast.success("Password updated successfully");
+        setPassword("")
+        setSelectedEmployeeId(null)
+        setShowConfirm(false);
+        setEditPass(false);
+        return true;
+      } else {
+        toast.error("Failed to update password")
+        return false;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUpdateLoading(false)
+    }
+  };
 
 
   const handleRoleChange = async (id: string, newRole: string) => {
@@ -402,11 +439,15 @@ const EmployeeList: React.FC = () => {
                     </td> */}
                     <td>
                       <div className="flex items-center space-x-2">
-                        {user?.role==="admin" && <button className="text-neutral-500 hover:text-error-500"  title="Reset-Password" onClick={() => {
-                          setResetpasswordModal(true)
-                        }}>
-                          <MdLockReset size={18} />
-                        </button>}
+                        {user?.role === "admin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" >
+                          <MdLockReset size={18} onClick={() => {
+                            setSelectedEmployeeId(employee._id);
+                            setEditPass(true)
+                          }
+                          }
+                          />
+                        </button>
+                        }
                         <Link to={`/employees/${employee._id}`} className="text-neutral-500 hover:text-primary-600" title="View">
                           <Eye size={18} />
                         </Link>
@@ -476,33 +517,79 @@ const EmployeeList: React.FC = () => {
                     </div>
                   </div>
                 )}
-                {resetpasswordModal && (
+                {editpass && (
                   <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-                      <h2 className="text-lg font-semibold mb-4">Confirm Reset Password</h2>
-                      <p className="text-sm text-gray-700 mb-6">Are you sure you want to reset this Password?</p>
+                      <h2 className="text-lg font-semibold mb-4">Update Password</h2>
+
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        New Password
+                      </label>
+
+                      <div className="relative mb-6">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-2 pr-2 flex items-center text-sm text-gray-600"
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
+                      </div>
+
                       <div className="flex justify-end space-x-4">
                         <button
                           className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                          onClick={() => setResetpasswordModal(false)}
+                          onClick={() => setEditPass(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                          onClick={() => setShowConfirm(true)}
+                        >
+                          {updateloading ? "Updating..." : "Update"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Confirm Modal */}
+                {showConfirm && (
+                  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                      <h2 className="text-lg font-semibold mb-4">Confirm Reset Password</h2>
+                      <p className="text-sm text-gray-700 mb-6">
+                        Are you sure you want to reset this password?
+                      </p>
+                      <div className="flex justify-end space-x-4">
+                        <button
+                          className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                          onClick={() => setShowConfirm(false)}
                         >
                           No
                         </button>
                         <button
                           className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                           onClick={() => {
-                            // handleDelete(selectedEmployeeId);
-                            setResetpasswordModal(false);
+
+                            handleUpdatePassword(password, selectedEmployeeId);
                           }}
+                          disabled={updateloading}
                         >
-                          Yes
+                          {updateloading ? "Updating..." : "Yes"}
                         </button>
                       </div>
                     </div>
                   </div>
-                )
-                  
-                }
+                )}
+
 
 
                 {!loading && employees.length === 0 && (
