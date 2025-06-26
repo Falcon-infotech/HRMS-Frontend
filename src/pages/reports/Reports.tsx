@@ -146,6 +146,46 @@ const Reports: React.FC = () => {
       
     }
   };
+  const handleDownloadOverview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!Validate()) return;
+    const token = localStorage.getItem('tokenId')
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${BASE_URL}/api/report/over_all_report?startDate=${startDate}&endDate=${endDate}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob'
+      }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `Overall_Report_${startDate}_to_${endDate}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setStartDate("")
+      setEndDate("")
+      // const url = response.data;
+      // const redirectUrl = url.downloadUrl
+      // const fullDownloadUrl = `${BASE_URL}${redirectUrl}`;
+
+      // console.log(fullDownloadUrl)
+      // window.open(`${BASE_URL}/api/attendance${redirectUrl}`, "_blank")
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false)
+      
+    }
+  };
 
   return (
     <div className="animate-fade-in">
@@ -247,6 +287,80 @@ const Reports: React.FC = () => {
       {/* Report Content */}
       {selectedReport === 'overview' && (
         <div className="space-y-6">
+           <div className="max-h-screen bg-gradient-to-br from-blue-50 to-white py-12 px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="max-w-full mx-auto bg-white p-8 rounded-3xl shadow-xl"
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 flex-wrap mb-6">
+                    
+                    {/* Left Side: Title & Description */}
+                    <div>
+                      <h1 className="text-2xl font-bold text-neutral-800"> Attendance Reports</h1>
+                      <p className="text-neutral-500 mt-1">View detailed reports and analytics</p>
+                    </div>
+
+                    {/* Right Side: Form */}
+                    <form
+                      onSubmit={handleDownloadOverview}
+                      className="w-full md:w-auto flex flex-col sm:flex-row flex-wrap items-start sm:items-end gap-4"
+                    >
+                      <div className="w-full sm:w-auto">
+                        <label className="block text-gray-600 mb-1">Start Date</label>
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                            setErrors((prev) => ({ ...prev, startDate: "", dateOrder: "" }));
+                          }}
+                          className={`p-3 border rounded-lg w-full sm:w-48 focus:outline-none transition ${
+                            errors?.startDate ? 'border-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500'
+                          }`}
+                        />
+                        {errors?.startDate && <p className="text-red-500 text-sm mt-1">{errors?.startDate}</p>}
+                      </div>
+
+                      <div className="w-full sm:w-auto">
+                        <label className="block text-gray-600 mb-1">End Date</label>
+                        <input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => {
+                            setEndDate(e.target.value);
+                            setErrors((prev) => ({ ...prev, endDate: "", dateOrder: "" }));
+                          }}
+                          className={`p-3 border rounded-lg w-full sm:w-48 focus:outline-none transition ${
+                            errors?.endDate || errors?.dateOrder ? 'border-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500'
+                          }`}
+                        />
+                        {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}
+                        {errors.dateOrder && <p className="text-red-500 text-sm mt-1">{errors.dateOrder}</p>}
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition transform hover:scale-105 flex items-center justify-center gap-2"
+                      >
+                        {loading ? (
+                          <>
+                            <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
+                            <span>Generating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FiDownload className="text-xl" />
+                            Export Report
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  </div>
+                </motion.div>
+</div>
           {/* Employee Distribution */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
