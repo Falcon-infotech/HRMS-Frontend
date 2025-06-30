@@ -39,6 +39,7 @@ import LeaveDetails from './components/LeaveDetails';
 import Holiday from './pages/Holidays/Holiday';
 import AttendanceStatus from './pages/attendance/AttendanceStatus';
 import MyLeaveStatus from './pages/leave/MyLeaveStatus';
+import SalarySlipForm from './components/SalarySlipDetails';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -125,6 +126,7 @@ function App() {
               {/* Payroll */}
               <Route path="/payroll" element={<PayrollDashboard />} />
               <Route path="/payroll/slip/:id" element={<SalarySlip />} />
+              <Route path="/payroll/addSlip/:id" element={<SalarySlipForm />} />
 
               {/* Performance */}
               <Route path="/performance" element={<Performance />} />

@@ -4,10 +4,14 @@ import {
   DollarSign, Calendar, Mail, Briefcase, ChevronRight
 } from 'lucide-react';
 import PageHeader from '../../components/common/PageHeader';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
-
+// const darkMode=useSelector((state:RootState)=>state.settings.data)
+const darkMode = useSelector((state: RootState) => state.settings.data.darkMode);
+console.log("darkMode",darkMode)
 
 
   const settingsSections = [
@@ -195,7 +199,7 @@ const Settings: React.FC = () => {
                         <div onClick={() => setSettingState((prev) => ({
                           ...prev,
                           [setting.name]: !prev[setting.name]
-                        }))} className={`w-14 h-8 bg-gray-300 dark:bg-gray-600 rounded-full p-1 flex items-center cursor-pointer ${settingState[setting.name] ? 'justify-end bg-blue-400' : 'justify-start'
+                        }))} className={`w-14 h-8 bg-gray-300 dark:bg-gray-600 rounded-full p-1 flex items-center cursor-pointer ${settingState[setting.name] ? 'justify-end bg-sky-500' : 'justify-start'
                           }`}>
                           <div className="w-6 h-6 bg-white dark:bg-black rounded-full shadow-md transition-all duration-300"></div>
                         </div>

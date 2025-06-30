@@ -362,6 +362,12 @@ const PayrollDashboard: React.FC = () => {
                         >
                           View Slip
                         </Link>
+                        <Link 
+                          to={`/payroll/addSlip/${item.id}`}
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          Add
+                        </Link>
                         <button className="text-sm text-neutral-600 hover:text-neutral-700 font-medium">
                           Download
                         </button>

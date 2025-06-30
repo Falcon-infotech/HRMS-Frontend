@@ -4,6 +4,7 @@ import { ArrowLeft, Download, Printer } from 'lucide-react';
 import { payrollData } from '../../data/payrollData';
 import employeesData from '../../data/employeeData';
 import PageHeader from '../../components/common/PageHeader';
+import SalarySlipDetails from '../../components/SalarySlipDetails';
 
 const SalarySlip: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -162,6 +163,11 @@ const SalarySlip: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* import SalarySlipDetails from './SalarySlipDetails'; */}
+
+      {/* // ... inside your JSX */}
+
+
     </div>
   );
 };

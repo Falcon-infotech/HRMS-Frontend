@@ -331,7 +331,7 @@ const Reports: React.FC = () => {
                     
                     {/* Left Side: Title & Description */}
                     <div>
-                      <h1 className="text-2xl font-bold text-neutral-800"> Attendance Reports</h1>
+                      <h1 className="text-2xl font-bold text-neutral-800"> Overall Reports</h1>
                       <p className="text-neutral-500 mt-1">View detailed reports and analytics</p>
                     </div>
 
