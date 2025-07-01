@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { BASE_URL } from '../constants/api';
+import { useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const SalarySlipForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +22,8 @@ const SalarySlipForm: React.FC = () => {
     payDate: '',
     status: 'pending' as 'pending' | 'processed' | 'paid',
   });
+ const {id}=useParams();
+//   console.log(id)
 
   const totalAllowances =
     formData.basicSalary +
@@ -53,12 +58,34 @@ const SalarySlipForm: React.FC = () => {
     };
 
     try {
-      const res = await axios.post('/api/salary-slips', payload); // Adjust your API endpoint
+      const token= localStorage.getItem('tokenId');
+      const res = await axios.post(`${BASE_URL}/api/payroll/add_payroll_basic_info/${id}`, payload,{
+        headers:{
+          Authorization: `Bearer ${token}`,
+        }
+      }); // Adjust your API endpoint
       console.log('Salary slip submitted:', res.data);
-      alert('Submitted successfully!');
+      toast.success('Submitted successfully!');
+      setFormData({
+        basicSalary: 0,
+        medicalAllowance: 0,
+        travelingAllowance: 0,
+        hra: 0,
+        bonuses: 0,
+        paymentMethod: '',
+        pfDeduction: 0,
+        loanDeduction: 0,
+        ptDeduction: 0,
+        accountNumber: '',
+        bankName: '',
+        ifscCode: '',
+        una: '',
+        payDate: '',
+        status: 'pending',
+      })
     } catch (err) {
       console.error('Submit error:', err);
-      alert('Submission failed.');
+      toast.error('Submission failed.');
     }
   };
 

@@ -9,8 +9,16 @@ const AuthLayout: React.FC = () => {
       <div className="hidden lg:flex lg:w-1/2 auth-gradient-bg p-12 flex-col justify-between">
         <div>
           <div className="flex items-center text-white">
-            <Building2 size={32} />
-            <h1 className="ml-2 text-2xl font-bold">HRMS</h1>
+            {/* <Building2 size={32} /> */}
+               <img
+              src="/image.png"
+              alt="Falcon HRMS Logo"
+              className="w-32 rounded-md"
+            />
+            {/* <h1 className="ml-2 text-2xl font-bold">HRMS</h1> */}
+             <h1 className="ml-2 text-2xl font-bold text-white">
+              FALCON-HRMS
+            </h1>
           </div>
           <div className="mt-12">
             <h2 className="text-3xl font-bold text-white mb-4">
@@ -30,12 +38,22 @@ const AuthLayout: React.FC = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8 flex items-center justify-center">
-            <Building2 size={28} className="text-primary-600" />
-            <h1 className="ml-2 text-xl font-bold text-primary-600">HRMS</h1>
+            {/* Logo and Title for small screens */}
+            {/* <Building2 size={28} className="text-primary-600" /> */}
+
+            <img
+              src="/image.png"
+              alt="Falcon HRMS Logo"
+              className="w-32"
+            />
+            <h1 className="ml-2 text-2xl font-bold text-[#1C50A3]">
+              FALCON-HRMS
+            </h1>
           </div>
-          
+
+
           <Outlet />
-          
+
           <div className="mt-8 text-center lg:hidden">
             <p className="text-neutral-500 text-sm">
               © 2025 HRMS. All rights reserved.
