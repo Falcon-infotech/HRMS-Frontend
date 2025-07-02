@@ -377,7 +377,7 @@ const PayrollDashboard: React.FC = () => {
             <tbody>
               {currentData.map(item => {
                 // const employee = employeesData.find(emp => emp.id === item.employeeId);
-                console.log(item._id)
+                // console.log(item._id)
                 return (
                   <tr key={item._id} className="hover:bg-neutral-50">
                     <td>
@@ -472,7 +472,7 @@ const PayrollDashboard: React.FC = () => {
               <p className="text-sm text-neutral-700">
                 Showing <span className="font-medium">1</span> to{' '}
                 <span className="font-medium">10</span> of{' '}
-                <span className="font-medium">{latestPayroll.length}</span> results
+                <span className="font-medium">{employees.length}</span> results
               </p>
             </div>
             <div>

@@ -362,10 +362,20 @@ const UserDashboard = () => {
   const handleCheckIn = async () => {
 
     const token = localStorage.getItem('tokenId');
-    // console.log(token)
+
     try {
       setCheckinLoading(true)
-      const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, {}, {
+
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      })
+      const payload = {
+        location: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+        }
+      };
+      const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -383,9 +393,20 @@ const UserDashboard = () => {
   const handleCheckOut = async () => {
     const token = localStorage.getItem('tokenId');
     try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      })
+      const payload = {
+        location: {
+
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+
+        }
+      };
       await axios.post(
         `${BASE_URL}/api/attendance/check_out`,
-        {},
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -398,7 +419,18 @@ const UserDashboard = () => {
       toast.error('Error checking out');
     }
   };
+  //  useEffect(() => {
+  //         navigator.geolocation.getCurrentPosition(
+  //             (position) => {
+  //                 console.log("Latitude:", position.coords.latitude);
+  //                 console.log("Longitude:", position.coords.longitude);
+  //             },
+  //             (error) => {
+  //                 console.error("Location error:", error.message);
+  //             }
+  //         );
 
+  //     }, [])
   // const menuItems = [
   //   "Activities",
   //   "Attendance",

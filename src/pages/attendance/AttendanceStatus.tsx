@@ -66,18 +66,7 @@ const AttendanceStatus = () => {
         fetchUser();
     }, [])
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                console.log("Latitude:", position.coords.latitude);
-                console.log("Longitude:", position.coords.longitude);
-            },
-            (error) => {
-                console.error("Location error:", error.message);
-            }
-        );
-
-    }, [])
+   
     useEffect(() => {
         const fetchAttendance = async () => {
             try {

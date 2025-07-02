@@ -6,14 +6,14 @@ import toast from 'react-hot-toast';
 
 const SalarySlipForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    basicSalary: 0,
-    medicalAllowance: 0,
-    travelingAllowance: 0,
-    hra: 0,
-    bonuses: 0,
-    pfDeduction: 0,
-    loanDeduction: 0,
-    ptDeduction: 0,
+    basicSalary: "",
+    medicalAllowance: "",
+    travelingAllowance: "",
+    hra: "",
+    bonuses: "",
+    pfDeduction: "",
+    loanDeduction: "",
+    ptDeduction: "",
     paymentMethod: '',
     accountNumber: '',
     bankName: '',
@@ -21,6 +21,8 @@ const SalarySlipForm: React.FC = () => {
     una: '',
     payDate: '',
     status: 'pending' as 'pending' | 'processed' | 'paid',
+    grossSalary: "",
+    netSalary:""
   });
  const {id}=useParams();
 //   console.log(id)
@@ -67,21 +69,23 @@ const SalarySlipForm: React.FC = () => {
       console.log('Salary slip submitted:', res.data);
       toast.success('Submitted successfully!');
       setFormData({
-        basicSalary: 0,
-        medicalAllowance: 0,
-        travelingAllowance: 0,
-        hra: 0,
-        bonuses: 0,
+        basicSalary: "",
+        medicalAllowance: "",
+        travelingAllowance: "",
+        hra: "",
+        bonuses: "",
         paymentMethod: '',
-        pfDeduction: 0,
-        loanDeduction: 0,
-        ptDeduction: 0,
+        pfDeduction: "",
+        loanDeduction: "",
+        ptDeduction: "",
         accountNumber: '',
         bankName: '',
         ifscCode: '',
         una: '',
         payDate: '',
         status: 'pending',
+        grossSalary:"",
+        netSalary: "",
       })
     } catch (err) {
       console.error('Submit error:', err);
@@ -101,6 +105,8 @@ const SalarySlipForm: React.FC = () => {
           ['travelingAllowance', 'Traveling Allowance'],
           ['hra', 'HRA'],
           ['bonuses', 'Bonuses'],
+           ['grossSalary', 'GrossSalary'],
+          ['netSalary', 'NetSalary'],
         ].map(([key, label]) => (
           <Field key={key} name={key} label={label} value={formData[key as keyof typeof formData]} onChange={handleChange} />
         ))}
@@ -121,6 +127,8 @@ const SalarySlipForm: React.FC = () => {
           ['ifscCode', 'IFSC Code'],
           ['una', 'UNA'],
           ['payDate', 'Pay Date'],
+          
+         
         ].map(([key, label]) => (
           <Field key={key} name={key} label={label} value={formData[key as keyof typeof formData]} onChange={handleChange} type={key === 'payDate' ? 'date' : 'text'} />
         ))}
@@ -132,6 +140,7 @@ const SalarySlipForm: React.FC = () => {
             <option value="Bank Transfer">Bank Transfer</option>
             <option value="Cheque">Cheque</option>
             <option value="Cash">Cash</option>
+            <option value="Cash">UPI</option>
           </select>
         </div>
 
