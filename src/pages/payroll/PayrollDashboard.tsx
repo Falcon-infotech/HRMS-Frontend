@@ -8,16 +8,19 @@ import PageHeader from '../../components/common/PageHeader';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 
+
+
 const PayrollDashboard: React.FC = () => {
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(true);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
   const COLORS = ['#2563eb', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 
- 
+
   // Get unique periods
   const periods = Array.from(new Set(payrollData.map(item => item.period))).sort().reverse();
 
@@ -76,31 +79,52 @@ const PayrollDashboard: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const call = async () => {
+  // const call = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const token = localStorage.getItem('tokenId');
+
+  //     const response = await axios.get(`${BASE_URL}/api/employee`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     const datas = response.data;
+  //     console.log(datas.data.users)
+  //     setEmployees(datas.data.users)
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   call();
+  // }, [])
+
+
+  const handlefilter =async () => {
+    setFilterOpen(filterOpen);
     try {
-      setLoading(true);
-      const token = localStorage.getItem('tokenId');
-
-      const response = await axios.get(`${BASE_URL}/api/employee`, {
+    const response = await axios.get(`${BASE_URL}/api/payrolls`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
         },
-      });
+        params: {
+          month: selectedMonth,
+          year: selectedYear,
 
-      const datas = response.data;
-      console.log(datas.data.users)
-      setEmployees(datas.data.users)
-
+        }
+      })
+      setEmployees(response.data.data.users|| []);
+      console.log(response.data)
     } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    call();
-  }, [])
+    }
+  }
 
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -266,13 +290,17 @@ const PayrollDashboard: React.FC = () => {
             <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
               <button
                 className="btn btn-secondary flex items-center justify-center"
-                onClick={() => setFilterOpen(!filterOpen)}
+                onClick={handlefilter}
               >
                 <Filter size={16} className="mr-1" />
                 Filter
               </button>
               <button
                 className="btn btn-secondary flex items-center justify-center"
+                onClick={() => {
+                  setSelectedYear("")
+                  setSelectedMonth("")
+                }}
               >
                 <RefreshCw size={16} className="mr-1" />
                 Reset
@@ -282,7 +310,7 @@ const PayrollDashboard: React.FC = () => {
 
           {filterOpen && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-neutral-200">
-              <div>
+              {/* <div>
                 <label className="form-label">Department</label>
                 <select
                   className="form-select"
@@ -294,21 +322,43 @@ const PayrollDashboard: React.FC = () => {
                     <option key={dept} value={dept}>{dept}</option>
                   ))}
                 </select>
+              </div> */}
+              <div className="flex gap-4 mb-4">
+                {/* Month */}
+                <div>
+                  <label className="form-label">Month</label>
+                  <select
+                    className="form-select"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                  >
+                    <option value="">Select Month</option>
+                    {[
+                      "January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"
+                    ].map((month) => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Year */}
+                <div>
+                  <label className="form-label">Year</label>
+                  <select
+                    className="form-select"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                  >
+                    <option value="">Select Year</option>
+                    {["2023", "2024", "2025", "2026"].map((year) => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div>
-                <label className="form-label">Month</label>
-                <select
-                  className="form-select"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                >
-                  <option value="">All Months</option>
-                  {periods.map(period => (
-                    <option key={period} value={period}>{period}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
+
+              {/* <div>
                 <label className="form-label">Status</label>
                 <select
                   className="form-select"
@@ -320,14 +370,15 @@ const PayrollDashboard: React.FC = () => {
                   <option value="pending">Pending</option>
                   <option value="on-hold">On Hold</option>
                 </select>
-              </div>
+              </div> */}
             </div>
           )}
         </div>
 
         <div className="overflow-x-auto">
           <table className="table">
-            <thead>
+            {currentData.length > 0 ? (
+              <thead>
               <tr>
                 <th>
                   <div className="flex items-center">
@@ -374,6 +425,15 @@ const PayrollDashboard: React.FC = () => {
                 <th>Actions</th>
               </tr>
             </thead>
+            ):(
+              <thead>
+                <tr>
+                  <th colSpan={8} className="text-center text-neutral-500 py-4">
+                    No payroll data available
+                  </th>
+                </tr>
+              </thead>
+            )}
             <tbody>
               {currentData.map(item => {
                 // const employee = employeesData.find(emp => emp.id === item.employeeId);
@@ -429,21 +489,21 @@ const PayrollDashboard: React.FC = () => {
                     </td>
                     <td>
                       <div className="flex items-center space-x-2">
-                        { <Link
+                        {/* { <Link
                           to={`/payroll/slip/${item.id}`}
                           className="text-sm text-primary-600 hover:text-primary-700 font-medium "
                         >
                           View-Slip
-                        </Link>}
+                        </Link>} */}
                         <Link
                           to={`/payroll/addSlip/${item._id}`}
                           className="text-sm text-primary-60 hover:text-primary-700 font-medium text-green-500"
                         >
-                          Add-payroll-Detail
+                          Update-Slip
                         </Link>
-                        <button className="text-sm text-neutral-600 hover:text-neutral-700 font-medium ">
+                        {/* <button className="text-sm text-neutral-600 hover:text-neutral-700 font-medium ">
                           Download
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -469,11 +529,11 @@ const PayrollDashboard: React.FC = () => {
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-neutral-700">
+              {currentData.length>0 && <p className="text-sm text-neutral-700">
                 Showing <span className="font-medium">1</span> to{' '}
                 <span className="font-medium">10</span> of{' '}
                 <span className="font-medium">{employees.length}</span> results
-              </p>
+              </p>}
             </div>
             <div>
               {employees.length > 0 && <nav className="relative z-0 inline-flex rounded-md shadow-sm space-x-px gap-3">

@@ -41,8 +41,10 @@ const EmployeeForm: React.FC = () => {
   const [bankDetails, setBankDetails] = useState({
     accountName: '',
     accountNumber: '',
-    bankName: '',
+    BankName: '',
     ifscCode: '',
+    pfNumber: "",
+    UNA: '',
   });
 
 
@@ -247,6 +249,63 @@ const EmployeeForm: React.FC = () => {
       }
     }
   };
+  const [bankError, setBankError] = useState<{ [key: string]: string }>({});
+  const validateBankDetails = () => {
+
+    const bankErrors: { [key: string]: string } = {};
+
+    if (!bankDetails.accountNumber.trim()) {
+      bankErrors.accountNumber = 'Account number is required';
+    }
+    if (!bankDetails.ifscCode.trim()) {
+      bankErrors.ifscCode = 'IFSC code is required';
+    }
+
+    if (!bankDetails.BankName.trim()) {
+      bankErrors.BankName = 'Bank name is required';
+    }
+
+    if (!bankDetails.pfNumber.trim()) {
+      bankErrors.pfNumber = 'PF Number is required';
+    }
+    if (!bankDetails.UNA.trim()) {
+      bankErrors.UNA = 'UNA is required';
+    }
+    setBankError(bankErrors);
+    return Object.keys(bankErrors).length === 0;
+
+  }
+
+
+
+  async function handleSubmitBankDetails() {
+
+    if (validateBankDetails()) {
+
+      try {
+        let payrollDetails = {
+          BankName: bankDetails.BankName, accountNumber: bankDetails.accountNumber, pfNumber: bankDetails.pfNumber, ifscCode: bankDetails.ifscCode, UNA: bankDetails.UNA
+        }
+        const response = await axios.put(`${BASE_URL}/api/employee/${id}`, { payrollDetails }, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("tokenId")}`,
+          }
+
+        });
+        toast.success("bankDetails Submitted successfully")
+        setBankDetails({ BankName: "", accountNumber: "", ifscCode: "", pfNumber: "", UNA: "" });
+
+      } catch (error) {
+        console.error("Error submitting bank details:", error);
+        toast.error("Something went wrong while submitting the bank details.");
+
+      }
+    } else {
+      toast.error("interal server error")
+    }
+
+
+  }
 
   return (
     <div className="animate-fade-in">
@@ -294,6 +353,17 @@ const EmployeeForm: React.FC = () => {
             >
               Employment Details
             </button>
+            {isEditMode && (
+              <button
+                className={`px-4 py-4 text-sm font-medium ${activeTab === 'bankDetails'
+                  ? 'border-b-2 border-primary-600 text-primary-600'
+                  : 'text-neutral-500 hover:text-neutral-700'
+                  }`}
+                onClick={() => setActiveTab('bankDetails')}
+              >
+                Bank Details
+              </button>
+            )}
             {/* <button 
               className={`px-4 py-4 text-sm font-medium ${
                 activeTab === 'documents' 
@@ -328,6 +398,7 @@ const EmployeeForm: React.FC = () => {
                       />
                       {formErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">{formErrors.firstName}</p>
+
                       )}
                     </div>
                     <div className="form-group">
@@ -838,6 +909,114 @@ const EmployeeForm: React.FC = () => {
               </div>
             )}
           </div>
+          {
+            activeTab === 'bankDetails' && (
+              <div className=''>
+                <h3 className="text-lg font-medium text-neutral-800 px-4">Employee Documents</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3">
+                  {/* Account Number */}
+                  <div className=''>
+                    <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-700">
+                      Account Number
+                    </label>
+                    <input
+                      type="number"
+                      id="accountNumber"
+                      name="accountNumber"
+                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      value={bankDetails.accountNumber || ''}
+                      onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
+                    />
+                    {
+                      bankError.accountNumber && (
+                        <p className="mt-1 text-sm text-red-500">Account number is required</p>
+                      )
+                    }
+                  </div>
+
+                  {/* Bank Name */}
+                  <div>
+                    <label htmlFor="bankName" className="block text-sm font-medium text-gray-700">
+                      Bank Name
+                    </label>
+                    <input
+                      type="text"
+                      id="bankName"
+                      name="bankName"
+                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      value={bankDetails.BankName || ''}
+                      onChange={(e) => setBankDetails({ ...bankDetails, BankName: e.target.value })}
+
+                    />
+                    {
+                      bankError.BankName && (
+                        <p className="mt-1 text-sm text-red-500">Bank name is required</p>
+                      )
+                    }
+                  </div>
+
+                  {/* IFSC Code */}
+                  <div>
+                    <label htmlFor="ifscCode" className="block text-sm font-medium text-gray-700">
+                      IFSC Code
+                    </label>
+                    <input
+                      type="text"
+                      id="ifscCode"
+                      name="ifscCode"
+                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      value={bankDetails.ifscCode || ''}
+                      onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value })}
+                    />
+                    {
+                      bankError.ifscCode && (
+                        <p className="mt-1 text-sm text-red-500">IFSC code is required</p>
+                      )
+                    }
+                  </div>
+
+                  {/* UNA */}
+                  <div>
+                    <label htmlFor="una" className="block text-sm font-medium text-gray-700">
+                      UNA
+                    </label>
+                    <input
+                      type="text"
+                      id="una"
+                      name="una"
+                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      value={bankDetails.UNA || ''}
+                      onChange={(e) => setBankDetails({ ...bankDetails, UNA: e.target.value })}
+                    />
+                    {
+                      bankError.una && (
+                        <p className="mt-1 text-sm text-red-500">UNA is required
+                        </p>
+                      )
+                    }
+                  </div>
+
+                  {/* PF Number */}
+                  <div>
+                    <label htmlFor="pfNumber" className="block text-sm font-medium text-gray-700">
+                      PF Number
+                    </label>
+                    <input
+                      type="text"
+                      id="pfNumber"
+                      name="pfNumber"
+                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      value={bankDetails.pfNumber || ''}
+                      onChange={(e) => setBankDetails({ ...bankDetails, pfNumber: e.target.value })}
+                    />
+                    {bankError.pfNumber && (
+                      <p className="mt-1 text-sm text-red-500">PF number is required</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          }
 
           {/* Form Actions */}
           <div className="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex justify-end space-x-3">
@@ -856,7 +1035,16 @@ const EmployeeForm: React.FC = () => {
                   </button>
 
                 </>
-              ) : (
+              ) : activeTab === "bankDetails" ? (
+                <>
+                  <Link to="/employees" className="btn btn-secondary">
+                    Cancel
+                  </Link>
+                  <button type="button" className="btn btn-primary" onClick={handleSubmitBankDetails}>
+                    Submit
+                  </button>
+                </>
+              ) :
                 <>
                   <Link to="/employees" className="btn btn-secondary">
                     Cancel
@@ -865,7 +1053,6 @@ const EmployeeForm: React.FC = () => {
                     Next
                   </button>
                 </>
-              )
             }
           </div>
         </form>

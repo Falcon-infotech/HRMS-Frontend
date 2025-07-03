@@ -12,6 +12,8 @@ import { RootState } from '../../store/store';
 import Loading from '../../components/Loading';
 import { MdLockReset } from "react-icons/md";
 import toast from 'react-hot-toast';
+import { FaFileInvoiceDollar } from "react-icons/fa6";
+
 
 const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -439,6 +441,9 @@ const EmployeeList: React.FC = () => {
                     </td> */}
                     <td>
                       <div className="flex items-center space-x-2">
+                        <Link to={`/payroll/addSlip/${employee._id}`} className="text-neutral-500 hover:text-primary-600 relative" title="Payroll-details">
+                          <FaFileInvoiceDollar  size={18} className='' />
+                        </Link>
                         {user?.role === "admin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" >
                           <MdLockReset size={18} onClick={() => {
                             setSelectedEmployeeId(employee._id);

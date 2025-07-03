@@ -126,7 +126,8 @@ function App() {
               {/* Payroll */}
               <Route path="/payroll" element={<PayrollDashboard />} />
               <Route path="/payroll/slip/:id" element={<SalarySlip />} />
-              <Route path="/payroll/addSlip/:id" element={<SalarySlipForm />} />
+              <Route path="/payroll/addSlip/:id" element={<SalarySlipForm type={"add"} />} />
+              <Route path="/payroll/updateSlip/:id" element={<SalarySlipForm type={"update"} />} />
 
               {/* Performance */}
               <Route path="/performance" element={<Performance />} />

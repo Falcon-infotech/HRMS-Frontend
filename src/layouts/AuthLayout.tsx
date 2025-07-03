@@ -11,7 +11,7 @@ const AuthLayout: React.FC = () => {
           <div className="flex items-center text-white">
             {/* <Building2 size={32} /> */}
                <img
-              src="/image.png"
+              src="/image.jpeg"
               alt="Falcon HRMS Logo"
               className="w-32 rounded-md"
             />
@@ -42,7 +42,7 @@ const AuthLayout: React.FC = () => {
             {/* <Building2 size={28} className="text-primary-600" /> */}
 
             <img
-              src="/image.png"
+              src="/image.jpeg"
               alt="Falcon HRMS Logo"
               className="w-32"
             />
