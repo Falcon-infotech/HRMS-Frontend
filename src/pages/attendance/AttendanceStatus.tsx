@@ -66,7 +66,7 @@ const AttendanceStatus = () => {
         fetchUser();
     }, [])
 
-
+   
     useEffect(() => {
         const fetchAttendance = async () => {
             try {
@@ -123,7 +123,7 @@ const AttendanceStatus = () => {
     ];
 
 
-     const [todayChekout, setTodayCheckout] = useState(null);
+    const [todayChekout, setTodayCheckout] = useState(null);
 
     const fetchStatus = async () => {
         try {

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, Filter, Plus, ArrowUpDown, Download, RefreshCw } from 'lucide-react';
+import { Calendar, Filter, Plus, ArrowUpDown, Download, RefreshCw, MoreHorizontal } from 'lucide-react';
 import { leaveRequests, leaveBalances, leaveTypes } from '../../data/leaveData';
 import employeesData from '../../data/employeeData';
 import PageHeader from '../../components/common/PageHeader';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
+import toast from 'react-hot-toast';
 
 const LeaveManagement: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -23,7 +24,7 @@ const LeaveManagement: React.FC = () => {
   const [loadingList, setLoadingList] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   // const [leaveCardOpen, setLeaveCardOpen] = useState(false);
-
+  // const[error, setError] = useState<string | null>(null);
   const handleAllusers = async (showGlobalLoader = true) => {
     try {
       // setLoadingList(true);
@@ -51,6 +52,7 @@ const LeaveManagement: React.FC = () => {
 
 
   const updateLeaveStatus = async (leaveId: string, status: 'approved' | 'rejected') => {
+    // console.log(leaveId, status)
     try {
       setUpdatingId({ id: leaveId, action: status })
       const response = await axios.put(`${BASE_URL}/api/leaves/update_leave/${leaveId}`, {
@@ -60,11 +62,19 @@ const LeaveManagement: React.FC = () => {
           Authorization: `Bearer ${localStorage.getItem('tokenId')}`
         }
       });
+
       await handleAllusers(false);
     } catch (error) {
       console.error('Error updating leave status:', error);
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Something went wrong while updating leave status.");
+      }
+
     } finally {
       setUpdatingId(null);
+
     }
   };
 
@@ -328,6 +338,7 @@ const LeaveManagement: React.FC = () => {
                   <div className="flex items-center">
                     Status
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+
                   </div>
                 </th>
                 <th>Applied On</th>
@@ -405,7 +416,33 @@ const LeaveManagement: React.FC = () => {
                           }`}>
                           {request?.status.charAt(0).toUpperCase() + request?.status.slice(1)}
                         </span>
+                        {updatingId?.id === request._id ? (
+                          <span className="ml-2 text-sm text-gray-500">Updating...</span>
+                        ) : (
+                          <select
+                            className="ml-2 mt-1 text-xs py-1 border border-gray-300  bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-md"
+                            value=""
+                            onChange={(e) => updateLeaveStatus(request._id, e.target.value)}
+                          >
+                            <option value="" className='' disabled>Change Status</option>
+                            {request.status === 'rejected' && (
+                              <option value="approved">Approve</option>
+                            )}
+                            {request.status === 'approved' && (
+                              <option value="rejected">Reject</option>
+                            )}
+                            {request.status === 'pending' && (
+                              <>
+                                <option value="approved">Approve</option>
+                                <option value="rejected">Reject</option>
+                              </>
+                            )}
+                          </select>
+                        )}
+
                       </td>
+
+
                       <td>
                         <span className="text-sm">
                           {new Date(request.appliedAt).toLocaleDateString()}

@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
-import { 
-  Settings as SettingsIcon, Bell, Lock, Users, Building2, 
-  DollarSign, Calendar, Mail, Briefcase, ChevronRight 
+import React, { useEffect, useState } from 'react';
+import {
+  Settings as SettingsIcon, Bell, Lock, Users, Building2,
+  DollarSign, Calendar, Mail, Briefcase, ChevronRight
 } from 'lucide-react';
 import PageHeader from '../../components/common/PageHeader';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
+// const darkMode=useSelector((state:RootState)=>state.settings.data)
+const darkMode = useSelector((state: RootState) => state.settings.data.darkMode);
+console.log("darkMode",darkMode)
+
 
   const settingsSections = [
     {
@@ -15,11 +21,12 @@ const Settings: React.FC = () => {
       icon: SettingsIcon,
       description: 'Basic company information and preferences',
       settings: [
-        { name: 'Company Name', value: 'HRMS Inc.' },
-        { name: 'Time Zone', value: 'UTC-8 (Pacific Time)' },
-        { name: 'Date Format', value: 'MM/DD/YYYY' },
-        { name: 'Currency', value: 'USD ($)' },
-        { name: 'Language', value: 'English' }
+        { name: 'Dark-mode', value: false },
+        { name: 'Location', value: false },
+        // { name: 'Time Zone', value: 'UTC-8 (Pacific Time)' },
+        // { name: 'Date Format', value: 'MM/DD/YYYY' },
+        // { name: 'Currency', value: 'USD ($)' },
+        // { name: 'Language', value: 'English' }
       ]
     },
     {
@@ -28,92 +35,103 @@ const Settings: React.FC = () => {
       icon: Bell,
       description: 'Configure notification preferences',
       settings: [
-        { name: 'Email Notifications', value: 'Enabled' },
-        { name: 'Push Notifications', value: 'Enabled' },
-        { name: 'SMS Notifications', value: 'Disabled' },
-        { name: 'Desktop Notifications', value: 'Enabled' }
+        { name: 'Email Notifications', value: false },
+        { name: 'Push Notifications', value: false },
+        { name: 'SMS Notifications', value: false },
+        { name: 'Desktop Notifications', value: false }
       ]
     },
-    {
-      id: 'security',
-      name: 'Security',
-      icon: Lock,
-      description: 'Security and authentication settings',
-      settings: [
-        { name: 'Two-Factor Authentication', value: 'Enabled' },
-        { name: 'Password Policy', value: 'Strong' },
-        { name: 'Session Timeout', value: '30 minutes' },
-        { name: 'Login History', value: 'View' }
-      ]
-    },
-    {
-      id: 'roles',
-      name: 'Roles & Permissions',
-      icon: Users,
-      description: 'Manage user roles and access rights',
-      settings: [
-        { name: 'Role Management', value: 'Configure' },
-        { name: 'Permission Groups', value: 'View' },
-        { name: 'Access Levels', value: 'Manage' }
-      ]
-    },
-    {
-      id: 'organization',
-      name: 'Organization',
-      icon: Building2,
-      description: 'Company structure and departments',
-      settings: [
-        { name: 'Departments', value: 'Manage' },
-        { name: 'Locations', value: 'Configure' },
-        { name: 'Hierarchy', value: 'View' }
-      ]
-    },
-    {
-      id: 'payroll',
-      name: 'Payroll Settings',
-      icon: DollarSign,
-      description: 'Configure payroll and compensation',
-      settings: [
-        { name: 'Pay Periods', value: 'Monthly' },
-        { name: 'Tax Settings', value: 'Configure' },
-        { name: 'Deductions', value: 'Manage' },
-        { name: 'Payment Methods', value: 'View' }
-      ]
-    },
-    {
-      id: 'leave',
-      name: 'Leave Settings',
-      icon: Calendar,
-      description: 'Leave types and policies',
-      settings: [
-        { name: 'Leave Types', value: 'Manage' },
-        { name: 'Holiday Calendar', value: 'Configure' },
-        { name: 'Leave Policies', value: 'View' }
-      ]
-    },
-    {
-      id: 'recruitment',
-      name: 'Recruitment',
-      icon: Briefcase,
-      description: 'Job posting and hiring settings',
-      settings: [
-        { name: 'Job Templates', value: 'Manage' },
-        { name: 'Interview Process', value: 'Configure' },
-        { name: 'Hiring Workflow', value: 'View' }
-      ]
-    },
-    {
-      id: 'email',
-      name: 'Email Templates',
-      icon: Mail,
-      description: 'Customize email notifications',
-      settings: [
-        { name: 'Offer Letters', value: 'Edit' },
-        { name: 'Welcome Emails', value: 'Configure' },
-        { name: 'Notification Templates', value: 'Manage' }
-      ]
-    }
+    // {
+    //   id: 'security',
+    //   name: 'Security',
+    //   icon: Lock,
+    //   description: 'Security and authentication settings',
+    //   settings: [
+    //     { name: 'Two-Factor Authentication', value: 'Enabled' },
+    //     { name: 'Password Policy', value: 'Strong' },
+    //     { name: 'Session Timeout', value: '30 minutes' },
+    //     { name: 'Login History', value: 'View' }
+    //   ]
+    // },
+    // {
+    //   id: 'roles',
+    //   name: 'Roles & Permissions',
+    //   icon: Users,
+    //   description: 'Manage user roles and access rights',
+    //   settings: [
+    //     { name: 'Role Management', value: 'Configure' },
+    //     { name: 'Permission Groups', value: 'View' },
+    //     { name: 'Access Levels', value: 'Manage' }
+    //   ]
+    // },
+    // {
+    //   id: 'organization',
+    //   name: 'Organization',
+    //   icon: Building2,
+    //   description: 'Company structure and departments',
+    //   settings: [
+    //     { name: 'Departments', value: 'Manage' },
+    //     { name: 'Locations', value: 'Configure' },
+    //     { name: 'Hierarchy', value: 'View' }
+    //   ]
+    // },
+    // {
+    //   id: 'payroll',
+    //   name: 'Payroll Settings',
+    //   icon: DollarSign,
+    //   description: 'Configure payroll and compensation',
+    //   settings: [
+    //     { name: 'Pay Periods', value: 'Monthly' },
+    //     { name: 'Tax Settings', value: 'Configure' },
+    //     { name: 'Deductions', value: 'Manage' },
+    //     { name: 'Payment Methods', value: 'View' }
+    //   ]
+    // },
+    // {
+    //   id: 'leave',
+    //   name: 'Leave Settings',
+    //   icon: Calendar,
+    //   description: 'Leave types and policies',
+    //   settings: [
+    //     { name: 'Leave Types', value: 'Manage' },
+    //     { name: 'Holiday Calendar', value: 'Configure' },
+    //     { name: 'Leave Policies', value: 'View' }
+    //   ]
+    // },
+    // {
+    //   id: 'recruitment',
+    //   name: 'Recruitment',
+    //   icon: Briefcase,
+    //   description: 'Job posting and hiring settings',
+    //   settings: [
+    //     { name: 'Job Templates', value: 'Manage' },
+    //     { name: 'Interview Process', value: 'Configure' },
+    //     { name: 'Hiring Workflow', value: 'View' }
+    //   ]
+    // },
+    // {
+    //   id: 'email',
+    //   name: 'Email Templates',
+    //   icon: Mail,
+    //   description: 'Customize email notifications',
+    //   settings: [
+    //     { name: 'Offer Letters', value: 'Edit' },
+    //     { name: 'Welcome Emails', value: 'Configure' },
+    //     { name: 'Notification Templates', value: 'Manage' }
+    //   ]
+    // }
   ];
+
+
+  const [settingState, setSettingState] = useState(() => {
+    const initial: Record<string, boolean> = {}
+    settingsSections.forEach((section) => {
+      section.settings.forEach(setting => {
+        initial[setting.name] = setting.value
+      })
+    })
+    return initial
+  })
 
   return (
     <div className="animate-fade-in">
@@ -130,28 +148,24 @@ const Settings: React.FC = () => {
               {settingsSections.map(section => (
                 <button
                   key={section.id}
-                  className={`w-full px-4 py-3 flex items-center justify-between text-left ${
-                    activeTab === section.id 
-                      ? 'bg-primary-50 border-l-4 border-primary-500' 
-                      : 'hover:bg-neutral-50'
-                  }`}
+                  className={`w-full px-4 py-3 flex items-center justify-between text-left ${activeTab === section.id
+                    ? 'bg-primary-50 border-l-4 border-primary-500'
+                    : 'hover:bg-neutral-50'
+                    }`}
                   onClick={() => setActiveTab(section.id)}
                 >
                   <div className="flex items-center">
-                    <section.icon 
-                      className={`h-5 w-5 mr-3 ${
-                        activeTab === section.id ? 'text-primary-500' : 'text-neutral-400'
-                      }`} 
+                    <section.icon
+                      className={`h-5 w-5 mr-3 ${activeTab === section.id ? 'text-primary-500' : 'text-neutral-400'
+                        }`}
                     />
-                    <span className={`text-sm font-medium ${
-                      activeTab === section.id ? 'text-primary-700' : 'text-neutral-700'
-                    }`}>
+                    <span className={`text-sm font-medium ${activeTab === section.id ? 'text-primary-700' : 'text-neutral-700'
+                      }`}>
                       {section.name}
                     </span>
                   </div>
-                  <ChevronRight className={`h-5 w-5 ${
-                    activeTab === section.id ? 'text-primary-500' : 'text-neutral-400'
-                  }`} />
+                  <ChevronRight className={`h-5 w-5 ${activeTab === section.id ? 'text-primary-500' : 'text-neutral-400'
+                    }`} />
                 </button>
               ))}
             </nav>
@@ -174,23 +188,28 @@ const Settings: React.FC = () => {
 
                   <div className="space-y-6">
                     {section.settings.map((setting, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="flex items-center justify-between py-3 border-b border-neutral-200 last:border-0"
                       >
                         <div>
                           <h3 className="text-sm font-medium text-neutral-800">{setting.name}</h3>
-                          <p className="text-sm text-neutral-500">Current value: {setting.value}</p>
+                          {/* <p className="text-sm text-neutral-500">Current value: {setting.value}</p> */}
                         </div>
-                        <button className="btn btn-secondary text-sm">
-                          Configure
-                        </button>
+                        <div onClick={() => setSettingState((prev) => ({
+                          ...prev,
+                          [setting.name]: !prev[setting.name]
+                        }))} className={`w-14 h-8 bg-gray-300 dark:bg-gray-600 rounded-full p-1 flex items-center cursor-pointer ${settingState[setting.name] ? 'justify-end bg-sky-500' : 'justify-start'
+                          }`}>
+                          <div className="w-6 h-6 bg-white dark:bg-black rounded-full shadow-md transition-all duration-300"></div>
+                        </div>
+
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {section.id === 'general' && (
+                {/* {section.id === 'general' && (
                   <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
                     <h3 className="text-lg font-semibold text-neutral-800 mb-4">System Information</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,7 +231,7 @@ const Settings: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
 
                 {section.id === 'security' && (
                   <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
@@ -249,7 +268,7 @@ const Settings: React.FC = () => {
                   </div>
                 )}
 
-                {section.id === 'notifications' && (
+                {/* {section.id === 'notifications' && (
                   <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
                     <h3 className="text-lg font-semibold text-neutral-800 mb-4">Notification Categories</h3>
                     <div className="space-y-4">
@@ -290,7 +309,7 @@ const Settings: React.FC = () => {
                                 type="checkbox"
                                 className="form-checkbox h-4 w-4 text-primary-600"
                                 checked={category.email}
-                                onChange={() => {}}
+                                onChange={() => { }}
                               />
                               <span className="ml-2 text-sm text-neutral-600">Email</span>
                             </label>
@@ -299,7 +318,7 @@ const Settings: React.FC = () => {
                                 type="checkbox"
                                 className="form-checkbox h-4 w-4 text-primary-600"
                                 checked={category.push}
-                                onChange={() => {}}
+                                onChange={() => { }}
                               />
                               <span className="ml-2 text-sm text-neutral-600">Push</span>
                             </label>
@@ -308,7 +327,7 @@ const Settings: React.FC = () => {
                                 type="checkbox"
                                 className="form-checkbox h-4 w-4 text-primary-600"
                                 checked={category.sms}
-                                onChange={() => {}}
+                                onChange={() => { }}
                               />
                               <span className="ml-2 text-sm text-neutral-600">SMS</span>
                             </label>
@@ -317,7 +336,7 @@ const Settings: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
             )
           ))}

@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Download, Filter, RefreshCw, ArrowUpDown, DollarSign, Wallet, CreditCard, PieChart } from 'lucide-react';
 import { payrollData, getPayrollsByPeriod, getTotalPayrollAmount } from '../../data/payrollData';
-import employeesData from '../../data/employeeData';
+import employeesData, { Employee } from '../../data/employeeData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts';
 import PageHeader from '../../components/common/PageHeader';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
+
+
 
 const PayrollDashboard: React.FC = () => {
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(true);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
   const COLORS = ['#2563eb', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+
 
   // Get unique periods
   const periods = Array.from(new Set(payrollData.map(item => item.period))).sort().reverse();
@@ -26,12 +33,12 @@ const PayrollDashboard: React.FC = () => {
   const departmentPayroll = employeesData.reduce((acc, employee) => {
     const dept = employee.department;
     if (!acc[dept]) acc[dept] = 0;
-    
+
     const employeePayroll = latestPayroll.find(p => p.employeeId === employee.id);
     if (employeePayroll) {
       acc[dept] += employeePayroll.grossSalary;
     }
-    
+
     return acc;
   }, {} as { [key: string]: number });
 
@@ -66,6 +73,90 @@ const PayrollDashboard: React.FC = () => {
     name: period,
     amount: getTotalPayrollAmount(period)
   })).reverse();
+
+  const [employees, setEmployees] = useState<Employee[]>([]);
+
+
+  const [loading, setLoading] = useState(true);
+
+  // const call = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const token = localStorage.getItem('tokenId');
+
+  //     const response = await axios.get(`${BASE_URL}/api/employee`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     const datas = response.data;
+  //     console.log(datas.data.users)
+  //     setEmployees(datas.data.users)
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   call();
+  // }, [])
+
+
+  const handlefilter =async () => {
+    setFilterOpen(filterOpen);
+    try {
+    const response = await axios.get(`${BASE_URL}/api/payrolls`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        },
+        params: {
+          month: selectedMonth,
+          year: selectedYear,
+
+        }
+      })
+      setEmployees(response.data.data.users|| []);
+      console.log(response.data)
+    } catch (error) {
+
+    }
+  }
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+
+  const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = employees.slice(startIndex, endIndex);
+
+  const renderPageNumbers = () => {
+    let pageNumbers = []
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, currentPage + 1);
+    if (endPage - startPage < 3) {
+      startPage = Math.max(1, endPage - 3);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn flex gap-5 ${i === currentPage ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  }
 
   return (
     <div className="animate-fade-in">
@@ -144,8 +235,8 @@ const PayrollDashboard: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   tick={{ fontSize: 12 }}
                   angle={-45}
                   textAnchor="end"
@@ -197,15 +288,19 @@ const PayrollDashboard: React.FC = () => {
               />
             </div>
             <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
-              <button 
+              <button
                 className="btn btn-secondary flex items-center justify-center"
-                onClick={() => setFilterOpen(!filterOpen)}
+                onClick={handlefilter}
               >
                 <Filter size={16} className="mr-1" />
                 Filter
               </button>
-              <button 
+              <button
                 className="btn btn-secondary flex items-center justify-center"
+                onClick={() => {
+                  setSelectedYear("")
+                  setSelectedMonth("")
+                }}
               >
                 <RefreshCw size={16} className="mr-1" />
                 Reset
@@ -215,9 +310,9 @@ const PayrollDashboard: React.FC = () => {
 
           {filterOpen && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-neutral-200">
-              <div>
+              {/* <div>
                 <label className="form-label">Department</label>
-                <select 
+                <select
                   className="form-select"
                   value={selectedDepartment}
                   onChange={(e) => setSelectedDepartment(e.target.value)}
@@ -227,21 +322,43 @@ const PayrollDashboard: React.FC = () => {
                     <option key={dept} value={dept}>{dept}</option>
                   ))}
                 </select>
+              </div> */}
+              <div className="flex gap-4 mb-4">
+                {/* Month */}
+                <div>
+                  <label className="form-label">Month</label>
+                  <select
+                    className="form-select"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                  >
+                    <option value="">Select Month</option>
+                    {[
+                      "January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"
+                    ].map((month) => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Year */}
+                <div>
+                  <label className="form-label">Year</label>
+                  <select
+                    className="form-select"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                  >
+                    <option value="">Select Year</option>
+                    {["2023", "2024", "2025", "2026"].map((year) => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div>
-                <label className="form-label">Month</label>
-                <select
-                  className="form-select"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                >
-                  <option value="">All Months</option>
-                  {periods.map(period => (
-                    <option key={period} value={period}>{period}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
+
+              {/* <div>
                 <label className="form-label">Status</label>
                 <select
                   className="form-select"
@@ -253,14 +370,15 @@ const PayrollDashboard: React.FC = () => {
                   <option value="pending">Pending</option>
                   <option value="on-hold">On Hold</option>
                 </select>
-              </div>
+              </div> */}
             </div>
           )}
         </div>
 
         <div className="overflow-x-auto">
           <table className="table">
-            <thead>
+            {currentData.length > 0 ? (
+              <thead>
               <tr>
                 <th>
                   <div className="flex items-center">
@@ -307,64 +425,85 @@ const PayrollDashboard: React.FC = () => {
                 <th>Actions</th>
               </tr>
             </thead>
+            ):(
+              <thead>
+                <tr>
+                  <th colSpan={8} className="text-center text-neutral-500 py-4">
+                    No payroll data available
+                  </th>
+                </tr>
+              </thead>
+            )}
             <tbody>
-              {latestPayroll.map(item => {
-                const employee = employeesData.find(emp => emp.id === item.employeeId);
-
+              {currentData.map(item => {
+                // const employee = employeesData.find(emp => emp.id === item.employeeId);
+                // console.log(item._id)
                 return (
-                  <tr key={item.id} className="hover:bg-neutral-50">
+                  <tr key={item._id} className="hover:bg-neutral-50">
                     <td>
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center overflow-hidden">
-                          {employee?.avatar ? (
+                          {employees?.avatar ? (
                             <img src={employee.avatar} alt={item.employeeName} className="h-full w-full object-cover" />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-sm font-medium">
-                              {item.employeeName.split(' ').map(n => n[0]).join('')}
+                              {item.first_name.split('')[0]}
+                              {/* {item.first_name.split('').map(n => n[0]).join('')} */}
                             </div>
                           )}
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium text-neutral-900">{item.employeeName}</p>
-                          <p className="text-xs text-neutral-500">{employee?.email}</p>
+                          <p className="text-sm font-medium text-neutral-900">{item.first_name}  {item.last_name}</p>
+                          <p className="text-xs text-neutral-500">{item?.email}</p>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <span className="text-sm">{item.employeeId}</span>
+                      <span className="text-sm">{item.userId}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{employee?.department}</span>
+                      <span className="text-sm">{item?.department}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{employee?.designation}</span>
+                      <span className="text-sm">{item?.designation}</span>
                     </td>
                     <td>
-                      <span className="text-sm font-medium">${item.grossSalary.toLocaleString()}</span>
+                      {/* <span className="text-sm font-medium">${item?.grossSalary.toLocaleString()}</span> */}--
                     </td>
                     <td>
-                      <span className="text-sm font-medium">${item.netSalary.toLocaleString()}</span>
+                      {/* <span className="text-sm font-medium">${item?.netSalary.toLocaleString()}</span> */}--
                     </td>
                     <td>
-                      <span className={`badge ${
-                        item.paymentStatus === 'processed' ? 'badge-success' :
-                        item.paymentStatus === 'pending' ? 'badge-warning' :
-                        'badge-danger'
-                      }`}>
-                        {item.paymentStatus.charAt(0).toUpperCase() + item.paymentStatus.slice(1)}
+                      {/* <span className={`badge ${item?.status === 'processed' ? 'badge-success' :
+                        item?.status === 'pending' ? 'badge-warning' :
+                          'badge-danger'
+                        }`}>
+                        {item?.paymentStatus.charAt(0).toUpperCase() + item?.paymentStatus.slice(1)}
+                      </span> */}
+                      <span className={`badge ${item?.status === 'active' ? 'badge-success' :
+                        item?.status === 'inactive' ? 'badge-warning' :
+                          'badge-danger'
+                        }`}>
+                        {item?.status}
                       </span>
                     </td>
                     <td>
                       <div className="flex items-center space-x-2">
-                        <Link 
+                        {/* { <Link
                           to={`/payroll/slip/${item.id}`}
-                          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium "
                         >
-                          View Slip
+                          View-Slip
+                        </Link>} */}
+                        <Link
+                          to={`/payroll/addSlip/${item._id}`}
+                          className="text-sm text-primary-60 hover:text-primary-700 font-medium text-green-500"
+                        >
+                          Update-Slip
                         </Link>
-                        <button className="text-sm text-neutral-600 hover:text-neutral-700 font-medium">
+                        {/* <button className="text-sm text-neutral-600 hover:text-neutral-700 font-medium ">
                           Download
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -377,25 +516,37 @@ const PayrollDashboard: React.FC = () => {
         {/* Pagination */}
         <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
           <div className="flex-1 flex justify-between sm:hidden">
-            <button className="btn btn-secondary">Previous</button>
-            <button className="btn btn-secondary">Next</button>
+            <button className="btn btn-secondary"
+              onClick={() => {
+                if (currentPage > 1) setCurrentPage(currentPage - 1);
+              }}
+              disabled={currentPage === 1}
+            >Previous</button>
+            <button className="btn btn-secondary" onClick={() => {
+              if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+            }}
+              disabled={currentPage === totalPages}>Next</button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-neutral-700">
+              {currentData.length>0 && <p className="text-sm text-neutral-700">
                 Showing <span className="font-medium">1</span> to{' '}
                 <span className="font-medium">10</span> of{' '}
-                <span className="font-medium">{latestPayroll.length}</span> results
-              </p>
+                <span className="font-medium">{employees.length}</span> results
+              </p>}
             </div>
             <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button className="btn btn-secondary rounded-l-md">Previous</button>
-                <button className="btn btn-primary">1</button>
-                <button className="btn btn-secondary">2</button>
-                <button className="btn btn-secondary">3</button>
-                <button className="btn btn-secondary rounded-r-md">Next</button>
-              </nav>
+              {employees.length > 0 && <nav className="relative z-0 inline-flex rounded-md shadow-sm space-x-px gap-3">
+                <button className="btn btn-secondary rounded-l-md" onClick={() => {
+                  if (currentPage > 1) setCurrentPage(currentPage - 1);
+                }}
+                  disabled={currentPage === 1}>Previous</button>
+                {renderPageNumbers()}
+                <button className="btn btn-secondary rounded-r-md" onClick={() => {
+                  if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                }}
+                  disabled={currentPage === totalPages}>Next</button>
+              </nav>}
             </div>
           </div>
         </div>

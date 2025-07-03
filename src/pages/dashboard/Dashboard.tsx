@@ -319,7 +319,7 @@ const Dashboard: React.FC = () => {
       {/* Recent Activity and Upcoming */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <div className="card">
+        {/* <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Recent Activity</h3>
             <Link to="#" className="text-primary-600 text-sm font-medium">View all</Link>
@@ -372,7 +372,7 @@ const Dashboard: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Upcoming */}
         <div className="card h-96 overflow-hidden">
