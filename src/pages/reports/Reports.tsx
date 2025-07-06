@@ -292,7 +292,7 @@ const Reports: React.FC = () => {
           <span className="text-sm font-medium">Payroll</span>
         </button>
 
-        <button 
+        {/* <button 
           className={`p-4 rounded-lg border ${
             selectedReport === 'performance'
               ? 'bg-primary-50 border-primary-200 text-primary-700'
@@ -302,9 +302,9 @@ const Reports: React.FC = () => {
         >
           <TrendingUp className="h-6 w-6 mb-2" />
           <span className="text-sm font-medium">Performance</span>
-        </button>
+        </button> */}
 
-        <button 
+        {/* <button 
           className={`p-4 rounded-lg border ${
             selectedReport === 'recruitment'
               ? 'bg-primary-50 border-primary-200 text-primary-700'
@@ -314,7 +314,7 @@ const Reports: React.FC = () => {
         >
           <Users className="h-6 w-6 mb-2" />
           <span className="text-sm font-medium">Recruitment</span>
-        </button>
+        </button> */}
       </div>
 
       {/* Report Content */}
@@ -395,7 +395,7 @@ const Reports: React.FC = () => {
                 </motion.div>
 </div>
           {/* Employee Distribution */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Department Distribution</h3>
               <div className="h-80">
@@ -440,10 +440,10 @@ const Reports: React.FC = () => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Employee Type and Joining Summary */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Employee Type Distribution</h3>
               <div className="h-80">
@@ -488,7 +488,7 @@ const Reports: React.FC = () => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 
@@ -569,7 +569,7 @@ const Reports: React.FC = () => {
                 </motion.div>
 </div>
           {/* Attendance Rate */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Daily Attendance Rate</h3>
               <div className="h-80">
@@ -609,10 +609,10 @@ const Reports: React.FC = () => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Attendance Status Distribution */}
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
             <h3 className="text-lg font-semibold mb-4">Attendance Status Distribution</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -635,7 +635,7 @@ const Reports: React.FC = () => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 
@@ -716,7 +716,7 @@ const Reports: React.FC = () => {
                   </div>
                 </motion.div>
             </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Leave Type Distribution</h3>
               <div className="h-80">
@@ -761,10 +761,10 @@ const Reports: React.FC = () => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Monthly Leave Trend */}
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
             <h3 className="text-lg font-semibold mb-4">Monthly Leave Trend</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -782,7 +782,7 @@ const Reports: React.FC = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 
@@ -861,7 +861,7 @@ const Reports: React.FC = () => {
                     </form>
                   </div>
                 </motion.div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Monthly Payroll Trend</h3>
               <div className="h-80">
@@ -901,10 +901,10 @@ const Reports: React.FC = () => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Salary Distribution */}
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
             <h3 className="text-lg font-semibold mb-4">Salary Distribution</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -927,15 +927,15 @@ const Reports: React.FC = () => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 
       {selectedReport === 'performance' && (
         <div className="space-y-6">
           {/* Performance Overview */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> */}
+            {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Department-wise Performance</h3>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
@@ -953,9 +953,9 @@ const Reports: React.FC = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </div>
+            </div> */}
 
-            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+            {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <h3 className="text-lg font-semibold mb-4">Rating Distribution</h3>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
@@ -978,11 +978,11 @@ const Reports: React.FC = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
 
           {/* Goal Completion */}
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
             <h3 className="text-lg font-semibold mb-4">Goal Completion Rate by Department</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -1000,7 +1000,7 @@ const Reports: React.FC = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 
