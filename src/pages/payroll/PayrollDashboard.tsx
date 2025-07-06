@@ -7,15 +7,27 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import PageHeader from '../../components/common/PageHeader';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
+import Loading from '../../components/Loading';
 
 
 
 const PayrollDashboard: React.FC = () => {
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
   const [filterOpen, setFilterOpen] = useState(true);
   const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedYear, setSelectedYear] = useState('');
+
+  const date = new Date()
+
+  const currentMonth = months[date.getMonth()]
+  const currentYear = date.getFullYear();
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const COLORS = ['#2563eb', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -77,7 +89,7 @@ const PayrollDashboard: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
 
 
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   // const call = async () => {
   //   try {
@@ -106,10 +118,11 @@ const PayrollDashboard: React.FC = () => {
   // }, [])
 
 
-  const handlefilter =async () => {
+  const handlefilter = async () => {
     setFilterOpen(filterOpen);
+    setLoading(true);
     try {
-    const response = await axios.get(`${BASE_URL}/api/payrolls`, {
+      const response = await axios.get(`${BASE_URL}/api/payroll/get_payroll_data`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
         },
@@ -119,12 +132,28 @@ const PayrollDashboard: React.FC = () => {
 
         }
       })
-      setEmployees(response.data.data.users|| []);
-      console.log(response.data)
-    } catch (error) {
 
+      setEmployees(response.data.data || []);
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          console.warn("No payroll data found for selected filters.");
+          setEmployees([]); 
+        } else {
+          console.error("Unexpected error:", error.response?.data || error.message);
+        }
+      } else {
+        console.error("Unknown error:", error);
+      }
+    } finally {
+      setLoading(false);
     }
   }
+
+  useEffect(() => {
+    handlefilter()
+  }, [])
 
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -229,7 +258,7 @@ const PayrollDashboard: React.FC = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Monthly Trend */}
-        <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+        {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
           <h3 className="text-lg font-semibold mb-4">Monthly Payroll Trend</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -247,10 +276,10 @@ const PayrollDashboard: React.FC = () => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </div> */}
 
         {/* Department Distribution */}
-        <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+        {/* <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
           <h3 className="text-lg font-semibold mb-4">Department-wise Distribution</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -273,7 +302,7 @@ const PayrollDashboard: React.FC = () => {
               </RePieChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Payroll Table */}
@@ -293,7 +322,7 @@ const PayrollDashboard: React.FC = () => {
                 onClick={handlefilter}
               >
                 <Filter size={16} className="mr-1" />
-                Filter
+                Search
               </button>
               <button
                 className="btn btn-secondary flex items-center justify-center"
@@ -333,10 +362,7 @@ const PayrollDashboard: React.FC = () => {
                     onChange={(e) => setSelectedMonth(e.target.value)}
                   >
                     <option value="">Select Month</option>
-                    {[
-                      "January", "February", "March", "April", "May", "June",
-                      "July", "August", "September", "October", "November", "December"
-                    ].map((month) => (
+                    {months.map((month) => (
                       <option key={month} value={month}>{month}</option>
                     ))}
                   </select>
@@ -377,141 +403,124 @@ const PayrollDashboard: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="table">
-            {currentData.length > 0 ? (
-              <thead>
-              <tr>
-                <th>
-                  <div className="flex items-center">
-                    Employee
-                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
-                  </div>
-                </th>
-                <th>
-                  <div className="flex items-center">
-                    Employee ID
-                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
-                  </div>
-                </th>
-                <th>
-                  <div className="flex items-center">
-                    Department
-                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
-                  </div>
-                </th>
-                <th>
-                  <div className="flex items-center">
-                    Designation
-                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
-                  </div>
-                </th>
-                <th>
-                  <div className="flex items-center">
-                    Gross Salary
-                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
-                  </div>
-                </th>
-                <th>
-                  <div className="flex items-center">
-                    Net Salary
-                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
-                  </div>
-                </th>
-                <th>
-                  <div className="flex items-center">
-                    Status
-                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
-                  </div>
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            ):(
-              <thead>
+            <thead>
+              {loading ? (
                 <tr>
                   <th colSpan={8} className="text-center text-neutral-500 py-4">
-                    No payroll data available
+                    Loading payroll data...
                   </th>
                 </tr>
-              </thead>
-            )}
+              ) : currentData.length > 0 ? (
+                <tr>
+                  <th>
+                    <div className="flex items-center">
+                      Bank-Name <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Month <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Basic-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Gross-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Net-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Payment-Method <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Status <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>Actions</th>
+                </tr>
+              ) : (
+                <tr>
+                  <th colSpan={8} className="text-center text-neutral-500 py-4">
+                    No payroll data available for the selected filters
+                  </th>
+                </tr>
+              )}
+            </thead>
+
             <tbody>
-              {currentData.map(item => {
-                // const employee = employeesData.find(emp => emp.id === item.employeeId);
-                // console.log(item._id)
-                return (
+              {loading ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-6">
+                    <Loading text="Loading payroll..." />
+                  </td>
+                </tr>
+              ) : currentData.length > 0 ? (
+                currentData.map((item) => (
                   <tr key={item._id} className="hover:bg-neutral-50">
                     <td>
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center overflow-hidden">
-                          {employees?.avatar ? (
-                            <img src={employee.avatar} alt={item.employeeName} className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-sm font-medium">
-                              {item.first_name.split('')[0]}
-                              {/* {item.first_name.split('').map(n => n[0]).join('')} */}
-                            </div>
-                          )}
+                          <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-sm font-medium">
+                            {item.bankName?.charAt(0) ?? 'U'}
+                          </div>
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium text-neutral-900">{item.first_name}  {item.last_name}</p>
-                          <p className="text-xs text-neutral-500">{item?.email}</p>
+                          <p className="text-sm font-medium text-neutral-900">{item.bankName}</p>
+                          <p className="text-xs text-neutral-500">{item.accountNumber}</p>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <span className="text-sm">{item.userId}</span>
+                      <span className="text-sm">{item.month} {item.year}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{item?.department}</span>
+                      <span className="text-sm">₹{item.basicSalary}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{item?.designation}</span>
+                      <span className="text-sm">₹{item.grossSalary}</span>
                     </td>
                     <td>
-                      {/* <span className="text-sm font-medium">${item?.grossSalary.toLocaleString()}</span> */}--
+                      <span className="text-sm">₹{item.netSalary}</span>
                     </td>
                     <td>
-                      {/* <span className="text-sm font-medium">${item?.netSalary.toLocaleString()}</span> */}--
+                      <span className="text-sm">{item.paymentMethod}</span>
                     </td>
                     <td>
-                      {/* <span className={`badge ${item?.status === 'processed' ? 'badge-success' :
-                        item?.status === 'pending' ? 'badge-warning' :
+                      <span className={`badge ${item.status === 'paid' ? 'badge-success' :
+                        item.status === 'pending' ? 'badge-warning' :
                           'badge-danger'
                         }`}>
-                        {item?.paymentStatus.charAt(0).toUpperCase() + item?.paymentStatus.slice(1)}
-                      </span> */}
-                      <span className={`badge ${item?.status === 'active' ? 'badge-success' :
-                        item?.status === 'inactive' ? 'badge-warning' :
-                          'badge-danger'
-                        }`}>
-                        {item?.status}
+                        {item.status}
                       </span>
                     </td>
                     <td>
                       <div className="flex items-center space-x-2">
-                        {/* { <Link
-                          to={`/payroll/slip/${item.id}`}
-                          className="text-sm text-primary-600 hover:text-primary-700 font-medium "
-                        >
-                          View-Slip
-                        </Link>} */}
                         <Link
-                          to={`/payroll/addSlip/${item._id}`}
-                          className="text-sm text-primary-60 hover:text-primary-700 font-medium text-green-500"
+                          to={`/payroll/updateSlip/${item._id}`}
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium text-green-500"
                         >
                           Update-Slip
                         </Link>
-                        {/* <button className="text-sm text-neutral-600 hover:text-neutral-700 font-medium ">
-                          Download
-                        </button> */}
                       </div>
                     </td>
                   </tr>
-                );
-              })}
+                ))
+              ) : null}
             </tbody>
           </table>
         </div>
+
 
         {/* Pagination */}
         <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
@@ -529,9 +538,9 @@ const PayrollDashboard: React.FC = () => {
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              {currentData.length>0 && <p className="text-sm text-neutral-700">
+              {currentData.length > 0 && <p className="text-sm text-neutral-700">
                 Showing <span className="font-medium">1</span> to{' '}
-                <span className="font-medium">10</span> of{' '}
+                <span className="font-medium">{currentData.length}</span> of{' '}
                 <span className="font-medium">{employees.length}</span> results
               </p>}
             </div>

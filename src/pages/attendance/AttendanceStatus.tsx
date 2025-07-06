@@ -78,11 +78,14 @@ const AttendanceStatus = () => {
                 const records = res.data?.data?.attendance || [];
                 // console.log(records, "records")
 
-                const mapped: Record<string, { status: string; duration: string }> = {};
+                const mapped: Record<string, { status: string; duration: string;location:string; inTime:string;outTime:string }> = {};
                 records.forEach((record: any) => {
                     mapped[record.date] = {
                         status: record.status,
                         duration: record.duration || '00:00',
+                        location: record.location?.displayName || 'Unknown',
+                        inTime: record.inTime,
+                        outTime: record.outTime
                     }
                 });
                 setAttendanceData(mapped);
@@ -133,7 +136,7 @@ const AttendanceStatus = () => {
                 }
             });
 
-            // console.log(res.data?.attendance)
+            // console.log(res.data?.attendance?.location.displayName, "location")
             setTodayCheckout(res.data.attendance)
 
 
@@ -325,7 +328,7 @@ const AttendanceStatus = () => {
 
             {activeTab === "Monthly Attendance" && <div>
                 <div className='font-bold mt-20 ' >
-                    <h1 className='text-3xl text-center'>Monthly Attendabce</h1>
+                    <h1 className='text-3xl text-center'>Monthly Attendance</h1>
                 </div>
                 <div className='mt-10 w-full border'>
                     <Calendar attendanceData={attendanceData} />

@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const SalarySlipForm: React.FC = ({type}) => {
+  console.log(type)
   const [formData, setFormData] = useState({
     basicSalary: "",
     medicalAllowance: "",
@@ -74,13 +75,21 @@ const SalarySlipForm: React.FC = ({type}) => {
 
     try {
       const token = localStorage.getItem('tokenId');
-      const res = await axios.post(`${BASE_URL}/api/payroll/add_payroll_basic_info/${id}`, payload, {
+     if(type==='add'){
+       const res = await axios.post(`${BASE_URL}/api/payroll/add_payroll_basic_info/${id}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
       });
+     }else{
+        const res = await axios.put(`${BASE_URL}/api/payroll/update_payroll_basic_info/:id `, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+     }
 
-      console.log('Salary slip submitted:', res.data);
+      // console.log('Salary slip submitted:', res.data);
       toast.success('Submitted successfully!');
 
       setFormData({
