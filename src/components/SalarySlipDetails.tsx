@@ -1,11 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../constants/api';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const SalarySlipForm: React.FC = ({type}) => {
-  console.log(type)
+const SalarySlipForm: React.FC = ({ type }) => {
+console.log(type)
+  const { id } = useParams();
+const [ids , setId] = useState<string | undefined>(id);
+
+  useEffect(() => {
+    const token = localStorage.getItem('tokenId');
+    if (type === "update") {
+      const fetchData = async () => {
+        try {
+          const res = await axios.get(`${BASE_URL}/api/payroll/get_salary_slip/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          });
+          console.log(res.data);
+          setId(res.data.data.userId._id)
+          setFormData(prev=>({
+            ...prev,
+            ...res.data.data,
+            payDate:res.data.data.payDate ? new Date(res.data.data.payDate).toISOString().split('T')[0] : '',
+          }));
+        } catch (err) {
+          console.error('Fetch error:', err);
+          toast.error('Failed to fetch data.');
+        }
+      };
+      fetchData();
+    }
+  }, [])
   const [formData, setFormData] = useState({
     basicSalary: "",
     medicalAllowance: "",
@@ -18,7 +46,7 @@ const SalarySlipForm: React.FC = ({type}) => {
     pfDeduction: "",
     loanDeduction: "",
     ptDeduction: "",
-    tds: "",
+    TDS: "",
     paymentMethod: '',
     accountNumber: '',
     bankName: '',
@@ -30,10 +58,13 @@ const SalarySlipForm: React.FC = ({type}) => {
     daysWorked: "",
     status: 'pending' as 'pending' | 'processed' | 'paid',
     grossSalary: "",
-    netSalary: ""
+    netSalary: "",
+    month: "",
+    year: "",
+    adminPermission: false
   });
 
-  const { id } = useParams();
+
 
   const totalAllowances =
     +formData.basicSalary +
@@ -69,25 +100,23 @@ const SalarySlipForm: React.FC = ({type}) => {
     const payload = {
       ...formData,
       totalAllowances,
-      totalDeductions,
-      netSalary,
     };
 
     try {
       const token = localStorage.getItem('tokenId');
-     if(type==='add'){
-       const res = await axios.post(`${BASE_URL}/api/payroll/add_payroll_basic_info/${id}`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
-     }else{
-        const res = await axios.put(`${BASE_URL}/api/payroll/update_payroll_basic_info/:id `, payload, {
+      if (type === 'add') {
+        const res = await axios.post(`${BASE_URL}/api/payroll/add_payroll_basic_info/${id}`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
         });
-     }
+      } else {
+        const res = await axios.put(`${BASE_URL}/api/payroll/update_payroll_basic_info/${ids}`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+      }
 
       // console.log('Salary slip submitted:', res.data);
       toast.success('Submitted successfully!');
@@ -104,7 +133,7 @@ const SalarySlipForm: React.FC = ({type}) => {
         pfDeduction: "",
         loanDeduction: "",
         ptDeduction: "",
-        tds: "",
+        TDS: "",
         paymentMethod: '',
         accountNumber: '',
         bankName: '',
@@ -116,7 +145,13 @@ const SalarySlipForm: React.FC = ({type}) => {
         daysWorked: "",
         status: 'pending',
         grossSalary: "",
-        netSalary: ""
+        netSalary: "",
+        totalAllowances: "",
+        totalDeductions: "",
+        month: "",
+        year: "",
+        adminPermission: false
+
       });
     } catch (err) {
       console.error('Submit error:', err);
@@ -158,7 +193,7 @@ const SalarySlipForm: React.FC = ({type}) => {
           ['pfDeduction', 'PF Deduction'],
           ['loanDeduction', 'Loan Deduction'],
           ['ptDeduction', 'Professional Tax'],
-          ['tds', 'TDS'],
+          ['TDS', 'TDS'],
         ].map(([key, label]) => (
           <Field
             key={key}
@@ -175,9 +210,9 @@ const SalarySlipForm: React.FC = ({type}) => {
           // ['bankName', 'Bank Name'],
           // ['ifscCode', 'IFSC Code'],
           // ['una', 'UNA'],
-          ['panNumber', 'PAN Number'],
+          ['PAN', 'PAN Number'],
           ['totalDays', 'Total Days'],
-          ['daysWorked', 'Days Worked'],
+          ['workedDays', 'Days Worked'],
           ['payDate', 'Pay Date'],
         ].map(([key, label]) => (
           <Field
@@ -221,14 +256,73 @@ const SalarySlipForm: React.FC = ({type}) => {
             <option value="paid">Paid</option>
           </select>
         </div>
+
+
+        <div>
+          <label htmlFor="month" className="block mb-1 font-medium text-neutral-700">Month</label>
+          <select
+            id="month"
+            name="month"
+            value={formData.month}
+            onChange={handleChange}
+            className="w-full input border border-neutral-300 rounded px-3 py-2"
+          >
+            <option value="">Select Month</option>
+            {[
+              'January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December'
+            ].map(month => (
+              <option key={month} value={month}>{month}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Year Selector */}
+        <div>
+          <label htmlFor="year" className="block mb-1 font-medium text-neutral-700">Year</label>
+          <select
+            id="year"
+            name="year"
+            value={formData.year}
+            onChange={handleChange}
+            className="w-full input border border-neutral-300 rounded px-3 py-2"
+          >
+            <option value="">Select Year</option>
+            {Array.from({ length: 11 }, (_, i) => {
+              const y = new Date().getFullYear() - 5 + i;
+              return (
+                <option key={y} value={y}>{y}</option>
+              );
+            })}
+          </select>
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium text-neutral-700">Admin Permission</label>
+          <select
+            name="adminPermission"
+            value={formData.adminPermission ? 'true' : 'false'}
+            onChange={(e) =>
+              setFormData(prev => ({
+                ...prev,
+                adminPermission: e.target.value === 'true',
+              }))
+            }
+            className="w-full input border border-neutral-300 rounded px-3 py-2"
+          >
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+
       </div>
 
       {/* Totals Summary */}
-      <div className="mt-8 p-4 bg-neutral-100 rounded-lg text-sm border border-neutral-300">
-        <p><strong>Total Allowances:</strong> ₹{totalAllowances.toLocaleString()}</p>
-        <p><strong>Total Deductions:</strong> ₹{totalDeductions.toLocaleString()}</p>
+      {/* <div className="mt-8 p-4 bg-neutral-100 rounded-lg text-sm border border-neutral-300">
+        <p><strong>Total Allowances:</strong> ₹{formData}</p>
+        <p><strong>Total Deductions:</strong> ₹{formData?.totalDeductions}</p>
         <p><strong>Net Salary:</strong> ₹{netSalary.toLocaleString()}</p>
-      </div>
+      </div> */}
 
       {/* Submit Button */}
       <div className="mt-6 text-right">
