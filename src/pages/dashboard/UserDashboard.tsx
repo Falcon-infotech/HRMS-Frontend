@@ -365,7 +365,6 @@ const UserDashboard = () => {
 
     try {
       setCheckinLoading(true)
-
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject)
       })
@@ -380,10 +379,12 @@ const UserDashboard = () => {
           Authorization: `Bearer ${token}`,
         }
       })
-      setCheckInTime(response.data.attendance.inTime);
+      // console.log(response.data)
+      setCheckInTime(response.data.attendanceStatus.inTime);
       toast.success('Checked in successfully');
       fetchStatus();
     } catch (error) {
+      console.log(error)
       toast.error('Error checking in');
     } finally {
       setCheckinLoading(false)

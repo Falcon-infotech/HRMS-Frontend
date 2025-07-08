@@ -512,6 +512,12 @@ const PayrollDashboard: React.FC = () => {
                         >
                           Update-Slip
                         </Link>
+                        <Link
+                          to={`/payslip/${item._id}`}
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium text-green-500"
+                        >
+                          payslip
+                        </Link>
                       </div>
                     </td>
                   </tr>
