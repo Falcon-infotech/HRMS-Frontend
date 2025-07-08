@@ -66,7 +66,7 @@ const AttendanceStatus = () => {
         fetchUser();
     }, [])
 
-   
+
     useEffect(() => {
         const fetchAttendance = async () => {
             try {
@@ -76,14 +76,14 @@ const AttendanceStatus = () => {
                     }
                 });
                 const records = res.data?.data?.attendance || [];
-                // console.log(records, "records")
+                console.log(res.data, "records")
 
-                const mapped: Record<string, { status: string; duration: string;location:string; inTime:string;outTime:string }> = {};
+                const mapped: Record<string, { status: string; duration: string; location: string; inTime: string; outTime: string }> = {};
                 records.forEach((record: any) => {
                     mapped[record.date] = {
                         status: record.status,
                         duration: record.duration || '00:00',
-                        location: record.location?.displayName || 'Unknown',
+                        location: record.location?.checkIn?.displayName || 'Unknown',
                         inTime: record.inTime,
                         outTime: record.outTime
                     }

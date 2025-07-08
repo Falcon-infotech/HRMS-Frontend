@@ -90,9 +90,8 @@ const PayslipComponent = () => {
         </div>
       </div>
 
-      {/* Income & Deductions Table */}
+    
       <div className="grid grid-cols-2 gap-4 mb-2">
-        {/* Income */}
         <div>
           <h3 className="font-semibold border-b border-black mb-1">Income</h3>
           <div className="flex justify-between"><span>Basic Salary</span><span>{formatCurrency(basicSalary)}</span></div>
