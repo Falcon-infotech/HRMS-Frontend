@@ -83,7 +83,7 @@ const DashboardLayout: React.FC = () => {
     { name: 'Holidays', href: '/holidays', icon: PartyPopper },
 
     { name: 'Payroll', href: '/payroll', icon: DollarSign },
-    { name: 'Performance', href: '/performance', icon: Award },
+    // { name: 'Performance', href: '/performance', icon: Award },
     // {
     //   name: 'Recruitment',
     //   href: '/recruitment/jobs',

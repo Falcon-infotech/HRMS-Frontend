@@ -28,6 +28,7 @@ const PayrollDashboard: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedStatus, setSelectedStatus] = useState('');
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const COLORS = ['#2563eb', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -87,6 +88,7 @@ const PayrollDashboard: React.FC = () => {
   })).reverse();
 
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employeesfilter, setEmployeesfilter] = useState<Employee[]>([]);
 
 
   // const [loading, setLoading] = useState(true);
@@ -132,14 +134,15 @@ const PayrollDashboard: React.FC = () => {
 
         }
       })
-
+      console.log(response.data.data)
       setEmployees(response.data.data || []);
+      setEmployeesfilter(response.data.data || []);
 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
           console.warn("No payroll data found for selected filters.");
-          setEmployees([]); 
+          setEmployees([]);
         } else {
           console.error("Unexpected error:", error.response?.data || error.message);
         }
@@ -156,14 +159,34 @@ const PayrollDashboard: React.FC = () => {
   }, [])
 
 
+
+  useEffect(() => {
+    let filteredEmployees = [...employees]
+
+    filteredEmployees = filteredEmployees.filter((employee) =>
+
+
+      employee?.userId?.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee?.userId?.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${employee?.userId?.first_name || ''} ${employee?.userId?.last_name || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) 
+
+      // employee?.month?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+
+
+    setEmployeesfilter(filteredEmployees);
+
+  }, [searchTerm, selectedMonth, selectedYear, selectedStatus]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
 
-  const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const totalPages = Math.ceil(employeesfilter.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = employees.slice(startIndex, endIndex);
+  const currentData = employeesfilter.slice(startIndex, endIndex);
 
   const renderPageNumbers = () => {
     let pageNumbers = []
@@ -314,8 +337,42 @@ const PayrollDashboard: React.FC = () => {
                 type="text"
                 className="form-input"
                 placeholder="Search employees..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            <div className="flex gap-4 mb-4">
+              {/* Month */}
+              <div>
+                <label className="form-label">Month</label>
+                <select
+                  className="form-select"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                >
+                  <option value="">Select Month</option>
+                  {months.map((month) => (
+                    <option key={month} value={month}>{month}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Year */}
+              <div>
+                <label className="form-label">Year</label>
+                <select
+                  className="form-select"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                >
+                  <option value="">Select Year</option>
+                  {["2023", "2024", "2025", "2026"].map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
               <button
                 className="btn btn-secondary flex items-center justify-center"
@@ -329,12 +386,15 @@ const PayrollDashboard: React.FC = () => {
                 onClick={() => {
                   setSelectedYear("")
                   setSelectedMonth("")
+                  setSearchTerm("");
+                  // handlefilter();
                 }}
               >
                 <RefreshCw size={16} className="mr-1" />
                 Reset
               </button>
             </div>
+
           </div>
 
           {filterOpen && (
@@ -352,37 +412,6 @@ const PayrollDashboard: React.FC = () => {
                   ))}
                 </select>
               </div> */}
-              <div className="flex gap-4 mb-4">
-                {/* Month */}
-                <div>
-                  <label className="form-label">Month</label>
-                  <select
-                    className="form-select"
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                  >
-                    <option value="">Select Month</option>
-                    {months.map((month) => (
-                      <option key={month} value={month}>{month}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Year */}
-                <div>
-                  <label className="form-label">Year</label>
-                  <select
-                    className="form-select"
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                  >
-                    <option value="">Select Year</option>
-                    {["2023", "2024", "2025", "2026"].map((year) => (
-                      <option key={year} value={year}>{year}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
 
               {/* <div>
                 <label className="form-label">Status</label>
@@ -414,7 +443,7 @@ const PayrollDashboard: React.FC = () => {
                 <tr>
                   <th>
                     <div className="flex items-center">
-                      Bank-Name <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                      Employee-Name <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                     </div>
                   </th>
                   <th>
@@ -472,48 +501,49 @@ const PayrollDashboard: React.FC = () => {
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center overflow-hidden">
                           <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-600 text-sm font-medium">
-                            {item.bankName?.charAt(0) ?? 'U'}
+                            {/* {item?.bankName?.charAt(0) ?? 'U'} */}
+                            {item?.userId?.first_name.charAt(0).toUpperCase() ?? 'U'}
                           </div>
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium text-neutral-900">{item.bankName}</p>
-                          <p className="text-xs text-neutral-500">{item.accountNumber}</p>
+                          <p className="text-sm font-medium text-neutral-900">{item?.userId?.first_name} {item?.userId?.last_name}</p>
+                          <p className="text-xs text-neutral-500">{item?.accountNumber || ""}</p>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <span className="text-sm">{item.month} {item.year}</span>
+                      <span className="text-sm">{item?.month} {item?.year}</span>
                     </td>
                     <td>
-                      <span className="text-sm">₹{item.basicSalary}</span>
+                      <span className="text-sm">₹{item?.basicSalary}</span>
                     </td>
                     <td>
-                      <span className="text-sm">₹{item.grossSalary}</span>
+                      <span className="text-sm">₹{item?.grossSalary}</span>
                     </td>
                     <td>
-                      <span className="text-sm">₹{item.netSalary}</span>
+                      <span className="text-sm">₹{item?.netSalary}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{item.paymentMethod}</span>
+                      <span className="text-sm">{item?.paymentMethod}</span>
                     </td>
                     <td>
-                      <span className={`badge ${item.status === 'paid' ? 'badge-success' :
-                        item.status === 'pending' ? 'badge-warning' :
+                      <span className={`badge ${item?.status === 'paid' ? 'badge-success' :
+                        item?.status === 'pending' ? 'badge-warning' :
                           'badge-danger'
                         }`}>
-                        {item.status}
+                        {item?.status}
                       </span>
                     </td>
                     <td>
                       <div className="flex items-center space-x-2">
                         <Link
-                          to={`/payroll/updateSlip/${item._id}`}
+                          to={`/payroll/updateSlip/${item?._id}`}
                           className="text-sm text-primary-600 hover:text-primary-700 font-medium text-green-500"
                         >
                           Update-Slip
                         </Link>
                         <Link
-                          to={`/payslip/${item._id}`}
+                          to={`/payslip/${item?._id}`}
                           className="text-sm text-primary-600 hover:text-primary-700 font-medium text-green-500"
                         >
                           payslip

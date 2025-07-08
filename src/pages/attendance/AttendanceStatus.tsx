@@ -76,14 +76,14 @@ const AttendanceStatus = () => {
                     }
                 });
                 const records = res.data?.data?.attendance || [];
-                console.log(res.data, "records")
+                console.log(records, "records")
 
                 const mapped: Record<string, { status: string; duration: string; location: string; inTime: string; outTime: string }> = {};
                 records.forEach((record: any) => {
                     mapped[record.date] = {
                         status: record.status,
                         duration: record.duration || '00:00',
-                        location: record.location?.checkIn?.displayName || 'Unknown',
+                        location: record.location?.checkIn?.displayName || record.location?.checkOut?.displayName || 'Unknown',
                         inTime: record.inTime,
                         outTime: record.outTime
                     }
