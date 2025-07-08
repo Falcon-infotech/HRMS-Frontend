@@ -201,7 +201,7 @@ const PayrollDashboard: React.FC = () => {
       />
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-4">
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 mr-3">
@@ -253,7 +253,7 @@ const PayrollDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
