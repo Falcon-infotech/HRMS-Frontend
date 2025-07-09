@@ -134,7 +134,7 @@ const PayrollDashboard: React.FC = () => {
 
         }
       })
-      console.log(response.data.data)
+      // console.log(response.data.data)
       setEmployees(response.data.data || []);
       setEmployeesfilter(response.data.data || []);
 
@@ -528,8 +528,8 @@ const PayrollDashboard: React.FC = () => {
                     </td>
                     <td>
                       <span className={`badge ${item?.status === 'paid' ? 'badge-success' :
-                        item?.status === 'pending' ? 'badge-warning' :
-                          'badge-danger'
+                        item?.status === 'pending' ? 'badge-danger' :
+                          'badge-warning'
                         }`}>
                         {item?.status}
                       </span>

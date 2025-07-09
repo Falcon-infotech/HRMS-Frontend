@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Bell, Check } from 'lucide-react';
 import { useNotification } from '../../contexts/NotificationContext';
 import { format } from 'date-fns';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
 
 interface NotificationDrawerProps {
   open: boolean;
@@ -40,6 +42,23 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
       return format(date, 'MMM d, yyyy');
     }
   };
+
+  useEffect(()=>{
+    const fetchNotification=async()=>{
+      try {
+        const respponse=await axios.get(`${BASE_URL}/api/notifications`,{
+        headers:{
+           Authorization:`${localStorage.getItem("tokenId")}`
+        }
+      })
+      const data=respponse.data
+      console.log(data)
+      } catch (error) {
+         console.log(error)
+      }
+    }
+    fetchNotification();
+  })
 
   return (
     <>

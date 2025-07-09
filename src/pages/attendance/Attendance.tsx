@@ -9,18 +9,19 @@ import employeesData from '../../data/employeeData';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
+import { FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaTimesCircle } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa6';
 
 const Attendance: React.FC = () => {
   const { user } = useAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEmployee, setSelectedEmployee] = useState(user?.role === 'employee' ? user.id : '');
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const [allAttendance, setAllAttendance] = useState([]);
+  const [selectedUserAttendance, setSelectedUserAttendance] = useState([]);
 
-
-  const [selectedUserAttendance, setSelectedUserAttendance] = useState([]); // This will go to the calendar
-
+  const [attendanceDataSingle, setAttendanceDataSingle] = useState<any[]>([]);
   const handleMonthChange = (offset: number) => {
     if (offset > 0) {
       setCurrentMonth(addMonths(currentMonth, 1));
@@ -138,6 +139,7 @@ const Attendance: React.FC = () => {
           checkOut: record.outTime || '-',
           workHours: record.duration || '-',
           notes: record.notes || '-',
+          location: record.location || '-',
         }));
     }) || [];
 
@@ -217,58 +219,58 @@ const Attendance: React.FC = () => {
   };
 
   // Custom calendar tile content
- const tileContent = ({ date, view }: { date: Date; view: string }) => {
-  if (view !== 'month') return null;
+  const tileContent = ({ date, view }: { date: Date; view: string }) => {
+    if (view !== 'month') return null;
 
-  const dateStr = format(date, 'yyyy-MM-dd');
-  const today = new Date();
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const today = new Date();
 
-  let status = '';
+    let status = '';
 
-  if (selectedEmployee) {
-    // Single employee selected
-    const record = selectedUserAttendance.find((rec) => rec.date === dateStr);
-    status = record?.status?.toLowerCase() || '';
-    if (status === 'half day') status = 'half-day';
-  } else {
-    // No employee selected → check if any status exists on this date from allattendanceData
-    const dayRecords = allattendanceData
-      .flatMap((user) => user.attendanceHistory || [])
-      .filter((rec) => rec.date === dateStr);
+    if (selectedEmployee) {
+      // Single employee selected
+      const record = selectedUserAttendance.find((rec) => rec.date === dateStr);
+      status = record?.status?.toLowerCase() || '';
+      if (status === 'half day') status = 'half-day';
+    } else {
+      // No employee selected → check if any status exists on this date from allattendanceData
+      const dayRecords = allattendanceData
+        .flatMap((user) => user.attendanceHistory || [])
+        .filter((rec) => rec.date === dateStr);
 
-    if (dayRecords.length > 0) {
-      const present = dayRecords.some((r) => r.status.toLowerCase() === 'present');
-      const halfDay = dayRecords.some((r) => r.status.toLowerCase() === 'half day');
-      const absent = dayRecords.some((r) => r.status.toLowerCase() === 'absent');
-      const leave = dayRecords.some((r) => r.status.toLowerCase() === 'leave');
+      if (dayRecords.length > 0) {
+        const present = dayRecords.some((r) => r.status.toLowerCase() === 'present');
+        const halfDay = dayRecords.some((r) => r.status.toLowerCase() === 'half day');
+        const absent = dayRecords.some((r) => r.status.toLowerCase() === 'absent');
+        const leave = dayRecords.some((r) => r.status.toLowerCase() === 'leave');
 
-      if (present) status = 'present';
-      else if (halfDay) status = 'half-day';
-      else if (leave) status = 'leave';
-      else if (absent) status = 'absent';
-    } else if (date > today) {
-      status = 'future';
+        if (present) status = 'present';
+        else if (halfDay) status = 'half-day';
+        else if (leave) status = 'leave';
+        else if (absent) status = 'absent';
+      } else if (date > today) {
+        status = 'future';
+      }
     }
-  }
 
-  const statusStyles: Record<string, string> = {
-    present: 'bg-green-100 text-green-800',
-    absent: 'bg-red-100 text-red-800',
-    'half-day': 'bg-yellow-100 text-yellow-800',
-    weekend: 'bg-neutral-100 text-neutral-500',
-    holiday: 'bg-blue-100 text-blue-800',
-    leave: 'bg-purple-100 text-purple-800',
-    future: 'bg-neutral-50 text-neutral-400',
+    const statusStyles: Record<string, string> = {
+      present: 'bg-green-100 text-green-800',
+      absent: 'bg-red-100 text-red-800',
+      'half-day': 'bg-yellow-100 text-yellow-800',
+      weekend: 'bg-neutral-100 text-neutral-500',
+      holiday: 'bg-blue-100 text-blue-800',
+      leave: 'bg-purple-100 text-purple-800',
+      future: 'bg-neutral-50 text-neutral-400',
+    };
+
+    const className = statusStyles[status] || '';
+
+    return (
+      <div className={`h-full w-full ${className} rounded-full flex items-center justify-center`}>
+        {String(date.getDate())}
+      </div>
+    );
   };
-
-  const className = statusStyles[status] || '';
-
-  return (
-    <div className={`h-full w-full ${className} rounded-full flex items-center justify-center`}>
-      {String(date.getDate())}
-    </div>
-  );
-};
 
 
 
@@ -363,6 +365,12 @@ const Attendance: React.FC = () => {
     }];
   }
 
+
+
+  useEffect(()=>{
+    console.log(selectedUserAttendance, "selectedUserAttendance")
+  })
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -427,7 +435,7 @@ const Attendance: React.FC = () => {
             </div>
 
             <div className="p-6">
-             {selectedEmployee && <div className="flex justify-between mb-4">
+              {selectedEmployee && <div className="flex justify-between mb-4">
                 <div className="flex space-x-4">
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-green-100 rounded-full mr-2"></div>
@@ -489,7 +497,11 @@ const Attendance: React.FC = () => {
                     </thead>
                     <tbody>
                       {dailyAttendance.map((record) => (
-                        <tr key={record._id || `${record.employeeId}-${record.date}`}>
+                        <tr key={record._id || `${record.employeeId}-${record.date}`} onClick={() => {
+                          setAttendanceDataSingle(record)
+                          setDrawerOpen(true);
+                        }
+                        } className="cursor-pointer hover:bg-neutral-50">
                           <td>{record.employeeName}</td>
                           <td>
                             <span className={`badge ${record.status === 'Present' ? 'badge-success' :
@@ -518,50 +530,113 @@ const Attendance: React.FC = () => {
               )
             ) : (
 
-              selectedDateAttendance ? (
-                <div className="bg-neutral-50 rounded-lg p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <h4 className="text-sm font-medium text-neutral-700 mb-1">Status</h4>
-                      <span className={`badge ${selectedDateAttendance.status === 'present' ? 'badge-success' :
-                        selectedDateAttendance.status === 'absent' ? 'badge-danger' :
-                          selectedDateAttendance.status === 'half-day' ? 'badge-warning' :
-                            selectedDateAttendance.status === 'leave' ? 'badge-info' :
-                              'bg-neutral-100 text-neutral-800'
-                        }`}>
-                        {selectedDateAttendance.status.charAt(0).toUpperCase() + selectedDateAttendance.status.slice(1)}
-                      </span>
-                    </div>
+              selectedUserAttendance ? (
+                // <div className="bg-neutral-50 rounded-lg p-6">
+                //   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                //     <div>
+                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Status</h4>
+                //       <span className={`badge ${selectedDateAttendance.status === 'present' ? 'badge-success' :
+                //         selectedDateAttendance.status === 'absent' ? 'badge-danger' :
+                //           selectedDateAttendance.status === 'half-day' ? 'badge-warning' :
+                //             selectedDateAttendance.status === 'leave' ? 'badge-info' :
+                //               'bg-neutral-100 text-neutral-800'
+                //         }`}>
+                //         {selectedDateAttendance.status.charAt(0).toUpperCase() + selectedDateAttendance.status.slice(1)}
+                //       </span>
+                //     </div>
 
-                    <div>
-                      <h4 className="text-sm font-medium text-neutral-700 mb-1">Check In</h4>
-                      <div className="flex items-center">
-                        <Clock size={16} className="text-neutral-500 mr-2" />
-                        <span className="text-lg">{selectedDateAttendance.checkIn || 'N/A'}</span>
-                      </div>
-                    </div>
+                //     <div>
+                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Check In</h4>
+                //       <div className="flex items-center">
+                //         <Clock size={16} className="text-neutral-500 mr-2" />
+                //         <span className="text-lg">{selectedDateAttendance.checkIn || 'N/A'}</span>
+                //       </div>
+                //     </div>
 
-                    <div>
-                      <h4 className="text-sm font-medium text-neutral-700 mb-1">Check Out</h4>
-                      <div className="flex items-center">
-                        <Clock size={16} className="text-neutral-500 mr-2" />
-                        <span className="text-lg">{selectedDateAttendance.checkOut || 'N/A'}</span>
-                      </div>
-                    </div>
+                //     <div>
+                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Check Out</h4>
+                //       <div className="flex items-center">
+                //         <Clock size={16} className="text-neutral-500 mr-2" />
+                //         <span className="text-lg">{selectedDateAttendance.checkOut || 'N/A'}</span>
+                //       </div>
+                //     </div>
 
-                    <div>
-                      <h4 className="text-sm font-medium text-neutral-700 mb-1">Working Hours</h4>
-                      <span className="text-lg">
-                        {selectedDateAttendance.workHours ? `${selectedDateAttendance.workHours} hours` : 'N/A'}
-                      </span>
-                    </div>
+                //     <div>
+                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Working Hours</h4>
+                //       <span className="text-lg">
+                //         {selectedDateAttendance.workHours ? `${selectedDateAttendance.workHours} hours` : 'N/A'}
+                //       </span>
+                //     </div>
 
-                    <div className="md:col-span-2">
-                      <h4 className="text-sm font-medium text-neutral-700 mb-1">Notes</h4>
-                      <p className="text-neutral-600">{selectedDateAttendance.notes || 'No notes'}</p>
+                //     <div className="md:col-span-2">
+                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Notes</h4>
+                //       <p className="text-neutral-600">{selectedDateAttendance.notes || 'No notes'}</p>
+                //     </div>
+                //   </div>
+                // </div>
+                <>
+                  {selectedUserAttendance.some(record => record.date === format(selectedDate, 'yyyy-MM-dd')) ? (
+                    <div className="overflow-x-auto">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Employee</th>
+                            <th>Status</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Working Hours</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedUserAttendance
+                            .filter(record => record.date === format(selectedDate, 'yyyy-MM-dd'))
+                            .map(record => (
+                              <tr
+                                key={record._id || `${record.employeeId}-${record.date}`}
+                                onClick={() => {
+                                  setAttendanceDataSingle(prev=>({
+                                    ...prev,checkIn:record?.inTime,
+                                    checkOut:record?.outTime,
+                                    workHours:record?.duration,
+                                  }));
+                                  setDrawerOpen(true);
+                                }}
+                                className="cursor-pointer hover:bg-neutral-50"
+                              >
+                                <td>{selectedEmployee}</td>
+                                <td>
+                                  <span
+                                    className={`badge ${record.status === 'Present'
+                                      ? 'badge-success'
+                                      : record.status === 'Absent'
+                                        ? 'badge-danger'
+                                        : record.status === 'Half-day'
+                                          ? 'badge-warning'
+                                          : record.status === 'Leave'
+                                            ? 'badge-info'
+                                            : 'bg-neutral-100 text-neutral-800'
+                                      }`}
+                                  >
+                                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                  </span>
+                                </td>
+                                <td>{record.inTime ? extractHourAndMinute(record.inTime) : '--'}</td>
+                                <td>{record.outTime ? extractHourAndMinute(record.outTime) : '--'}</td>
+                                <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
                     </div>
-                  </div>
-                </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
+                      <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
+                      <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
+                    </div>
+                  )}
+                </>
+
               ) : (
                 <div className="text-center py-12">
                   <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
@@ -738,6 +813,110 @@ const Attendance: React.FC = () => {
             </div>
           </div>
         </div>
+        {drawerOpen && attendanceDataSingle ? (
+          <>
+            {/* Overlay */}
+            <div
+              className="fixed inset-0 bg-black bg-opacity-40 z-40"
+              onClick={() => setDrawerOpen(false)}
+            />
+
+            {/* Bottom Drawer */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl p-6 h-[40%] overflow-y-auto animate-slideUp transition-all">
+              <div className="flex flex-col items-center mb-6 border-b pb-2 text-center">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <FaCalendarAlt className="text-blue-600 text-lg" />
+                  <h3 className="text-xl font-semibold">
+                    {attendanceDataSingle.date && format(attendanceDataSingle?.date, 'EEEE, MMMM d, yyyy')}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setDrawerOpen(false)}
+                  className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {attendanceDataSingle.status === "Absent" ? (
+                // Drawer view for Absent status
+                <div className="text-center text-gray-700 space-y-4">
+                  <FaTimesCircle className="text-4xl text-red-500 mx-auto" />
+                  <p className="text-xl font-semibold">Marked Absent</p>
+                  <p className="text-gray-500">No check-in or check-out was recorded for this date.</p>
+                </div>
+              ) : (
+                // Drawer view for other statuses (Present, Half Day, etc.)
+                <div className="space-y-6 text-gray-700 max-w-md mx-auto">
+                  {/* Status */}
+                  <div className="flex items-start gap-3">
+                    <FaCheckCircle className={`mt-1 text-lg ${attendanceDataSingle.status === 'Present'
+                      ? 'text-green-500'
+                      : attendanceDataSingle.status === 'Half Day'
+                        ? 'text-blue-500'
+                        : attendanceDataSingle.status === 'Leave'
+                          ? 'text-yellow-500'
+                          : 'text-gray-400'
+                      }`} />
+                    <div>
+                      <p className="text-sm text-gray-500">Status</p>
+                      <p className="font-medium text-base">{attendanceDataSingle.status || 'No Data'}</p>
+                    </div>
+                  </div>
+
+                  {/* Duration */}
+                  <div className="flex items-start gap-3">
+                    <FaClock className="mt-1 text-blue-500 text-lg" />
+                    <div>
+                      <p className="text-sm text-gray-500">Duration</p>
+                      <p className="font-medium text-base">{attendanceDataSingle.workHours || '-'}</p>
+                    </div>
+                  </div>
+
+                  {/* Check-In & Check-Out */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Check-In */}
+                    <div className="flex items-start gap-3  p-4 rounded">
+                      <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 w-20" />
+                      <div>
+                        <p className="text-sm text-gray-500 font-medium">Check-In</p>
+                        <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
+                        <p className="text-base text-gray-800 font-medium">
+                          {attendanceDataSingle.checkIn
+                            ? format(new Date(attendanceDataSingle.checkIn), 'hh:mm a')
+                            : '-'}
+                        </p>
+                        <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
+                        <p className="text-sm text-gray-700">
+                          {attendanceDataSingle?.location?.checkIn?.displayName || 'Location not available'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Check-Out */}
+                    <div className="flex items-start gap-3  p-4 rounded">
+                      <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 w-20" />
+                      <div>
+                        <p className="text-sm text-gray-500 font-medium">Check-Out</p>
+                        <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
+                        <p className="text-base text-gray-800 font-medium">
+                          {attendanceDataSingle.checkOut && attendanceDataSingle.checkOut !== "-"
+                            ? format(new Date(attendanceDataSingle.checkOut), 'hh:mm a')
+                            : '-'}
+                        </p>
+                        <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
+                        <p className="text-sm text-gray-700">
+                          {attendanceDataSingle?.location?.checkOut?.displayName || 'Location not available'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        ) : null}
+
       </div>
       {/* 
       <style jsx>{`
