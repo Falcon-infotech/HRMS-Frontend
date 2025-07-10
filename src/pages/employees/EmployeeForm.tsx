@@ -208,7 +208,7 @@ const EmployeeForm: React.FC = () => {
           address_line: employee.address_line || '',
           pincode: employee.pincode || ''
         },
-        userId: employee.empployeeId || '',
+        userId: employee.id || '',
       };
 
       try {
@@ -656,7 +656,8 @@ const EmployeeForm: React.FC = () => {
                           id="id"
                           name="id"
                           className="form-input bg-neutral-50"
-                          value={employee?.userId}
+                          value={employee?.id}
+                          onChange={handleInputChange}
                           // readOnly
                           // disabled
                         />
