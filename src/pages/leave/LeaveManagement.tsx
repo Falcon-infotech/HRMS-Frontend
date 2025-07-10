@@ -109,7 +109,27 @@ const LeaveManagement: React.FC = () => {
   const viewLeaveDetails = (LeaveId: string) => {
     navigate(`/leave/${LeaveId}`);
   };
+const renderPageNumbers = () => {
+    let pageNumbers = []
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, currentPage + 1);
+    if (endPage - startPage < 3) {
+      startPage = Math.max(1, endPage - 3);
+    }
 
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn flex gap-5 ${i === currentPage ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  }
 
 
   useEffect(() => {
@@ -497,7 +517,7 @@ const LeaveManagement: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
+        {paginatedRequests.length > 0 ? <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
           <div className="flex-1 flex justify-between sm:hidden">
             <button className="btn btn-secondary">Previous</button>
             <button className="btn btn-secondary">Next</button>
@@ -506,15 +526,15 @@ const LeaveManagement: React.FC = () => {
             <div>
               <p className="text-sm text-neutral-700">
                 Showing <span className="font-medium">1</span> to{' '}
-                <span className="font-medium">10</span> of{' '}
+                <span className="font-medium">{paginatedRequests.length}</span> of{' '}
                 <span className="font-medium">{leaveRequests.length}</span> results
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px gap-3">
                 <button className="btn btn-secondary rounded-l-md" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 >Previous</button>
-                {pageNumbers.map((number) => (
+                {/* {pageNumbers.map((number) => (
                   <button
                     key={number}
                     onClick={() => setCurrentPage(number)}
@@ -522,14 +542,14 @@ const LeaveManagement: React.FC = () => {
                   >
                     {number}
                   </button>
-                ))}
-
+                ))} */}
+                {renderPageNumbers()}
                 <button className="btn btn-secondary rounded-r-md" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 >Next</button>
               </nav>
             </div>
           </div>
-        </div>
+        </div>:""}
       </div>
     </div>
   );

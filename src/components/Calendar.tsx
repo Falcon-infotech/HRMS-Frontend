@@ -175,7 +175,8 @@ const Calendar = ({ attendanceData }) => {
 
             <div className="space-y-6 text-gray-700 max-w-md mx-auto">
               {/* Status */}
-              <div className="flex items-start gap-3">
+              <div className='grid grid-cols-2 sm:grid-cols-2 gap-6 mb-4'>
+                <div className="flex items-start gap-3">
                 <FaCheckCircle className={`mt-1 text-lg ${selectedDate.status === 'Present'
                   ? 'text-green-500'
                   : selectedDate.status === 'Half Day'
@@ -200,12 +201,13 @@ const Calendar = ({ attendanceData }) => {
                   <p className="font-medium text-base">{selectedDate.duration || '-'}</p>
                 </div>
               </div>
+              </div>
 
               {/* Location (Check-in & Check-out) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
                 {/* Check-In */}
                 <div className="flex items-start gap-3  p-4 rounded">
-                  <FaMapMarkerAlt className="text-rose-500 text-lg mt-1" />
+                  <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 shrink-0" />
                   <div>
                     <p className="text-sm text-gray-500 font-medium">Check-In</p>
                     <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
@@ -221,7 +223,7 @@ const Calendar = ({ attendanceData }) => {
 
                 {/* Check-Out */}
                 <div className="flex items-start gap-3  p-4 rounded">
-                  <FaMapMarkerAlt className="text-rose-500 text-lg mt-1" />
+                  <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 shrink-0" />
                   <div>
                     <p className="text-sm text-gray-500 font-medium">Check-Out</p>
                     <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>

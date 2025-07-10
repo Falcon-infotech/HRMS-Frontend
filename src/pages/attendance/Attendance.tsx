@@ -367,9 +367,6 @@ const Attendance: React.FC = () => {
 
 
 
-  useEffect(()=>{
-    console.log(selectedUserAttendance, "selectedUserAttendance")
-  })
 
   return (
     <div className="animate-fade-in">
@@ -849,7 +846,8 @@ const Attendance: React.FC = () => {
                 // Drawer view for other statuses (Present, Half Day, etc.)
                 <div className="space-y-6 text-gray-700 max-w-md mx-auto">
                   {/* Status */}
-                  <div className="flex items-start gap-3">
+                  <div className='grid grid-cols-2 sm:grid-cols-2 gap-6 mb-4'>
+                    <div className="flex items-start gap-3">
                     <FaCheckCircle className={`mt-1 text-lg ${attendanceDataSingle.status === 'Present'
                       ? 'text-green-500'
                       : attendanceDataSingle.status === 'Half Day'
@@ -873,8 +871,9 @@ const Attendance: React.FC = () => {
                     </div>
                   </div>
 
+                  </div>
                   {/* Check-In & Check-Out */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
                     {/* Check-In */}
                     <div className="flex items-start gap-3  p-4 rounded">
                       <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 w-20" />
