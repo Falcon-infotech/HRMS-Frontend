@@ -19,7 +19,7 @@ const PayslipComponent = () => {
         });
 
         const data = res.data.data;
-
+        console.log(data)
         // Format payDate
         data.payDate = data.payDate ? new Date(data.payDate).toISOString().split('T')[0] : '';
 

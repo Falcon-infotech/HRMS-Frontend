@@ -380,7 +380,7 @@ const UserDashboard = () => {
         }
       })
       // console.log(response.data)
-      setCheckInTime(response.data.attendanceStatus.inTime);
+      setCheckInTime(response.data.attendance.inTime);
       toast.success('Checked in successfully');
       fetchStatus();
     } catch (error) {

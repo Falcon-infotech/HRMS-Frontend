@@ -82,8 +82,12 @@ const DashboardLayout: React.FC = () => {
     },
     { name: 'Holidays', href: '/holidays', icon: PartyPopper },
 
-    { name: 'Payroll', href: '/payroll', icon: DollarSign },
-    { name: 'Performance', href: '/performance', icon: Award },
+    { name: 'Payroll', href: '/payroll', icon: DollarSign,children:[
+      { name: 'Payroll Dashboard', href: '/payroll' },
+      { name: 'Salary Slips', href: '/payroll/slips' },
+      // { name: 'Generate Payslip', href: '/payroll/generate' }
+    ] },
+    // { name: 'Performance', href: '/performance', icon: Award },
     // {
     //   name: 'Recruitment',
     //   href: '/recruitment/jobs',
@@ -124,7 +128,7 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Payroll", "Settings"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings"];
           return !restrictedSections.includes(item.name);
         }
         return true;
@@ -142,6 +146,12 @@ const DashboardLayout: React.FC = () => {
           return {
             ...item,
             children: item.children.filter(child => child.name !== "Leave Dashboard")
+          };
+        }
+        if (user?.role === "employee" && item.name === "Payroll" && item.children) {
+          return {
+            ...item,
+            children: item.children.filter(child => child.name !== "Payroll Dashboard")
           };
         }
         return item

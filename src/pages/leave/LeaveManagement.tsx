@@ -426,15 +426,30 @@ const LeaveManagement: React.FC = () => {
                           >
                             <option value="" className='' disabled>Change Status</option>
                             {request.status === 'rejected' && (
-                              <option value="approved">Approve</option>
+                              <>
+                                <option value="approved">Approve</option>
+                                <option value="cancelled">Cancel</option>
+                              </>
                             )}
                             {request.status === 'approved' && (
-                              <option value="rejected">Reject</option>
+                              <>
+                                <option value="rejected">Reject</option>
+                                <option value="cancelled">Cancel</option>
+
+                              </>
                             )}
                             {request.status === 'pending' && (
                               <>
                                 <option value="approved">Approve</option>
                                 <option value="rejected">Reject</option>
+                                <option value="cancelled">Cancel</option>
+                              </>
+                            )}
+                            {request.status === 'cancelled' && (
+                              <>
+                                <option value="approved">Approve</option>
+                                <option value="rejected">Reject</option>
+                                {/* <option value="cancelled">Cancel</option> */}
                               </>
                             )}
                           </select>

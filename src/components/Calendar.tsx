@@ -214,7 +214,7 @@ const Calendar = ({ attendanceData }) => {
                     </p>
                     <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
                     <p className="text-sm text-gray-700">
-                      {selectedDate.location || 'Location not available'}
+                      {selectedDate.checkIn || 'Location not available'}
                     </p>
                   </div>
                 </div>
@@ -230,7 +230,7 @@ const Calendar = ({ attendanceData }) => {
                     </p>
                     <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
                     <p className="text-sm text-gray-700">
-                      {selectedDate.location || 'Location not available'}
+                      {selectedDate.checkOut || 'Location not available'}
                     </p>
                   </div>
                 </div>
