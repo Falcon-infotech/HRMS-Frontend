@@ -96,7 +96,7 @@ const EmployeeForm: React.FC = () => {
               salary: emp.salary || 0,
               empployeeId: emp._id || '',
               village: emp?.address?.village,
-              id: emp._id
+              id: emp.userId
             });
 
             // if (existingEmployee.emergencyContact) {
@@ -657,8 +657,8 @@ const EmployeeForm: React.FC = () => {
                           name="id"
                           className="form-input bg-neutral-50"
                           value={employee.id}
-                          readOnly
-                          disabled
+                          // readOnly
+                          // disabled
                         />
                       </div>
                     )}
