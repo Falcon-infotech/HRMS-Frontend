@@ -84,7 +84,7 @@ const DashboardLayout: React.FC = () => {
 
     { name: 'Payroll', href: '/payroll', icon: DollarSign,children:[
       { name: 'Payroll Dashboard', href: '/payroll' },
-      { name: 'Salary Slips', href: '/payroll/slips' },
+      { name: 'My Salary Slips', href: '/payroll/slips' },
       // { name: 'Generate Payslip', href: '/payroll/generate' }
     ] },
     // { name: 'Performance', href: '/performance', icon: Award },

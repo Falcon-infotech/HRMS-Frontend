@@ -452,10 +452,12 @@ const EmployeeForm: React.FC = () => {
                         type="password"
                         id="password"
                         name="password"
+                        placeholder='*********'
                         className={`form-input ${formErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
                         value={employee.password || ''}
                         onChange={handleInputChange}
                         required
+                        disabled={isEditMode}
                       />
                       {formErrors.phone && (
                         <p className="mt-1 text-sm text-red-600">{formErrors.phone}</p>

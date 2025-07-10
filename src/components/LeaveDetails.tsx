@@ -71,28 +71,28 @@ const LeaveDetails = () => {
               <tr key={leave._id} className="border-b bg-white hover:bg-gray-50 transition">
                 <td className="px-4 py-3">{startIndex + index + 1}</td>
                 <td className="px-4 py-3">
-                  {leave.employee.first_name} {leave.employee.last_name}
+                  {leave?.employee?.first_name} {leave?.employee?.last_name}
                 </td>
-                <td className="px-4 py-3">{leave.employee.email}</td>
-                <td className="px-4 py-3">{leave.leaveType}</td>
-                <td className="px-4 py-3">{leave.reason}</td>
-                <td className="px-4 py-3">{new Date(leave.fromDate).toLocaleDateString()}</td>
-                <td className="px-4 py-3">{new Date(leave.toDate).toLocaleDateString()}</td>
+                <td className="px-4 py-3">{leave?.employee?.email}</td>
+                <td className="px-4 py-3">{leave?.leaveType}</td>
+                <td className="px-4 py-3">{leave?.reason}</td>
+                <td className="px-4 py-3">{new Date(leave?.fromDate).toLocaleDateString()}</td>
+                <td className="px-4 py-3">{new Date(leave?.toDate).toLocaleDateString()}</td>
                 <td className="px-4 py-3 capitalize">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      leave.status === 'approved'
+                      leave?.status === 'approved'
                         ? 'bg-green-100 text-green-700'
-                        : leave.status === 'rejected'
+                        : leave?.status === 'rejected'
                         ? 'bg-red-100 text-red-700'
                         : 'bg-yellow-100 text-yellow-700'
                     }`}
                   >
-                    {leave.status}
+                    {leave?.status}
                   </span>
                 </td>
-                <td className="px-4 py-3">{leave.leaveTaken}</td>
-                <td className="px-4 py-3">{leave.leaveBalance}</td>
+                <td className="px-4 py-3">{leave?.leaveTaken}</td>
+                <td className="px-4 py-3">{leave?.leaveBalance}</td>
               </tr>
             ))}
           </tbody>

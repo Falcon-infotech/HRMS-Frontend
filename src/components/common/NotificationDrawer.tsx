@@ -31,7 +31,8 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
           },
         });
         const data = response.data;
-        console.log(data);
+        setNotificationData(data.data)
+        // console.log(data.data);
       } catch (error) {
         console.log(error);
       }finally{
@@ -40,6 +41,25 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
     };
     fetchNotification();
   }, []);
+
+
+  const handleMarkAsRead = (notifId:string) => {
+  axios.put(`${BASE_URL}/api/notifications/mark_as_read/${notifId}`, {}, {
+    headers: {
+      Authorization: `${localStorage.getItem('tokenId')}`,
+    },
+  })
+    .then(() => {
+      setNotificationData(prev =>
+        prev.map(n => n._id === notifId ? { ...n, isRead: true } : n)
+      );
+    })  
+    .catch(error => {
+      console.error('Error marking notification as read:', error);
+    });
+     
+};
+
 
   if (!open) return null;
 
@@ -85,12 +105,12 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
             <h2 className="text-lg font-semibold">Notifications</h2>
           </div>
           <div className="flex items-center space-x-2">
-            <button
+            {/* <button
               onClick={markAllAsRead}
               className="text-sm text-primary-600 hover:text-primary-800"
             >
               Mark all as read
-            </button>
+            </button> */}
             <button
               onClick={onClose}
               className="p-1 rounded-md text-neutral-500 hover:bg-neutral-100"
@@ -101,14 +121,14 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {notifications.length === 0 ? (
+          {notificationData.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <Bell className="h-12 w-12 text-neutral-300 mb-4" />
               <p className="text-neutral-500">No notifications yet</p>
             </div>
           ) : (
             <div className="divide-y divide-neutral-100">
-              {notifications.map((notification) => (
+              {notificationData.map((notification) => (
                 <div
                   key={notification.id}
                   className={`p-4 hover:bg-neutral-50 transition-colors ${
@@ -127,15 +147,15 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
                           {notification.title}
                         </h3>
                         <span className="text-xs text-neutral-500 ml-2">
-                          {formatTime(notification.timestamp)}
+                          {formatTime(notification.updatedAt)}
                         </span>
                       </div>
                       <p className="mt-1 text-sm text-neutral-600">{notification.message}</p>
                       <div className="mt-2 flex space-x-2">
-                        {!notification.read && (
+                        {!notification?.isRead && (
                           <button
-                            onClick={() => markAsRead(notification.id)}
-                            className="text-xs text-primary-600 hover:text-primary-800 flex items-center"
+                            onClick={() => handleMarkAsRead(notification?._id)}
+                            className={`text-xs text-primary-600 hover:text-primary-800 flex items-center`}
                           >
                             <Check className="h-3 w-3 mr-1" />
                             Mark as read
@@ -156,7 +176,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
           )}
         </div>
 
-        {notifications.length > 0 && (
+        {/* {notificationData.length > 0 && (
           <div className="p-4 border-t border-neutral-200">
             <button
               onClick={clearAllNotifications}
@@ -165,7 +185,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
               Clear all notifications
             </button>
           </div>
-        )}
+        )} */}
       </div>
     </>
   );
