@@ -656,7 +656,7 @@ const EmployeeForm: React.FC = () => {
                           id="id"
                           name="id"
                           className="form-input bg-neutral-50"
-                          value={employee.id}
+                          value={employee?.userId}
                           // readOnly
                           // disabled
                         />

@@ -11,6 +11,8 @@ interface NotificationDrawerProps {
 }
 
 const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }) => {
+  const[notificationData, setNotificationData] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const {
     notifications,
     markAsRead,
@@ -21,6 +23,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
 
   useEffect(() => {
     const fetchNotification = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(`${BASE_URL}/api/notifications`, {
           headers: {
@@ -31,6 +34,8 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
         console.log(data);
       } catch (error) {
         console.log(error);
+      }finally{
+        setLoading(false);
       }
     };
     fetchNotification();
