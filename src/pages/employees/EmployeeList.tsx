@@ -402,7 +402,7 @@ const EmployeeList: React.FC = () => {
                 {currentEmployees.map(employee => (
                   <tr key={employee._id} className="hover:bg-neutral-50">
                     <td>
-                      <span className="text-sm font-medium">{employee.userId}</span>
+                      <span className="text-sm font-medium">{employee?.userId}</span>
                     </td>
                     <td>
                       <div className="flex items-center">
