@@ -52,7 +52,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
         }
       })
       const data=respponse.data
-      console.log(data)
+      console.log(data )
       } catch (error) {
          console.log(error)
       }
