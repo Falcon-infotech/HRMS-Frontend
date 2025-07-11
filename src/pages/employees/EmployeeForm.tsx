@@ -708,10 +708,10 @@ const EmployeeForm: React.FC = () => {
                         <label htmlFor="employeeType" className="form-label">EmployeeID</label>
                         <input
                           id="empployeeId"
-                          name="empployeeId"
+                          name="id"
                           type='text'
                           className="form-select"
-                          value={employee?.empployeeId || ''}
+                          value={employee?.id || ''}
                           onChange={handleInputChange}
                         />
                       </div>
