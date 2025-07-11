@@ -178,6 +178,11 @@ const EmployeeForm: React.FC = () => {
     if (!employee.department?.trim()) errors.department = 'Department is required';
     if (!employee.designation?.trim()) errors.designation = 'Designation is required';
     if (!employee.joiningDate?.trim()) errors.joiningDate = 'Joining date is required';
+    if(!employee.country?.trim()) errors.country = 'Country is required';
+    if(!employee.state?.trim()) errors.state = 'State is required';
+    if(!employee.city?.trim()) errors.city = 'City is required';
+    if(!employee.id?.trim()) errors.id = 'Employee ID is required';
+    if (!employee.salary || employee.salary <= 0) errors.salary = 'Salary is required and must be a positive number';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -391,7 +396,7 @@ const EmployeeForm: React.FC = () => {
                         type="text"
                         id="firstName"
                         name="first_name"
-                        className={`form-input ${formErrors.firstName ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                        className={`form-input`}
                         value={employee.first_name || ''}
                         onChange={handleInputChange}
                         required
@@ -407,7 +412,7 @@ const EmployeeForm: React.FC = () => {
                         type="text"
                         id="lastName"
                         name="last_name"
-                        className={`form-input ${formErrors.lastName ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                        className={`form-input `}
                         value={employee.last_name || ''}
                         onChange={handleInputChange}
                         required
@@ -481,7 +486,7 @@ const EmployeeForm: React.FC = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="country" className="form-label">Country</label>
+                      <label htmlFor="country" className="form-label">Country *</label>
                       <select
                         id="country"
                         name="country"
@@ -496,6 +501,11 @@ const EmployeeForm: React.FC = () => {
                           </option>
                         ))}
                       </select>
+                      {
+                        formErrors.country && ( 
+                          <p className="mt-1 text-sm text-red-600">{formErrors.country}</p>
+                        ) 
+                      }
                     </div>
 
 
@@ -511,7 +521,7 @@ const EmployeeForm: React.FC = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="state" className="form-label">State/Province</label>
+                      <label htmlFor="state" className="form-label">State/Province *</label>
                       <input
                         type="text"
                         id="state"
@@ -520,6 +530,9 @@ const EmployeeForm: React.FC = () => {
                         value={employee.state}
                         onChange={handleInputChange}
                       />
+                      {formErrors.state && (
+                        <p className="mt-1 text-sm text-red-600">{formErrors.state}</p>
+                      )}
                     </div>
                     <div className="form-group">
                       <label htmlFor="postalCode" className="form-label">Postal Code</label>
@@ -533,7 +546,7 @@ const EmployeeForm: React.FC = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="city" className="form-label">City</label>
+                      <label htmlFor="city" className="form-label">City *</label>
                       <input
                         type="text"
                         id="city"
@@ -542,6 +555,9 @@ const EmployeeForm: React.FC = () => {
                         value={employee.city}
                         onChange={handleInputChange}
                       />
+                      {formErrors.city && (
+                        <p className="mt-1 text-sm text-red-600">{formErrors.city}</p>
+                      )}
                     </div>
 
 
@@ -670,7 +686,7 @@ const EmployeeForm: React.FC = () => {
                       <select
                         id="department"
                         name="department"
-                        className={`form-select ${formErrors.department ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                        className={`form-select `}
                         value={employee.department || ''}
                         onChange={handleInputChange}
                         required
@@ -689,7 +705,7 @@ const EmployeeForm: React.FC = () => {
                       <select
                         id="designation"
                         name="designation"
-                        className={`form-select ${formErrors.designation ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                        className={`form-select`}
                         value={employee.designation || ''}
                         onChange={handleInputChange}
                         required
@@ -714,6 +730,9 @@ const EmployeeForm: React.FC = () => {
                           value={employee?.id || ''}
                           onChange={handleInputChange}
                         />
+                        { formErrors.id &&
+                          <p className="mt-1 text-sm text-red-600">{formErrors.id}</p>
+                        }
                       </div>
                     }
                     {/* <div className="form-group">
@@ -737,7 +756,7 @@ const EmployeeForm: React.FC = () => {
                         type="number"
                         id="salary"
                         name="salary"
-                        className={`form-input ${formErrors.salary ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                        className={`form-input`}
                         value={employee.salary || ''}
                         onChange={handleInputChange}
                         required
@@ -849,6 +868,7 @@ const EmployeeForm: React.FC = () => {
                     >
                       Add Document
                     </button>
+                                        
                   </div>
                 ) : (
                   <div className="space-y-4">
