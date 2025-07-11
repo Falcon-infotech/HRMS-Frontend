@@ -4,6 +4,7 @@ import { useNotification } from '../../contexts/NotificationContext';
 import { format } from 'date-fns';
 import axios from 'axios';
 import { BASE_URL } from '../../constants/api';
+import { useNavigate } from 'react-router-dom';
 
 interface NotificationDrawerProps {
   open: boolean;
@@ -11,7 +12,9 @@ interface NotificationDrawerProps {
 }
 
 const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }) => {
-  const[notificationData, setNotificationData] = React.useState<any[]>([]);
+  const navigate=useNavigate();
+
+  const [notificationData, setNotificationData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const {
     notifications,
@@ -19,7 +22,8 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
     markAllAsRead,
     removeNotification,
     clearAllNotifications,
-  } = useNotification();
+  } 
+  = useNotification();
 
   useEffect(() => {
     const fetchNotification = async () => {
@@ -35,7 +39,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
         // console.log(data.data);
       } catch (error) {
         console.log(error);
-      }finally{
+      } finally {
         setLoading(false);
       }
     };
@@ -43,22 +47,44 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
   }, []);
 
 
-  const handleMarkAsRead = (notifId:string) => {
-  axios.put(`${BASE_URL}/api/notifications/mark_as_read/${notifId}`, {}, {
-    headers: {
-      Authorization: `${localStorage.getItem('tokenId')}`,
-    },
-  })
-    .then(() => {
-      setNotificationData(prev =>
-        prev.map(n => n._id === notifId ? { ...n, isRead: true } : n)
-      );
-    })  
-    .catch(error => {
-      console.error('Error marking notification as read:', error);
-    });
-     
-};
+  const handleMarkAsRead = (notifId: string) => {
+    axios.put(`${BASE_URL}/api/notifications/mark_as_read/${notifId}`, {}, {
+      headers: {
+        Authorization: `${localStorage.getItem('tokenId')}`,
+      },
+    })
+      .then(() => {
+        setNotificationData(prev =>
+          prev.map(n => n._id === notifId ? { ...n, isRead: true } : n)
+        );
+      })
+      .catch(error => {
+        console.error('Error marking notification as read:', error);
+      });
+
+  };
+
+
+  const dismiss = (notifId: string) => {
+    console.log(notifId)
+    const token = localStorage.getItem('tokenId');
+
+    // if (!token || !notifId) return;
+    axios.put(`${BASE_URL}/api/notifications/dismiss_notification/${notifId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(() => {
+        setNotificationData(prev =>
+          prev.filter(n => n._id !== notifId)
+        );
+      })
+      .catch(error => {
+        console.error('Error marking notification as read:', error);
+      });
+
+  };
 
 
   if (!open) return null;
@@ -88,6 +114,15 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
       return format(new Date(date), 'MMM d, yyyy');
     }
   };
+
+  const handleredirect = async (e, notification: any) => {
+    e.stopPropagation();
+    handleMarkAsRead(notification._id);
+    onClose();
+   if (notification?.link) {
+    navigate(notification.link);
+  } 
+  }
 
   return (
     <>
@@ -131,11 +166,10 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
               {notificationData.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 hover:bg-neutral-50 transition-colors ${
-                    !notification.read ? 'bg-primary-50' : ''
-                  }`}
+                  className={`p-4 hover:bg-neutral-50 transition-colors ${!notification.read ? 'bg-primary-50' : ''
+                    }`}
                 >
-                  <div className="flex items-start">
+                  <div className="flex items-start" onClick={(e) => handleredirect(e, notification)}>
                     <div
                       className={`w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0 ${getNotificationColor(
                         notification.type
@@ -162,7 +196,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
                           </button>
                         )}
                         <button
-                          onClick={() => removeNotification(notification.id)}
+                          onClick={() => dismiss(notification?._id)}
                           className="text-xs text-neutral-500 hover:text-neutral-700"
                         >
                           Dismiss

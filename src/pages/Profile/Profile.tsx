@@ -279,7 +279,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Edit, Mail, Phone, MapPin, Briefcase, Calendar, Clock, UserCheck, FileText,
-  DollarSign, Clipboard, ChevronDown, Download
+  DollarSign, Clipboard, ChevronDown, Download,
+  Edit2
 } from 'lucide-react';
 
 import axios from 'axios';
@@ -287,39 +288,125 @@ import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import toast from 'react-hot-toast';
 
 const EmployeeDetail: React.FC = () => {
   // const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState('info');
   const [employee, setEmployees] = useState([])
   const [isLoading, setIsLoading] = useState(true);
-  const{user}=useSelector((state:RootState)=>state.auth)
-const id=user?._id;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
+  const { user } = useSelector((state: RootState) => state.auth)
+  const id = user?._id;
+  console.log(user)
+
+  const [department, setDepartment] = useState('');
+
+
+  const [address, setAddress] = useState({
+    address_line: '',
+    city: '',
+    state: '',
+    pincode: '',
+    country: '',
+    village: '',
+  });
   useEffect(() => {
-    // console.log(user?._id,"user")
-    
-    const fetchEmployees = async () => {
-      try {
-        const token = localStorage.getItem('tokenId');
-        const response = await axios.get(`${BASE_URL}/api/employee/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (employee?.address) {
+      setAddress({
+        address_line: employee.address.address_line || '',
+        city: employee.address.city || '',
+        state: employee.address.state || '',
+        pincode: employee.address.pincode || '',
+        country: employee.address.country || '',
+        village: employee.address.village || '',
+      });
 
-        console.log('API response:', response.data.data);
+    }
 
-        setEmployees(response.data.data);
-      } catch (error) {
-        console.log('Error fetching employees:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (employee?.department) {
+      setDepartment(employee.department);
+    }
+  }, [employee]);
+  const fetchEmployees = async () => {
+    try {
+      const token = localStorage.getItem('tokenId');
+      const response = await axios.get(`${BASE_URL}/api/employee/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log('API response:', response.data.data);
+
+      setEmployees(response.data.data);
+    } catch (error) {
+      console.log('Error fetching employees:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+
+
     fetchEmployees();
   }, []);
 
-  const [status,setStatus] = useState<any>("null");
+
+  ////////////////////
+  const handleSave = async () => {
+    if (!/^\d{6}$/.test(address.pincode)) {
+      toast.error('Pincode must be exactly 6 digits');
+      return;
+    }
+
+    try {
+      await axios.patch(`${BASE_URL}/api/employee/update_profile_by_self`, {
+        address
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+        }
+      });
+      setIsModalOpen(false);
+      fetchEmployees();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err)
+    }
+  };
+  ////////////////////
+
+  const handleDepartmentSave = async () => {
+    if (!department.trim()) {
+      toast.error('Department cannot be empty');
+      return;
+    }
+
+    try {
+      await axios.patch(`${BASE_URL}/api/employee/update_profile_by_self`, {
+        department
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
+        }
+      });
+      setIsDepartmentModalOpen(false);
+      fetchEmployees();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || 'Something went wrong');
+    }
+  };
+////////
+  const handleInputChange = (e) => {
+    setAddress({ ...address, [e.target.name]: e.target.value });
+  };
+
+
+
+  const [status, setStatus] = useState<any>("null");
   useEffect(() => {
     const fetchStatus = async () => {
       console.log("starrt")
@@ -331,7 +418,7 @@ const id=user?._id;
         });
 
         setStatus(res.data.attendance)
-    
+
       } catch (error) {
         console.error('Failed to fetch status', error);
       }
@@ -361,7 +448,7 @@ const id=user?._id;
     }
 
     Alluseleaves();
-  },[])
+  }, [])
 
   if (isLoading) {
     return (
@@ -416,7 +503,7 @@ const id=user?._id;
                 <img src={employee.avatar} alt={`${employee.first_name} ${employee.last_name}`} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-3xl font-bold">
-                  {employee.role==="admin" ? employee.first_name[0]: employee.first_name[0]}
+                  {employee.role === "admin" ? employee.first_name[0] : employee.first_name[0]}
                 </div>
               )}
             </div>
@@ -455,7 +542,7 @@ const id=user?._id;
               </div>
             </div>
 
-            {user?.role !=="employee" &&<div className="mt-8 w-full">
+            {user?.role !== "employee" && <div className="mt-8 w-full">
               <Link to={`/employees/edit/${employee._id}`} className="btn btn-primary w-full flex items-center justify-center">
                 <Edit size={16} className="mr-2" />
                 Edit Profile
@@ -488,7 +575,7 @@ const id=user?._id;
                   <div>
                     <p className="text-sm text-neutral-500">Attendance</p>
                     {/* <p className="text-lg font-semibold">{attendanceRate}%</p> */}
-                    {status ? status.status:"Absent"}
+                    {status ? status.status : "Absent"}
                   </div>
                 </div>
               </div>
@@ -607,7 +694,11 @@ const id=user?._id;
                         <p className="text-sm font-medium">{employee?.phone || "9876543210"}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-neutral-500">Address</p>
+                        <p className='flex gap-3 items-center justify-between'>
+                          <p className="text-sm text-neutral-500">Address</p><span className='bg-gray-200 p-1 rounded-md cursor-pointer'><Edit2 width={30} height={20} onClick={() => setIsModalOpen(true)}
+                          /></span>
+
+                        </p>
                         <p className="text-sm font-medium">
                           {employee?.address?.address_line}, {employee?.address?.city}, {employee?.address?.state} {employee?.address?.pincode}, {employee?.address?.country}
                         </p>
@@ -623,7 +714,15 @@ const id=user?._id;
                         <p className="text-sm font-medium">{employee?.userId}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-neutral-500">Department</p>
+                        <p className="flex gap-3 items-center justify-between">
+                          <span className="text-sm text-neutral-500">Department</span>
+                          <span
+                            className="bg-gray-200 p-1 rounded-md cursor-pointer"
+                            onClick={() => setIsDepartmentModalOpen(true)}
+                          >
+                            <Edit2 width={30} height={20} />
+                          </span>
+                        </p>
                         <p className="text-sm font-medium">{employee?.department}</p>
                       </div>
                       <div>
@@ -632,7 +731,7 @@ const id=user?._id;
                       </div>
                       <div>
                         <p className="text-sm text-neutral-500">Employment Type</p>
-                        <p className="text-sm font-medium">{employee?.employeeType}</p>
+                        <p className="text-sm font-medium">{employee?.role}</p>
                       </div>
                       <div>
                         <p className="text-sm text-neutral-500">Joining Date</p>
@@ -651,6 +750,35 @@ const id=user?._id;
                       </div>
                     </div>
                   </div>
+                  {isDepartmentModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                      <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                        <h2 className="text-lg font-bold mb-4">Edit Department</h2>
+                        <input
+                          value={department}
+                          onChange={(e) => setDepartment(e.target.value)}
+                          placeholder="Department"
+                          className="w-full border p-2 rounded"
+                        />
+
+                        <div className="mt-4 flex justify-end gap-2">
+                          <button
+                            className="bg-gray-300 px-3 py-1 rounded"
+                            onClick={() => setIsDepartmentModalOpen(false)}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-blue-600 text-white px-4 py-1 rounded"
+                            onClick={handleDepartmentSave}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
 
                   {/* {employee.emergencyContact && (
                     <div className="border-t border-neutral-200 pt-6">
@@ -1161,6 +1289,72 @@ const id=user?._id;
                 </div>
               )} */}
             </div>
+            {isModalOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                  <h2 className="text-lg font-bold mb-4">Edit Address</h2>
+                  <div className="space-y-3">
+                    <input
+                      name="address_line"
+                      value={address.address_line || ''}
+                      onChange={handleInputChange}
+                      placeholder="Address Line"
+                      className="w-full border p-2 rounded"
+                    />
+                    <input
+                      name="village"
+                      value={address.village || ''}
+                      onChange={handleInputChange}
+                      placeholder="Village"
+                      className="w-full border p-2 rounded"
+                    />
+                    <input
+                      name="city"
+                      value={address.city || ''}
+                      onChange={handleInputChange}
+                      placeholder="City"
+                      className="w-full border p-2 rounded"
+                    />
+                    <input
+                      name="state"
+                      value={address.state || ''}
+                      onChange={handleInputChange}
+                      placeholder="State"
+                      className="w-full border p-2 rounded"
+                    />
+                    <input
+                      name="pincode"
+                      value={address.pincode || ''}
+                      onChange={handleInputChange}
+                      placeholder="Pincode"
+                      className="w-full border p-2 rounded"
+                    />
+                    <input
+                      name="country"
+                      value={address.country || ''}
+                      onChange={handleInputChange}
+                      placeholder="Country"
+                      className="w-full border p-2 rounded"
+                    />
+                  </div>
+
+                  <div className="mt-4 flex justify-end gap-2">
+                    <button
+                      className="bg-gray-300 px-3 py-1 rounded"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-blue-600 text-white px-4 py-1 rounded"
+                      onClick={handleSave}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
