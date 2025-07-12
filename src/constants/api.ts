@@ -8,7 +8,10 @@
 
 
 // fro production
-export const BASE_URL = 'https://hrms-backend-yrrr.onrender.com';
+// export const BASE_URL = 'https://hrms-backend-yrrr.onrender.com';
+
+//aws
+export const BASE_URL = 'https://backend.falconinfotech.co';
 
 
 
