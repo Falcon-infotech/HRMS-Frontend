@@ -4,47 +4,7 @@ import { BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-// import { addDays, addWeeks, endOfWeek, format, isSameDay, startOfWeek, subWeeks } from 'date-fns';
-
-
-// import DatePicker from 'react-datepicker';
-// import { CalendarHeart, Edit2, PlusCircle, Trash2 } from 'lucide-react';
-// import HolidayForm from '../../components/HolidayForm';
-// import Calendar from '../../components/Calendar';
-
-
-
-// checkin response
-// {
-//     "success": true,
-//     "statusCode": 200,
-//     "message": "Punched IN successfully",
-//     "attendance": {
-//         "_id": "68341dd218f1ae28ecb40989",
-//         "date": "2025-05-26",
-//         "userId": "68341cfea30d4c01f7d86d7e",
-//         "__v": 0,
-//         "createdAt": "2025-05-26T07:52:50.771Z",
-//         "inTime": "2025-05-26T07:52:50.770Z",
-//         "updatedAt": "2025-05-26T07:52:50.771Z"
-//     }
-// }
-
-// {
-//   "success": true,
-//   "statusCode": 200,
-//   "message": "Punched IN successfully",
-//   "attendance": {
-//     "_id": "6830679518f1ae28ecb402fb",
-//     "date": "2025-05-23",
-//     "userId": "6821d1602582fe365af0120a",
-//     "__v": 0,
-//     "createdAt": "2025-05-23T12:18:29.070Z",
-//     "inTime": "2025-05-23T12:18:29.068Z",
-//     "updatedAt": "2025-05-23T12:18:29.070Z"
-//   }
-// }
-
+import Loading from '../../components/Loading';
 
 
 
@@ -301,9 +261,11 @@ const UserDashboard = () => {
 
 
 
-
+  const [isStatusLoading, setIsStatusLoading] = useState(true);
+  const [isOnLeave, setIsOnLeave] = useState(false);
   const fetchStatus = async () => {
-    // console.log("starrt")
+    setIsStatusLoading(true);
+
     try {
       const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
         headers: {
@@ -312,8 +274,12 @@ const UserDashboard = () => {
       });
 
       // console.log(res.data.attendance)
+      if (res.data?.attendance?.status === "Leave") {
+        setIsOnLeave(true)
+      }
       if (res?.data?.attendance?.inTime) {
-        setCheckInTime(res.data.attendance?.inTime);
+        setCheckInTime(res.data?.attendance?.inTime);
+        localStorage.setItem('lastCheckInTime', res.data?.attendance?.inTime);
       }
       if (res?.data?.attendance?.outTime) {
         setCheckOutTime(res.data.attendance?.outTime);
@@ -321,11 +287,16 @@ const UserDashboard = () => {
       }
     } catch (error) {
       console.error('Failed to fetch status', error);
+      const storedCheckIn = localStorage.getItem('lastCheckInTime');
+      if (storedCheckIn) {
+        setCheckInTime(storedCheckIn);
+      }
+    } finally {
+      setIsStatusLoading(false);
     }
   };
 
   useEffect(() => {
-
     fetchStatus();
   }, []);
 
@@ -334,28 +305,36 @@ const UserDashboard = () => {
   useEffect(() => {
     let timer: any;
 
-    if (checkInTime && !hasCheckedOut) {
-      const startTime = new Date(checkInTime);
-      timer = setInterval(() => {
+    const updateElapsedTime = () => {
+      if (checkInTime && !hasCheckedOut) {
+        const startTime = new Date(checkInTime);
         const now = new Date();
         const elapsedTime = new Date(now.getTime() - startTime.getTime());
         const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
         const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
         const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
         setElapsed(`${hours}:${minutes}:${seconds}`);
-      }, 1000);
-    } else if (checkInTime && checkOutTime) {
-      const startTime = new Date(checkInTime);
-      const endTime = new Date(checkOutTime);
-      const elapsedTime = new Date(endTime.getTime() - startTime.getTime());
-      const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
-      const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
-      const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
-      setElapsed(`${hours}:${minutes}:${seconds}`);
+      } else if (checkInTime && checkOutTime) {
+        const startTime = new Date(checkInTime);
+        const endTime = new Date(checkOutTime);
+        const elapsedTime = new Date(endTime.getTime() - startTime.getTime());
+        const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
+        const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+        setElapsed(`${hours}:${minutes}:${seconds}`);
+      }
+    };
+
+    // 🟢 Immediately calculate once, even before interval starts
+    updateElapsedTime();
+
+    if (checkInTime && !hasCheckedOut) {
+      timer = setInterval(updateElapsedTime, 1000);
     }
 
     return () => clearInterval(timer);
   }, [checkInTime, hasCheckedOut, checkOutTime]);
+
 
   // made changes here for attendence statas update
 
@@ -370,8 +349,8 @@ const UserDashboard = () => {
       })
       const payload = {
         location: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
         }
       };
       const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, payload, {
@@ -380,12 +359,16 @@ const UserDashboard = () => {
         }
       })
       // console.log(response.data)
-      setCheckInTime(response.data.attendance.inTime);
+      const inTime = response.data?.attendance?.inTime;
+
+      setCheckInTime(inTime);
+      localStorage.setItem('lastCheckInTime', inTime);
+      // setCheckInTime(response.data.attendance.inTime);
       toast.success('Checked in successfully');
       fetchStatus();
-    } catch (error) {
+    } catch (error: any) {
       console.log(error)
-      toast.error('Error checking in');
+      toast.error('Error checking in', error);
     } finally {
       setCheckinLoading(false)
     }
@@ -415,6 +398,7 @@ const UserDashboard = () => {
         }
       );
       setHasCheckedOut(true);
+      localStorage.removeItem('lastCheckInTime');
       toast.success('Checked out successfully');
     } catch (error) {
       toast.error('Error checking out');
@@ -534,485 +518,113 @@ const UserDashboard = () => {
 
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-6 max-w-full mx-auto border rounded-xl shadow-lg bg-white">
+    <>
+      {
+        isStatusLoading ? <div> <Loading text={"Loading..."} /></div> : <>
+          <div className="flex flex-col lg:flex-row gap-6 p-6 max-w-full mx-auto border rounded-xl shadow-lg bg-white">
 
-      {/* Left Card */}
-      <div className="lg:w-1/3 w-full flex flex-col items-center justify-center border p-6 rounded-xl bg-gray-50">
-        <div className="flex flex-col items-center gap-4 text-center">
+            <div className="lg:w-1/3 w-full flex flex-col items-center justify-center border p-6 rounded-xl bg-gray-50">
+              <div className="flex flex-col items-center gap-4 text-center">
 
-          {/* Avatar */}
-          <div className="w-24 h-24 rounded-xl overflow-hidden shadow-md">
-            <img
-              src="https://contacts.zoho.in/file?ID=60028830319&fs=thumb"
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Info */}
-          <div>
-            <h1 className="text-2xl font-bold">{userDetails?.name || capitalize(userDetails?.first_name) + " " + capitalize(userDetails?.last_name)}</h1>
-
-
-            <p className="text-sm text-gray-400">{userDetails?.email}</p>
-            <p className="text-lg text-gray-600 mt-1 font-bold">{userDetails?.designation}</p>
-            {!checkInTime && (
-              <p className="text-red-500 font-semibold mt-2">Yet to check In </p>
-            )}
-          </div>
-
-          {/* Time Block */}
-          <div className="flex justify-center gap-2 mt-4">
-            {elapsed.split(':').map((value, index) => (
-              <React.Fragment key={index}>
-                <div className="bg-gray-200 w-14 h-14 rounded-xl flex items-center justify-center text-xl font-mono shadow-inner">
-                  {value}
-                </div>
-                {index < 2 && <span className="text-2xl text-gray-500 flex items-center">:</span>}
-              </React.Fragment>
-            ))}
-          </div>
-
-          {/* Button */}
-          <div className="mt-6">
-            {!checkInTime ? (
-              <button
-                onClick={handleCheckIn}
-                className="bg-green-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
-                disabled={checkinLoading}
-              >
-                {checkinLoading ? <>
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
-                    <span>Checking-In...</span>
-                  </div>
-
-                </> : "Check In"}
-              </button>
-            ) : (
-              <button
-                onClick={handleCheckOut}
-                className={`${hasCheckedOut ? "bg-blue-500" : "bg-red-500"} hover:bg-blue-400 text-white px-6 py-2 rounded-lg shadow transition duration-300`}
-                disabled={hasCheckedOut}
-              >
-                {hasCheckedOut ? 'Checked Out' : 'Check Out'}
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Right Panel (Empty) */}
-      <div className="flex-1 border rounded-xl bg-gray-50 p-4">
-        {/* Tabs */}
-        <div className="flex flex-wrap border-b mb-4">
-          {["Activities"].map((item) => (
-            <button
-              key={item}
-              onClick={() => setActiveTab(item)}
-              className={`px-4 py-2 text-sm md:text-base font-medium transition border-b-2 ${activeTab === item
-                ? 'text-blue-600 border-blue-600'
-                : 'text-gray-500 border-transparent hover:text-blue-500 hover:border-blue-300'
-                }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === 'Activities' && (
-          <ActivitiesTab />
-        )
-        }
-        {
-          // activeTab === 'Attendance' && (
-          //   <div className="p-6">
-          //     <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          //       <span className="text-blue-600">🗓️</span> Attendance Records (Last 7 Days)
-          //     </h2>
-
-          //     <div className="bg-gray-50 border rounded-lg overflow-hidden">
-          //       {/* Header */}
-          //       <div className="grid grid-cols-3 bg-gray-100 text-gray-600 text-sm font-semibold p-3 border-b">
-          //         <span>Day</span>
-          //         <span>Shift</span>
-          //         <span>Status</span>
-          //       </div>
-
-          //       {/* Attendance Rows */}
-          //       {Object.entries(attendanceData)
-          //         .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) // chronological order
-          //         .slice(0, 7)
-          //         .map(([date, status]) => {
-          //           const day = new Date(date);
-          //           const formattedDay = day.toLocaleDateString(undefined, {
-          //             weekday: 'short',
-          //             day: 'numeric',
-          //           });
-
-          //           const isPresent = status === 'Present';
-          //           const isAbsent = status === 'Absent';
-          //           const isWeekend = status === 'Weekend';
-
-          //           return (
-          //             <div key={date} className="grid grid-cols-3 items-center text-sm border-b last:border-0 hover:bg-gray-50 transition">
-          //               {/* Date */}
-          //               <div className="py-3 px-4 text-gray-700 font-medium">
-          //                 <div className="text-xs">{formattedDay}</div>
-          //                 <div className="text-xs text-gray-400">{day.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</div>
-          //               </div>
-
-          //               {/* Shift */}
-          //               <div className="py-3 px-4">
-          //                 <div className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">General</div>
-          //                 <div className="text-xs text-gray-500 mt-1">09:00 AM - 6:00 PM</div>
-          //               </div>
-
-          //               {/* Status */}
-          //               <div className="py-3 px-4">
-          //                 <div
-          //                   className={`
-          //             text-xs font-semibold inline-block px-2 py-1 rounded-full 
-          //             ${isPresent && 'bg-green-100 text-green-700'}
-          //             ${isAbsent && 'bg-red-100 text-red-600'}
-          //             ${isWeekend && 'bg-orange-100 text-orange-600'}
-          //           `}
-          //                 >
-          //                   {isWeekend ? 'Weekend' : status}
-          //                 </div>
-          //                 {isAbsent && (
-          //                   <div className="text-lg text-gray-500 mt-1">No check-in - No check-out</div>
-          //                 )}
-          //                 {isWeekend && (
-          //                   <div className="text-lg text-gray-500 mt-1">No check-in - No check-out</div>
-          //                 )}
-          //               </div>
-          //             </div>
-          //           );
-          //         })}
-          //     </div>
-          //   </div>
-          // )
-
-
-          // activeTab === "Attendance" && (
-          //   <>
-          //     <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-          //       {/* Header */}
-          //       <div className="flex items-center justify-between mb-4">
-          //         <button
-          //           onClick={handlePrevWeek}
-          //           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-          //         >
-          //           ← Prev
-          //         </button>
-
-          //         <div className="font-semibold text-lg cursor-pointer relative flex gap-4"><span onClick={() => setShowCalendar(!showCalendar)}><CalendarHeart /></span>
-          //           <span>
-          //             {format(weekStart, 'dd MMM')} – {format(weekEnd, 'dd MMM yyyy')}
-          //           </span>
-
-          //           {showCalendar && (
-          //             <div className="absolute z-10 mt-2 ">
-          //               <DatePicker
-          //                 selected={selectedDate}
-          //                 onChange={handleDateChange}
-          //                 inline
-          //               />
-          //             </div>
-          //           )}
-          //         </div>
-
-          //         <button
-          //           onClick={handleNextWeek}
-          //           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-          //         >
-          //           Next →
-          //         </button>
-          //       </div>
-
-          //       {/* Week Grid */}
-          //       <div className="grid grid-cols-7 gap-2 text-center text-sm">
-          //         {days.map((day, index) => (
-          //           <div
-          //             key={index}
-          //             className={`p-3 rounded-lg cursor-pointer 
-          //     ${isSameDay(day, new Date()) ? 'border border-blue-500' : ''}
-          //     bg-blue-100 text-blue-800 hover:bg-blue-200`}
-          //           >
-          //             <div className="font-semibold">{format(day, 'EEE')}</div>
-          //             <div>{format(day, 'dd')}</div>
-          //           </div>
-          //         ))}
-          //       </div>
-          //     </div>
-          //     <div className="w-full bg-white p-4 rounded-lg shadow mt-6 flex items-center justify-between">
-          //       <p className="text-gray-600 text-lg m-2">
-          //         General [ 09:00 AM - 6:00 PM ]
-          //       </p>
-
-          //       <div className="flex items-center gap-2">
-          //         {/* Check-in Badge */}
-          //         <div className="flex flex-col bg-green-500 text-white px-4 py-2 rounded-lg shadow">
-          //           <span className="text-sm font-bold">Check-in</span>
-          //           <div className="flex items-center text-white font-boldmono text-lg font-bold">
-          //             {elapsed.split(':').map((value, index) => (
-          //               <React.Fragment key={index}>
-          //                 <span>{value}</span>
-          //                 {index < 2 && <span className="mx-1 text-white">:</span>}
-          //               </React.Fragment>
-          //             ))}
-          //             <span className="ml-1 text-sm font-bold">Hrs</span>
-          //           </div>
-          //         </div>
-
-          //         {/* Clock Icon Button */}
-          //         <button className="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-green-500 -mx-5">
-          //           <svg
-          //             xmlns="http://www.w3.org/2000/svg"
-          //             className="h-4 w-4"
-          //             fill="none"
-          //             viewBox="0 0 24 24"
-          //             stroke="currentColor"
-          //           >
-          //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m4-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          //           </svg>
-          //         </button>
-          //       </div>
-          //     </div>
-          //     {/* Weekly Attendance Summary (Styled Row Cards) */}
-          //     <div className="space-y-4 mt-6">
-          //       <div className="flex items-center justify-between px-4 text-md font-semibold text-sky-500 text-nowrap">
-          //         <div className="w-16">Day</div>
-          //         <div className="w-9 text-center">Date</div>
-          //         <div className="w-20 text-center">Check-in</div>
-          //         <div className="w-20 text-center">Check-out</div>
-          //         <div className="w-20 text-center">Status</div>
-          //         <div className="w-24 text-center">Hours Worked</div>
-          //       </div>
-          //       {days.map((day, index) => {
-          //         const isToday = isSameDay(day, new Date());
-          //         const isWeekend = format(day, 'EEE') === 'Sun' || format(day, 'EEE') === 'Sat';
-          //         const record = user?.find(
-          //           (rec) => rec.date === format(day, 'yyyy-MM-dd')
-          //         ) || [];
-
-          //         // console.log(record.inTime)
-
-          //         return (
-          //           <>
-          //             <div
-          //               key={index}
-          //               onClick={() => setSelected(format(day, 'yyyy-MM-dd'))}
-
-          //               className={`flex flex-col bg-white shadow rounded-lg px-4 py-5 
-          //                   ${isToday || selected === format(day, 'yyyy-MM-dd')
-          //                   ? 'border-2 border-blue-500'
-          //                   : ''
-          //                 }`}
-          //             >
-          //               {/* Main Row Content */}
-          //               <div className="flex items-center justify-between">
-          //                 {/* Day Name */}
-          //                 <div className="text-sm font-medium w-16 text-gray-800">
-          //                   {format(day, 'EEE')}
-          //                 </div>
-
-          //                 {/* Date in Circle */}
-          //                 <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-800">
-          //                   {format(day, 'dd')}
-          //                 </div>
-
-          //                 {/* In Time */}
-          //                 <div className="text-xs text-gray-600 w-20 text-center">
-          //                   {record?.inTime ? extractHourAndMinute(record?.inTime) : '--'}
-          //                 </div>
-
-          //                 {/* Out Time */}
-          //                 <div className="text-xs text-gray-600 w-20 text-center">
-          //                   {record?.outTime ? extractHourAndMinute(record?.outTime) : '--'}
-          //                 </div>
-
-          //                 {/* Status */}
-          //                 <div className="text-xs text-gray-600 w-20 text-center">
-          //                   {record?.status ?? '--'}
-          //                 </div>
-
-          //                 {/* Duration */}
-          //                 <div className="text-xs text-green-600 w-24 text-center">
-          //                   {record?.duration ?? '00:00'}
-          //                 </div>
-          //               </div>
-
-          //               {/* Horizontal Attendance Line (Inside Box) */}
-          //               <div className="flex items-center justify-between mt-3 px-1 relative">
-          //                 {/* Left dot */}
-          //                 <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-
-          //                 {/* Line */}
-          //                 <div className={`flex-1 h-0.5 mx-2 ${getStatusColor(record?.status)}`}></div>
-
-          //                 {/* Right dot */}
-          //                 <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-
-          //                 {/* Centered Status Label */}
-          //                 <span
-          //                   className={`absolute left-1/2 -translate-x-1/2 -top-2.5 text-[11px] px-2 py-0.5 rounded-full border ${getStatusColor(
-          //                     record?.status,
-          //                     true
-          //                   )}`}
-          //                 >
-          //                   {record?.status ?? 'No Status'}
-          //                 </span>
-          //               </div>
-          //             </div>
-          //           </>
-
-
-          //         );
-          //       })}
-          //     </div>
-          //   </>
-          // )
-        }
-
-
-        {/* {
-          activeTab === "All-Holidays" && (
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-blue-600 text-3xl">🎉</span>
-                  <p>All Holidays</p>
+                <div className="w-24 h-24 rounded-xl overflow-hidden shadow-md">
+                  <img
+                    src="https://contacts.zoho.in/file?ID=60028830319&fs=thumb"
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
-                {(Users?.role === 'admin' || Users?.role === 'hr') && (
-                  <button
-                    onClick={() => {
-                      setSelectedHoliday(null);
-                      setIsEditMode(false);
-                      setIsFormOpen(true);
-                    }}
-                    className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition duration-200"
-                  >
-                    <PlusCircle className="w-5 h-5" />
-                    <span>Add</span>
-                  </button>
-                )}
-              </h2>
+                <div>
+                  <h1 className="text-2xl font-bold">{userDetails?.name || capitalize(userDetails?.first_name) + " " + capitalize(userDetails?.last_name)}</h1>
 
 
-              <div className="relative h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {holidays.map((holiday) => {
-                    const dateObj = new Date(holiday.date);
-                    const day = dateObj.getDate();
-                    const month = dateObj.toLocaleString('default', { month: 'short' });
-                    const weekday = dateObj.toLocaleString('default', { weekday: 'long' });
+                  <p className="text-sm text-gray-400">{userDetails?.email}</p>
+                  <p className="text-lg text-gray-600 mt-1 font-bold">{userDetails?.designation}</p>
+                  {!checkInTime && (
+                    <p className="text-red-500 font-semibold mt-2">Yet to check In </p>
+                  )}
+                </div>
 
-                    return (
-                      <div
-                        key={holiday.date}
-                        className="bg-white border border-gray-200 rounded-2xl p-5 shadow hover:shadow-lg transition duration-300 flex flex-col justify-between relative"
-                      >
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-800 mb-1">{holiday.reason}</h3>
-
-                          <p className="text-gray-500 text-sm mb-1">
-                            {`${day} - ${month}, ${weekday}`}
-                          </p>
-                        </div>
-                        <div>
-                          {(Users?.role === 'admin' || Users?.role === 'hr') && (
-                            <div className="absolute top-3 right-3 flex flex-col gap-2 items-center">
-                              <button
-                                title="Delete"
-                                onClick={() => handleDeleteHoliday(holiday._id)}
-                                className="p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transition duration-200"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-
-                              <button
-                                title="Edit"
-                                onClick={() => {
-                                  setSelectedHoliday(holiday);
-                                  setIsEditMode(true);
-                                  setIsFormOpen(true);
-                                }}
-                                className="p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 hover:text-blue-700 transition duration-200"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          )}
-
-
-                        </div>
+                <div className="flex justify-center gap-2 mt-4">
+                  {elapsed.split(':').map((value, index) => (
+                    <React.Fragment key={index}>
+                      <div className="bg-gray-200 w-14 h-14 rounded-xl flex items-center justify-center text-xl font-mono shadow-inner">
+                        {value}
                       </div>
-                    );
-
-                  })}
+                      {index < 2 && <span className="text-2xl text-gray-500 flex items-center">:</span>}
+                    </React.Fragment>
+                  ))}
                 </div>
+
+                <div className="mt-6 text-center">
+                  {isOnLeave ? (
+                    <>
+                      <p className="text-red-500 font-semibold mb-3">You are on leave today. Check-in is disabled.</p>
+                      <button
+                        className="bg-gray-400 text-white px-6 py-2 rounded-lg shadow cursor-not-allowed"
+                        disabled
+                      >
+                        Check In 
+                      </button>
+                    </>
+                  ) : (
+                    !checkInTime ? (
+                      <button
+                        onClick={handleCheckIn}
+                        className="bg-green-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
+                        disabled={checkinLoading}
+                      >
+                        {checkinLoading ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
+                            <span>Checking-In...</span>
+                          </div>
+                        ) : (
+                          "Check In"
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleCheckOut}
+                        className={`${hasCheckedOut ? "bg-blue-500" : "bg-red-500"} hover:bg-blue-400 text-white px-6 py-2 rounded-lg shadow transition duration-300`}
+                        disabled={hasCheckedOut}
+                      >
+                        {hasCheckedOut ? 'Checked Out' : 'Check Out'}
+                      </button>
+                    )
+                  )}
+                </div>
+
               </div>
-              {isFormOpen && (
-                <div
-                  className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                  onClick={() => setIsFormOpen(false)}
-                >
-                  <div
-                    className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <HolidayForm
-                      isEdit={isEditMode}
-                      holidayId={selectedHoliday?._id}
-                      existingData={selectedHoliday}
-                      onSuccess={() => {
-                        setIsFormOpen(false);
-                        fetchHolidays();
-                      }}
-                    />
-                    {/* Cancel button below form or top right */}
-        {/* <button
-                      onClick={() => setIsFormOpen(false)}
-                      className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-                      aria-label="Cancel"
-                    >
-                      ✕
-                    </button>
-                  </div>
-        //         </div> */}
-        {/* //       )} */}
-
-
-        {/* //     </div> */}
-        {/* //   ) */}
-        {/* // } */}
-
-
-
-        {/* {
-          activeTab === 'Time Logs' && (
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <span className="text-blue-600">🕒</span> Time Logs
-              </h2>
-              <p className="text-gray-500">No time logs available yet.</p>
             </div>
-          )
-        } */}
 
-        {/* {
-          activeTab === "Monthly-Attendance" && (
-            <Calendar attendanceData={attendanceData} />)
+            <div className="flex-1 border rounded-xl bg-gray-50 p-4">
+              <div className="flex flex-wrap border-b mb-4">
+                {["Activities"].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => setActiveTab(item)}
+                    className={`px-4 py-2 text-sm md:text-base font-medium transition border-b-2 ${activeTab === item
+                      ? 'text-blue-600 border-blue-600'
+                      : 'text-gray-500 border-transparent hover:text-blue-500 hover:border-blue-300'
+                      }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
 
-        } */}
+              {activeTab === 'Activities' && (
+                <ActivitiesTab />
+              )
+              }
 
 
-      </div>
-    </div>
+            </div>
+          </div>
+        </>
+      }
+    </>
   );
 };
 
