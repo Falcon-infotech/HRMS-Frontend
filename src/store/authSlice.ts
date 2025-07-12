@@ -51,6 +51,7 @@ export const authSlice = createSlice({
 
             localStorage.removeItem("tokenId")
             localStorage.removeItem("userData")
+            localStorage.removeItem("lastCheckInTime")
         }
     },
     extraReducers: (builder) => {

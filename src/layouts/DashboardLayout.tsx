@@ -13,6 +13,8 @@ import NotificationDrawer from '../components/common/NotificationDrawer';
 import { logout } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import axios from 'axios';
+import { BASE_URL } from '../constants/api';
 
 const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,9 +30,28 @@ const DashboardLayout: React.FC = () => {
   const menuRef = useRef();
 
   const { notifications } = useNotification();
-  const unreadNotifications = notifications.filter(n => !n.read).length;
-  const dispatch = useDispatch()
+  // const unreadNotifications = notifications.filter(n => !n.read).length;
 
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    const unread = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/notifications`, {
+          headers: {
+            Authorization: `${localStorage.getItem('tokenId')}`,
+          },
+        });
+        const data = response.data.data;
+        console.log(data.filter(n => !n.isRead).length)
+        setUnreadNotifications(data.filter(n => !n.isRead).length)
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    }
+    unread()
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
@@ -82,11 +103,13 @@ const DashboardLayout: React.FC = () => {
     },
     { name: 'Holidays', href: '/holidays', icon: PartyPopper },
 
-    { name: 'Payroll', href: '/payroll', icon: DollarSign,children:[
-      { name: 'Payroll Dashboard', href: '/payroll' },
-      { name: 'My Salary Slips', href: '/payroll/slips' },
-      // { name: 'Generate Payslip', href: '/payroll/generate' }
-    ] },
+    {
+      name: 'Payroll', href: '/payroll', icon: DollarSign, children: [
+        { name: 'Payroll Dashboard', href: '/payroll' },
+        { name: 'My Salary Slips', href: '/payroll/slips' },
+        // { name: 'Generate Payslip', href: '/payroll/generate' }
+      ]
+    },
     // { name: 'Performance', href: '/performance', icon: Award },
     // {
     //   name: 'Recruitment',
