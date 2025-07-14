@@ -5,12 +5,18 @@ import employeesData, { Employee, country, departments, designations } from '../
 import axios from 'axios';
 import { API, BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const EmployeeForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditMode = !!id;
-
+  const [isCustom, setIsCustom] = useState(false);
+  const [isCustomDepartment, setIsCustomDepartment] = useState(false);
+  const [desinations, setDesignations] = useState([]);
+  const [department, setDepartment] = useState([]);
   const [employee, setEmployee] = useState<Partial<Employee>>({
     first_name: '',
     last_name: '',
@@ -46,9 +52,9 @@ const EmployeeForm: React.FC = () => {
     pfNumber: "",
     UNA: '',
   });
+  const { user } = useSelector((state: RootState) => state.auth)
 
-
-
+console.log(user)
 
   const [documents, setDocuments] = useState<{ name: string; type: string }[]>([]);
   const [activeTab, setActiveTab] = useState('basic');
@@ -128,6 +134,19 @@ const EmployeeForm: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    if (name === "designation" && value === "customdesignation") {
+      setIsCustom(true)
+      setEmployee(prev => ({ ...prev, designation: "" }))
+      return;
+    }
+
+
+    if (name === "department" && value === "customdepartment") {
+      setIsCustomDepartment(true)
+      setEmployee(prev => ({ ...prev, department: "" }))
+      return
+    }
     setEmployee(prev => ({ ...prev, [name]: value }));
 
     // Clear error for this field if it exists
@@ -178,10 +197,10 @@ const EmployeeForm: React.FC = () => {
     if (!employee.department?.trim()) errors.department = 'Department is required';
     if (!employee.designation?.trim()) errors.designation = 'Designation is required';
     if (!employee.joiningDate?.trim()) errors.joiningDate = 'Joining date is required';
-    if(!employee.country?.trim()) errors.country = 'Country is required';
-    if(!employee.state?.trim()) errors.state = 'State is required';
-    if(!employee.city?.trim()) errors.city = 'City is required';
-    if(!employee.id?.trim()) errors.id = 'Employee ID is required';
+    if (!employee.country?.trim()) errors.country = 'Country is required';
+    if (!employee.state?.trim()) errors.state = 'State is required';
+    if (!employee.city?.trim()) errors.city = 'City is required';
+    if (!employee.id?.trim()) errors.id = 'Employee ID is required';
     if (!employee.salary || employee.salary <= 0) errors.salary = 'Salary is required and must be a positive number';
 
     setFormErrors(errors);
@@ -281,6 +300,84 @@ const EmployeeForm: React.FC = () => {
 
   }
 
+
+  const loaddepartments = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/employee/department`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('tokenId')}`
+        }
+      });
+      setDepartment(response.data.data);
+      console.log(response.data.data)
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  }
+
+
+  const loaddesignations = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/employee/designation`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('tokenId')}`
+        }
+      });
+      setDesignations(response.data.data);
+      console.log(response.data.data)
+
+    } catch (error) {
+      console.error("Error fetching designations:", error);
+    }
+  }
+  const [images, setImages] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleImage = (e) => {
+    const file = e.target?.files[0]
+    if (file) {
+      setImages(file)
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  }
+
+
+  const handleuploadImage = async (e) => {
+    e.stopPropagation();
+
+    if (!images) {
+      toast.error("Please select an image first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("files", images);
+    formData.append("userId", user?._id || "");
+    formData.append("title", "profile");
+
+    try {
+      const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('tokenId')}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const data = response.data;
+      console.log(data);
+      toast.success("Image uploaded successfully!");
+
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Upload failed.");
+    }
+  };
+
+
+  useEffect(() => {
+    loaddepartments();
+    loaddesignations();
+  }, [])
 
 
   async function handleSubmitBankDetails() {
@@ -502,9 +599,9 @@ const EmployeeForm: React.FC = () => {
                         ))}
                       </select>
                       {
-                        formErrors.country && ( 
+                        formErrors.country && (
                           <p className="mt-1 text-sm text-red-600">{formErrors.country}</p>
-                        ) 
+                        )
                       }
                     </div>
 
@@ -676,49 +773,113 @@ const EmployeeForm: React.FC = () => {
                           className="form-input bg-neutral-50"
                           value={employee?.id}
                           onChange={handleInputChange}
-                          // readOnly
-                          // disabled
+                        // readOnly
+                        // disabled
                         />
                       </div>
                     )}
-                    <div className="form-group">
-                      <label htmlFor="department" className="form-label">Department *</label>
-                      <select
-                        id="department"
-                        name="department"
-                        className={`form-select `}
-                        value={employee.department || ''}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">Select Department</option>
-                        {departments.map(dept => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                      {formErrors.department && (
-                        <p className="mt-1 text-sm text-red-600">{formErrors.department}</p>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="designation" className="form-label">Designation *</label>
-                      <select
-                        id="designation"
-                        name="designation"
-                        className={`form-select`}
-                        value={employee.designation || ''}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">Select Designation</option>
-                        {designations.map(desig => (
-                          <option key={desig} value={desig}>{desig}</option>
-                        ))}
-                      </select>
-                      {formErrors.designation && (
-                        <p className="mt-1 text-sm text-red-600">{formErrors.designation}</p>
-                      )}
-                    </div>
+                    {isCustomDepartment ? (
+                      <div className="form-group">
+                        <label htmlFor="department" className="form-label">Custom Department *</label>
+                        <input
+                          type="text"
+                          id="department"
+                          name="department"
+                          placeholder="Enter custom department"
+                          value={employee.department}
+                          onChange={handleInputChange}
+                          className="form-input"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsCustomDepartment(false);
+                            setEmployee(prev => ({ ...prev, department: '' }));
+                          }}
+                          className="mt-1 text-sm text-blue-600 underline"
+                        >
+                          Back to dropdown
+                        </button>
+                        {formErrors.department && (
+                          <p className="mt-1 text-sm text-red-600">{formErrors.department}</p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="form-group">
+                        <label htmlFor="department" className="form-label">Department *</label>
+                        <select
+                          id="department"
+                          name="department"
+                          className="form-select"
+                          value={employee.department || ''}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="">Select Department</option>
+                          {department.map(dept => (
+                            <option key={dept} value={dept?.name}>{dept.name}</option>
+                          ))}
+                          <option value="customdepartment">Other (Custom)</option>
+                        </select>
+                        {formErrors.department && (
+                          <p className="mt-1 text-sm text-red-600">{formErrors.department}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {isCustom ? <>
+                      <div className="form-group">
+                        <label htmlFor="designation" className="form-label">Custom Designation *</label>
+                        <input
+                          type="text"
+                          id="designation"
+                          name="designation"
+                          placeholder="Enter custom designation"
+                          value={employee.designation}
+                          onChange={handleInputChange}
+                          className="form-input"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsCustom(false);
+                            setEmployee(prev => ({ ...prev, designation: "" }));
+                          }}
+                          className="mt-1 text-sm text-blue-600 underline"
+                        >
+                          Back to dropdown
+                        </button>
+                        {formErrors.designation && (
+                          <p className="mt-1 text-sm text-red-600">{formErrors.designation}</p>
+                        )}
+                      </div>
+                    </> : <>
+
+                      <div className="form-group">
+                        <label htmlFor="designation" className="form-label">Designation *</label>
+                        <select
+                          id="designation"
+                          name="designation"
+                          className={`form-select`}
+                          value={employee.designation || ''}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="">Select Designation</option>
+                          {desinations.map(desig => (
+                            <option key={desig} value={desig?.name}>{desig?.name}</option>
+
+                          ))}
+                          <option value="customdesignation">Other (Custom)</option>
+
+                        </select>
+                        {formErrors.designation && (
+                          <p className="mt-1 text-sm text-red-600">{formErrors.designation}</p>
+                        )}
+                      </div>
+                    </>}
                     {!isEditMode &&
                       <div className="form-group">
                         <label htmlFor="employeeType" className="form-label">EmployeeID</label>
@@ -730,7 +891,7 @@ const EmployeeForm: React.FC = () => {
                           value={employee?.id || ''}
                           onChange={handleInputChange}
                         />
-                        { formErrors.id &&
+                        {formErrors.id &&
                           <p className="mt-1 text-sm text-red-600">{formErrors.id}</p>
                         }
                       </div>
@@ -819,6 +980,8 @@ const EmployeeForm: React.FC = () => {
                               type="file"
                               className="hidden"
                               accept="image/*"
+                              // value={images}
+                              // onChange={handleImage}
                             />
                           </label>
                           <p className="mt-1 text-xs text-neutral-500">PNG, JPG or GIF up to 2MB</p>
@@ -831,6 +994,14 @@ const EmployeeForm: React.FC = () => {
                             Remove
                           </button>
                         )}
+                        {/* {
+
+                          <>
+                            <div>
+                              <button onClick={(e)=>handleuploadImage(e)}>Submit</button>
+                            </div>
+                          </>
+                        } */}
                       </div>
                     </div>
                   </div>
@@ -868,7 +1039,7 @@ const EmployeeForm: React.FC = () => {
                     >
                       Add Document
                     </button>
-                                        
+
                   </div>
                 ) : (
                   <div className="space-y-4">
