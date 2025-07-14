@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import Loading from '../../components/Loading';
+import ActivitiesTab from '../../components/ActivitiesTab';
 
 
 
@@ -197,7 +198,7 @@ const UserDashboard = () => {
   //   }
   // };
 
-
+// console.log("first")
 
   // const weekRange = `${weekData[0]?.fullDate?.toLocaleDateString('en-GB', {
   //   day: '2-digit',
@@ -263,8 +264,10 @@ const UserDashboard = () => {
 
   const [isStatusLoading, setIsStatusLoading] = useState(true);
   const [isOnLeave, setIsOnLeave] = useState(false);
-  const fetchStatus = async () => {
-    setIsStatusLoading(true);
+
+
+  const fetchStatus = async (showLoading: boolean = true) => {
+  if (showLoading) setIsStatusLoading(true);
 
     try {
       const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
@@ -292,12 +295,11 @@ const UserDashboard = () => {
         setCheckInTime(storedCheckIn);
       }
     } finally {
-      setIsStatusLoading(false);
-    }
+if (showLoading) setIsStatusLoading(false);    }
   };
 
   useEffect(() => {
-    fetchStatus();
+    fetchStatus(true);
   }, []);
 
 
@@ -341,11 +343,16 @@ const UserDashboard = () => {
   const handleCheckIn = async () => {
 
     const token = localStorage.getItem('tokenId');
-
+ if (!token) {
+    toast.error("Authentication token missing. Please log in again.");
+    return;
+  }
     try {
       setCheckinLoading(true)
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject)
+        navigator.geolocation.getCurrentPosition(resolve, reject,{
+          enableHighAccuracy:true
+        })
       })
       const payload = {
         location: {
@@ -365,9 +372,20 @@ const UserDashboard = () => {
       localStorage.setItem('lastCheckInTime', inTime);
       // setCheckInTime(response.data.attendance.inTime);
       toast.success('Checked in successfully');
-      fetchStatus();
+      fetchStatus(false);
     } catch (error: any) {
-      console.log(error)
+      console.error("❌ Check-in Error:", error);
+
+    if (axios.isAxiosError(error)) {
+      const errorMessage = error.response?.data?.message || "Something went wrong.";
+      console.log("🔴 API 400 Error Response:", error.response?.data);
+
+      toast.error(`❌ ${errorMessage}`);
+    } else if (error.code === 1) {
+      toast.error("🚫 Location permission denied. Please allow GPS access.");
+    } else {
+      toast.error("⚠️ Failed to check in. Please try again.");
+    }
       toast.error('Error checking in', error);
     } finally {
       setCheckinLoading(false)
@@ -425,96 +443,96 @@ const UserDashboard = () => {
   // ];
 
 
-  const ActivitiesTab = () => {
-    return (
-      <div className="space-y-6">
+  // const ActivitiesTab = () => {
+  //   return (
+  //     <div className="space-y-6">
 
-        {/* Greeting Section */}
-        <div className="flex justify-between items-center p-6 bg-white rounded-xl shadow">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800">Good Morning <span className="text-blue-600">{userDetails?.name || capitalize(userDetails?.first_name) + " " + capitalize(userDetails?.last_name)}</span></h2>
-            <p className="text-gray-500">Have a productive day!</p>
-          </div>
-          <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
-            ☀️
-          </div>
-        </div>
-        <div className="bg-gray-50 mt-4 p-4 rounded-lg overflow-x-auto">
+  //       {/* Greeting Section */}
+  //       <div className="flex justify-between items-center p-6 bg-white rounded-xl shadow">
+  //         <div>
+  //           <h2 className="text-xl font-semibold text-gray-800">Good Morning <span className="text-blue-600">{userDetails?.name || capitalize(userDetails?.first_name) + " " + capitalize(userDetails?.last_name)}</span></h2>
+  //           <p className="text-gray-500">Have a productive day!</p>
+  //         </div>
+  //         <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
+  //           ☀️
+  //         </div>
+  //       </div>
+  //       <div className="bg-gray-50 mt-4 p-4 rounded-lg overflow-x-auto">
 
-          {/* Work Schedule */}
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <span>📅</span> Work Schedule
-            </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              {weekData[0]?.fullDate.toLocaleDateString('en-GB')} -{' '}
-              {weekData[6]?.fullDate.toLocaleDateString('en-GB')}
-            </p>
+  //         {/* Work Schedule */}
+  //         <div className="bg-white rounded-xl shadow p-6">
+  //           <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+  //             <span>📅</span> Work Schedule
+  //           </h3>
+  //           <p className="text-sm text-gray-500 mt-1">
+  //             {weekData[0]?.fullDate.toLocaleDateString('en-GB')} -{' '}
+  //             {weekData[6]?.fullDate.toLocaleDateString('en-GB')}
+  //           </p>
 
-            <div className="bg-gray-50 mt-4 p-4 rounded-lg overflow-x-auto">
-              <div className="text-gray-600 mb-2">General: 09:00 AM - 6:00 PM</div>
-              <div className="grid grid-cols-7 min-w-[700px] text-center text-sm font-medium text-gray-700 gap-2">
-                {weekData.map((item) => (
-                  <div key={item.fullDate.toISOString()} className="space-y-1 min-w-[90px]">
-                    <div className="text-gray-500">{item.day}</div>
-                    <div
-                      className={`text-base font-semibold ${item.highlight
-                        ? 'text-white bg-blue-500 rounded-full px-2 py-1'
-                        : item.color
-                        }`}
-                    >
-                      {item.dateNum}
-                    </div>
-                    <div className={`text-xs ${item.color}`}>{item.status}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+  //           <div className="bg-gray-50 mt-4 p-4 rounded-lg overflow-x-auto">
+  //             <div className="text-gray-600 mb-2">General: 09:00 AM - 6:00 PM</div>
+  //             <div className="grid grid-cols-7 min-w-[700px] text-center text-sm font-medium text-gray-700 gap-2">
+  //               {weekData.map((item) => (
+  //                 <div key={item.fullDate.toISOString()} className="space-y-1 min-w-[90px]">
+  //                   <div className="text-gray-500">{item.day}</div>
+  //                   <div
+  //                     className={`text-base font-semibold ${item.highlight
+  //                       ? 'text-white bg-blue-500 rounded-full px-2 py-1'
+  //                       : item.color
+  //                       }`}
+  //                   >
+  //                     {item.dateNum}
+  //                   </div>
+  //                   <div className={`text-xs ${item.color}`}>{item.status}</div>
+  //                 </div>
+  //               ))}
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
 
-        {/* Upcoming Holidays */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <span>🏖️</span> Holidays This Month
-          </h3>
+  //       {/* Upcoming Holidays */}
+  //       <div className="bg-white rounded-xl shadow p-6">
+  //         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+  //           <span>🏖️</span> Holidays This Month
+  //         </h3>
 
-          <div className="flex flex-wrap gap-4 mt-4">
-            {holidatsThisMonth.length > 0 ? (
-              holidatsThisMonth.map((holiday) => {
-                const dateObj = new Date(holiday.date);
-                const day = dateObj.getDate();
-                const month = dateObj.toLocaleString('default', { month: 'short' });
-                const weekday = dateObj.toLocaleString('default', { weekday: 'long' });
+  //         <div className="flex flex-wrap gap-4 mt-4">
+  //           {holidatsThisMonth.length > 0 ? (
+  //             holidatsThisMonth.map((holiday) => {
+  //               const dateObj = new Date(holiday.date);
+  //               const day = dateObj.getDate();
+  //               const month = dateObj.toLocaleString('default', { month: 'short' });
+  //               const weekday = dateObj.toLocaleString('default', { weekday: 'long' });
 
-                return (
-                  <div
-                    key={holiday.date}
-                    className="border border-blue-500 text-blue-600 rounded-lg p-4 w-full sm:w-1/3"
-                  >
-                    <p className="font-semibold">{holiday.reason}</p>
-                    <p className="text-sm text-gray-500">
-                      {`${day} - ${month}, ${weekday}`}
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-gray-500">No holidays this month.</p>
-            )}
-          </div>
-        </div>
+  //               return (
+  //                 <div
+  //                   key={holiday.date}
+  //                   className="border border-blue-500 text-blue-600 rounded-lg p-4 w-full sm:w-1/3"
+  //                 >
+  //                   <p className="font-semibold">{holiday.reason}</p>
+  //                   <p className="text-sm text-gray-500">
+  //                     {`${day} - ${month}, ${weekday}`}
+  //                   </p>
+  //                 </div>
+  //               );
+  //             })
+  //           ) : (
+  //             <p className="text-gray-500">No holidays this month.</p>
+  //           )}
+  //         </div>
+  //       </div>
 
-        {/* Reminder */}
-        {!checkInTime && <div className="bg-white rounded-xl shadow p-6 flex items-center gap-4">
-          <div className="text-yellow-500 text-2xl">⏰</div>
-          <div className="text-sm text-gray-700">
-            <strong>You are yet to submit your time logs today!</strong>
-          </div>
-        </div>}
-      </div>
-    );
-  };
+  //       {/* Reminder */}
+  //       {!checkInTime && <div className="bg-white rounded-xl shadow p-6 flex items-center gap-4">
+  //         <div className="text-yellow-500 text-2xl">⏰</div>
+  //         <div className="text-sm text-gray-700">
+  //           <strong>You are yet to submit your time logs today!</strong>
+  //         </div>
+  //       </div>}
+  //     </div>
+  //   );
+  // };
 
 
   return (
@@ -564,7 +582,7 @@ const UserDashboard = () => {
                         className="bg-gray-400 text-white px-6 py-2 rounded-lg shadow cursor-not-allowed"
                         disabled
                       >
-                        Check In 
+                        Check In
                       </button>
                     </>
                   ) : (
@@ -615,9 +633,14 @@ const UserDashboard = () => {
               </div>
 
               {activeTab === 'Activities' && (
-                <ActivitiesTab />
-              )
-              }
+                <ActivitiesTab
+                  userDetails={userDetails}
+                  weekData={weekData}
+                  holidatsThisMonth={holidatsThisMonth}
+                  checkInTime={checkInTime}
+                />
+              )}
+
 
 
             </div>

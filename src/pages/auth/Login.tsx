@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,11 +12,19 @@ const Login: React.FC = () => {
   const [errors, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const dispatch = useDispatch<AppDispatch>(); // ✅ correct spelling
-  const { user, loading, error } = useSelector((state: RootState) => state.auth)
-  // console.log(user, loading, error)
+  const { user, loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth)
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirectPath = location.state?.from?.pathname || '/dashboard';
+      navigate(redirectPath, { replace: true });
+    }
+  }, [isAuthenticated]);
+  // console.log(user, loading, error)
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -25,10 +33,10 @@ const Login: React.FC = () => {
     try {
       // await login(email, password);
       const resultAction = await dispatch(loginUser({ email, password })).unwrap();
-      if(resultAction.user.role === 'admin'|| resultAction.user.role === 'hr' ) {
-      navigate('/dashboard');
+      if (resultAction.user.role === 'admin' || resultAction.user.role === 'hr') {
+        navigate('/dashboard');
       }
-      else if(resultAction.user.role === 'employee') {
+      else if (resultAction.user.role === 'employee') {
         navigate('/home');
       }
     } catch (err) {
