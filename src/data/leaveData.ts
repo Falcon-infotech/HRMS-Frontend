@@ -75,6 +75,20 @@ export const leaveTypes = [
     maxDays: 90,
     color: '#ec4899', // pink
   },
+  {
+    id: 'first half',
+    name: 'First Half',
+    // description: 'Leave granted to mothers during and after pregnancy',
+    maxDays: 90,
+    color: '#8b5cf6', 
+  },
+  {
+    id: 'second half',
+    name: 'Second Half ',
+    // description: 'Leave granted to mothers during and after pregnancy',
+    maxDays: 90,
+    color: '#6b7280', // pink
+  },
   // {
   //   id: 'paternity',
   //   name: 'Paternity Leave',
