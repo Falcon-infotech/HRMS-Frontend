@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, AlertCircle, EyeOff, Eye } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { loginUser } from '../../store/authSlice';
@@ -16,6 +16,7 @@ const Login: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>(); // ✅ correct spelling
   const { user, loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,7 +25,7 @@ const Login: React.FC = () => {
     }
   }, [isAuthenticated]);
   // console.log(user, loading, error)
- 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -48,6 +49,9 @@ const Login: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
+      <div className='mb-8 flex justify-center'>
+        <img src="Falcon_MSL.png" className='w-68 h-48' alt="" />
+      </div>
       <h1 className="text-3xl font-bold text-neutral-800 mb-2">Welcome back</h1>
       <p className="text-neutral-500 mb-8">Sign in to your account to continue</p>
 
@@ -79,25 +83,33 @@ const Login: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <label htmlFor="password" className="form-label">Password</label>
             <a href="#" className="text-sm text-primary-600 hover:text-primary-700">
               Forgot password?
             </a>
-          </div>
+          </div> */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock className="h-5 w-5 text-neutral-400" />
             </div>
             <input
               id="password"
-              type="password"
-              className="form-input pl-10"
+              type={showPassword ? 'text' : 'password'}
+              className="form-input pl-10 pr-10"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-500 hover:text-neutral-700"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 

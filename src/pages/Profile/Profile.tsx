@@ -280,7 +280,9 @@ import { useParams, Link } from 'react-router-dom';
 import {
   Edit, Mail, Phone, MapPin, Briefcase, Calendar, Clock, UserCheck, FileText,
   DollarSign, Clipboard, ChevronDown, Download,
-  Edit2
+  Edit2,
+  Image,
+  Edit3Icon
 } from 'lucide-react';
 
 import axios from 'axios';
@@ -299,7 +301,7 @@ const EmployeeDetail: React.FC = () => {
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth)
   const id = user?._id;
-  console.log(user)
+  // console.log(user)
 
   const [department, setDepartment] = useState('');
 
@@ -338,7 +340,7 @@ const EmployeeDetail: React.FC = () => {
         },
       });
 
-      console.log('API response:', response.data.data);
+      // console.log('API response:', response.data.data);
 
       setEmployees(response.data.data);
     } catch (error) {
@@ -399,7 +401,7 @@ const EmployeeDetail: React.FC = () => {
       toast.error(err?.response?.data?.message || 'Something went wrong');
     }
   };
-////////
+  ////////
   const handleInputChange = (e) => {
     setAddress({ ...address, [e.target.name]: e.target.value });
   };
@@ -409,7 +411,7 @@ const EmployeeDetail: React.FC = () => {
   const [status, setStatus] = useState<any>("null");
   useEffect(() => {
     const fetchStatus = async () => {
-      console.log("starrt")
+      // console.log("starrt")
       try {
         const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
           headers: {
@@ -492,13 +494,59 @@ const EmployeeDetail: React.FC = () => {
 
   // const attendanceRate = totalWorkdays > 0 ? Math.round((presentDays / totalWorkdays) * 100) : 0;
 
+  const handleImageUpload = async () => {
+  // if (!imageFile) return toast.error("No file selected");
+
+  const formData = new FormData();
+  // formData.append("file", imageFile);
+  // formData.append("userId", user?._id); // adjust as needed
+  formData.append("title", "profile");
+
+  try {
+    const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("tokenId")}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    const imageUrl = response.data.imageUrl;
+
+    // Update UI
+    // setEmploy(prev => ({ ...prev, avatar: imageUrl }));
+
+    // Save to backend profile (if needed)
+    await axios.put(`${BASE_URL}/api/user/update`, {
+      userId: user?._id,
+      avatar: imageUrl,
+    });
+
+    toast.success("Image uploaded successfully");
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Upload failed");
+  }
+};
+
+
   return (
     <div className="animate-fade-in">
       {/* employees Header */}
       <div className="bg-white rounded-lg shadow-sm border border-neutral-200 mb-6 overflow-hidden">
         <div className="md:flex">
           <div className="md:w-1/3 lg:w-1/4 bg-primary-50 p-6 flex flex-col items-center">
-            <div className="w-32 h-32 rounded-full overflow-hidden bg-white border-4 border-white shadow-md mb-4">
+            <div className="w-32 h-32 rounded-full overflow-hidden bg-white border-4 border-white shadow-md mb-4 relative">
+              <div className='absolute bottom-5 right-3 bg-gray-300 p-1 rounded-xl'><label htmlFor="avatar-upload">
+                <Edit3Icon />
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden" // re-enable this to hide default file input styling
+                  // onChange={handleImage} // assumes you have this function
+                />
+              </label></div>
               {employee.avatar ? (
                 <img src={employee.avatar} alt={`${employee.first_name} ${employee.last_name}`} className="w-full h-full object-cover" />
               ) : (
