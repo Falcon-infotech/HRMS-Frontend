@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { BASE_URL } from './api';
+import { store } from '../store/store';
+import { logout } from '../store/authSlice';
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -31,11 +33,12 @@ api.interceptors.response.use(
 
         const newAccessToken = res.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken); // ✅ save new token
-
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; // ✅ retry with new token
         return api(originalRequest); 
       } catch (err) {
         console.error('Refresh token failed:', err.message);
+        store.dispatch(logout());
+        window.location.href = '/';
       }
     }
 

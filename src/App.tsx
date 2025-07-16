@@ -42,6 +42,8 @@ import MyLeaveStatus from './pages/leave/MyLeaveStatus';
 import SalarySlipForm from './components/SalarySlipDetails';
 import PayslipComponent from './components/PaySlip';
 import MySlip from './pages/payroll/MySlip';
+import axios from 'axios';
+import { BASE_URL } from './constants/api';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -76,7 +78,6 @@ function App() {
       clearSelectedLocalStorageAt1159PM(timeZone); // reschedule
     }, delay);
   }
-
 
   useEffect(() => {
     const timeZone = "Asia/Kolkata";
