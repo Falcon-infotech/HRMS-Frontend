@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { addDays, addWeeks, endOfWeek, format, isSameDay, startOfWeek, subWeeks } from 'date-fns';
 import { CalendarHeart } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
@@ -52,11 +52,7 @@ const AttendanceStatus = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-                    }
-                });
+                const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, );
                 // console.log(res.data.data)
                 setUser(res.data.data.attendance);
             } catch (error) {

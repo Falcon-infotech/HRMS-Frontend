@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
-
+import axios from "../../constants/axiosInstance"
 const MyLeaveStatus = () => {
     const [leaveData, setLeaveData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -9,15 +9,11 @@ const MyLeaveStatus = () => {
     useEffect(() => {
         const fetchLeaveData = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/api/leaves/my_leaves`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-                    },
-                });
-                if (!response.ok) {
+                const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, );
+                if (!response.status) {
                     throw new Error('Network response was not ok');
                 }
-                const data = await response.json();
+                const data = await response.data;
                 setLeaveData(data.data || []);
             } catch (error) {
                 console.error('Error fetching leave data:', error);

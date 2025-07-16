@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../constants/axiosInstance.ts';
 import React, { useEffect, useState } from 'react';
 import { BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
@@ -59,14 +59,11 @@ const UserDashboard = () => {
 
   const fetchHolidays = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/holidays/all_holidays`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-        }
-      });
+      const response = await axios.get(`${BASE_URL}/api/holidays/all_holidays`, 
+      );
 
 
-      const data = await response.json();
+      const data = await response.data;
       // console.log(data.data)
       setHolidays(data.data || [])
     } catch (error) {
@@ -160,9 +157,7 @@ const UserDashboard = () => {
     const fetchAttendance = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          }
+         
         });
         const records = res.data?.data?.attendance || [];
         // console.log(records, "records")
@@ -360,11 +355,8 @@ if (showLoading) setIsStatusLoading(false);    }
           longitude: position.coords.longitude,
         }
       };
-      const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      })
+      const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, payload,
+      )
       // console.log(response.data)
       const inTime = response.data?.attendance?.inTime;
 

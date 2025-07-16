@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Upload, Plus, Trash2 } from 'lucide-react';
 import employeesData, { Employee, country, departments, designations } from '../../data/employeeData';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { API, BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
@@ -239,18 +239,10 @@ console.log(user)
         const token = localStorage.getItem("tokenId")
         console.log("running")
         if (isEditMode && id) {
-          const response = await axios.put(`${BASE_URL}/api/employee/${id}`, payload, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            }
-          });
+          const response = await axios.put(`${BASE_URL}/api/employee/${id}`, payload, );
           toast.success("Employee updated successfully")
         } else {
-          const response = await axios.post(`${BASE_URL}/api/auth/register`, payload, {
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
-          });
+          const response = await axios.post(`${BASE_URL}/api/auth/register`, payload, );
           toast.success("Employee created successfully")
         }
         // const successMessage = isEditMode
@@ -303,11 +295,7 @@ console.log(user)
 
   const loaddepartments = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/employee/department`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('tokenId')}`
-        }
-      });
+      const response = await axios.get(`${BASE_URL}/api/employee/department`, );
       setDepartment(response.data.data);
       console.log(response.data.data)
     } catch (error) {
@@ -318,11 +306,7 @@ console.log(user)
 
   const loaddesignations = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/employee/designation`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('tokenId')}`
-        }
-      });
+      const response = await axios.get(`${BASE_URL}/api/employee/designation`, );
       setDesignations(response.data.data);
       console.log(response.data.data)
 
@@ -358,7 +342,6 @@ console.log(user)
     try {
       const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('tokenId')}`,
           'Content-Type': 'multipart/form-data',
         },
       });

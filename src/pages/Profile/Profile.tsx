@@ -548,50 +548,50 @@ const EmployeeDetail: React.FC = () => {
                 />
               </label></div>
               {employee.avatar ? (
-                <img src={employee.avatar} alt={`${employee.first_name} ${employee.last_name}`} className="w-full h-full object-cover" />
+                <img src={employee?.avatar} alt={`${employee?.first_name} ${employee?.last_name}`} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-3xl font-bold">
-                  {employee.role === "admin" ? employee.first_name[0] : employee.first_name[0]}
+                  {employee?.role === "admin" ? employee?.first_name[0] : employee?.first_name[0]}
                 </div>
               )}
             </div>
-            <h1 className="text-xl font-bold text-neutral-800 text-center">{employee.first_name || employee.name} {employee.last_name}</h1>
-            <p className="text-neutral-600 mt-1 text-center">{employee.designation}</p>
+            <h1 className="text-xl font-bold text-neutral-800 text-center">{employee?.first_name || employee?.name} {employee?.last_name}</h1>
+            <p className="text-neutral-600 mt-1 text-center">{employee?.designation}</p>
             <div className="mt-3">
-              <span className={`badge ${employee.status === 'active' ? 'badge-success' :
-                employee.status === 'on-leave' ? 'badge-warning' : 'badge-danger'
+              <span className={`badge ${employee?.status === 'active' ? 'badge-success' :
+                employee?.status === 'on-leave' ? 'badge-warning' : 'badge-danger'
                 }`}>
-                {employee.status === 'active' ? 'Active' :
-                  employee.status === 'on-leave' ? 'On Leave' : 'Inactive'}
+                {employee?.status === 'active' ? 'Active' :
+                  employee?.status === 'on-leave' ? 'On Leave' : 'Inactive'}
               </span>
             </div>
             <div className="mt-6 w-full space-y-3">
               <div className="flex items-center text-sm text-neutral-600">
                 <Mail size={16} className="mr-2 text-neutral-400" />
-                <span className="truncate">{employee.email}</span>
+                <span className="truncate">{employee?.email}</span>
               </div>
               <div className="flex items-center text-sm text-neutral-600">
                 <Phone size={16} className="mr-2 text-neutral-400" />
                 <span>{employee?.phone || "9876543210"}</span>
               </div>
-              {employee.address_line && (
+              {employee?.address_line && (
                 <div className="flex items-center text-sm text-neutral-600">
                   <MapPin size={16} className="mr-2 text-neutral-400" />
-                  <span className="truncate">{employee.address}, {employee.city}, {employee.state}</span>
+                  <span className="truncate">{employee?.address}, {employee?.city}, {employee?.state}</span>
                 </div>
               )}
               <div className="flex items-center text-sm text-neutral-600">
                 <Briefcase size={16} className="mr-2 text-neutral-400" />
-                <span>{employee.department} - {employee.employeeType}</span>
+                <span>{employee?.department} - {employee?.employeeType}</span>
               </div>
               <div className="flex items-center text-sm text-neutral-600">
                 <Calendar size={16} className="mr-2 text-neutral-400" />
-                <span>Joined- {new Date(employee.joining_date).toLocaleDateString()}</span>
+                <span>Joined- {new Date(employee?.joining_date).toLocaleDateString()}</span>
               </div>
             </div>
 
             {user?.role !== "employee" && <div className="mt-8 w-full">
-              <Link to={`/employees/edit/${employee._id}`} className="btn btn-primary w-full flex items-center justify-center">
+              <Link to={`/employees/edit/${employee?._id}`} className="btn btn-primary w-full flex items-center justify-center">
                 <Edit size={16} className="mr-2" />
                 Edit Profile
               </Link>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../constants/axiosInstance';
 import { BASE_URL } from '../constants/api';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -105,17 +105,9 @@ const [ids , setId] = useState<string | undefined>(id);
     try {
       const token = localStorage.getItem('tokenId');
       if (type === 'add') {
-        const res = await axios.post(`${BASE_URL}/api/payroll/add_payroll_basic_info/${id}`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
+        const res = await axios.post(`${BASE_URL}/api/payroll/add_payroll_basic_info/${id}`, payload,);
       } else {
-        const res = await axios.put(`${BASE_URL}/api/payroll/update_payroll_basic_info/${ids}`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
+        const res = await axios.put(`${BASE_URL}/api/payroll/update_payroll_basic_info/${ids}`, payload, );
       }
 
       // console.log('Salary slip submitted:', res.data);

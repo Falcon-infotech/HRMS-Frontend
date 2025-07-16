@@ -12,7 +12,7 @@ import {
 import { getDashboardData } from '../../data/analyticsData';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import axios from 'axios';
+import axios from "../../constants/axiosInstance.ts"
 import { BASE_URL } from '../../constants/api';
 import { departments } from '../../data/employeeData';
 
@@ -51,9 +51,9 @@ const Dashboard: React.FC = () => {
         setLoading(true)
         const tokon = localStorage.getItem('tokenId')
         const response = await axios.get(`${BASE_URL}/api/employee`, {
-          headers: {
-            Authorization: `Bearer ${tokon}`
-          }
+          // headers: {
+          //   Authorization: `Bearer ${tokon}`
+          // }
         })
         const data = response.data
         // console.log(data.data.users)
@@ -83,14 +83,14 @@ const Dashboard: React.FC = () => {
   const fetchHolidays = async () => {
     // console.log("first")
     try {
-      const response = await fetch(`${BASE_URL}/api/holidays/all_holidays`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-        }
+      const response = await axios.get(`${BASE_URL}/api/holidays/all_holidays`, {
+        // headers: {
+        //   Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        // }
       });
 
 
-      const data = await response.json();
+      const data = await response.data;
       // console.log(data.data)
       setHolidays(data.data || [])
     } catch (error) {
@@ -111,13 +111,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const todayAttendace = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/attendance/all_users_today_attendance`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          }
+        const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`, {
+          // headers: {
+          //   Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+          // }
         });
 
-        const data = await response.json();
+        const data = await response.data;
         // console.log(data)
 
         setTodayStats(data.totalUsers);

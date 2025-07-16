@@ -13,7 +13,7 @@ import NotificationDrawer from '../components/common/NotificationDrawer';
 import { logout } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import axios from 'axios';
+import axios from '../constants/axiosInstance';
 import { BASE_URL } from '../constants/api';
 
 const DashboardLayout: React.FC = () => {
@@ -37,13 +37,9 @@ const DashboardLayout: React.FC = () => {
   useEffect(() => {
     const unread = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/notifications`, {
-          headers: {
-            Authorization: `${localStorage.getItem('tokenId')}`,
-          },
-        });
+        const response = await axios.get(`${BASE_URL}/api/notifications`);
         const data = response.data.data;
-        console.log(data.filter(n => !n.isRead).length)
+        // console.log(data.filter(n => !n.isRead).length)
         setUnreadNotifications(data.filter(n => !n.isRead).length)
       } catch (error) {
         console.log(error);

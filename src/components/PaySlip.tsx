@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../constants/axiosInstance';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BASE_URL } from '../constants/api';
@@ -12,11 +12,7 @@ const PayslipComponent = () => {
     const token = localStorage.getItem('tokenId');
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/payroll/get_salary_slip/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
+        const res = await axios.get(`${BASE_URL}/api/payroll/get_salary_slip/${id}`, );
 
         const data = res.data.data;
         console.log(data)

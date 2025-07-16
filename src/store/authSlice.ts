@@ -49,7 +49,8 @@ export const authSlice = createSlice({
             state.error = null;
             state.isAuthenticated = false;
 
-            localStorage.removeItem("tokenId")
+            localStorage.removeItem("accessToken")
+            localStorage.removeItem("refreshToken")
             localStorage.removeItem("userData")
             localStorage.removeItem("lastCheckInTime")
         }
@@ -65,7 +66,8 @@ export const authSlice = createSlice({
                 state.user = action.payload.user
                 state.token = action.payload.token;
                 state.isAuthenticated = true;
-                localStorage.setItem("tokenId", action.payload.token)
+                localStorage.setItem("accessToken", action.payload?.accessToken)
+                localStorage.setItem("refreshToken", action.payload?.refreshToken)
                 localStorage.setItem("userData", JSON.stringify(action.payload.user))
             })
             .addCase(loginUser.rejected, (state, action) => {

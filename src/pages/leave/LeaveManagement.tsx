@@ -4,7 +4,7 @@ import { Calendar, Filter, Plus, ArrowUpDown, Download, RefreshCw, MoreHorizonta
 import { leaveRequests, leaveBalances, leaveTypes } from '../../data/leaveData';
 import employeesData from '../../data/employeeData';
 import PageHeader from '../../components/common/PageHeader';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
 import toast from 'react-hot-toast';
@@ -30,11 +30,7 @@ const LeaveManagement: React.FC = () => {
       // setLoadingList(true);
       if (showGlobalLoader) setLoadingList(true); // only set loading if requested
 
-      const response = await axios.get(`${BASE_URL}/api/leaves`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
-        }
-      })
+      const response = await axios.get(`${BASE_URL}/api/leaves`, )
       // console.log(response.data.data)
       setAllLeaveRequests(response.data.data)
       setFilteredRequests(response.data.data);
@@ -57,10 +53,6 @@ const LeaveManagement: React.FC = () => {
       setUpdatingId({ id: leaveId, action: status })
       const response = await axios.put(`${BASE_URL}/api/leaves/update_leave/${leaveId}`, {
         status: status,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
-        }
       });
 
       await handleAllusers(false);
