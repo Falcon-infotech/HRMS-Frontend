@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../constants/axiosInstance";
 import { BASE_URL } from "../constants/api";
 
 const HolidayForm = ({ isEdit = false, existingData = {}, holidayId = null, onSuccess }) => {
@@ -35,17 +35,9 @@ const HolidayForm = ({ isEdit = false, existingData = {}, holidayId = null, onSu
         e.preventDefault();
         try {
             if (isEdit) {
-                await axios.put(`${BASE_URL}/api/holidays/edit_holiday/${holidayId}`, formData, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("tokenId")}`
-                    }
-                });
+                await axios.put(`${BASE_URL}/api/holidays/edit_holiday/${holidayId}`, formData,);
             } else {
-                await axios.post(`${BASE_URL}/api/holidays/add_custom_holiday`, formData, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("tokenId")}`
-                    }
-                });
+                await axios.post(`${BASE_URL}/api/holidays/add_custom_holiday`, formData,);
             }
             onSuccess?.();
         } catch (error) {

@@ -5,7 +5,7 @@ import {
   Download, Upload, ArrowUpDown, Eye
 } from 'lucide-react';
 import employeesData, { Employee, departments, designations } from '../../data/employeeData';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
@@ -53,11 +53,8 @@ const EmployeeList: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('tokenId');
 
-      const response = await axios.get(`${BASE_URL}/api/employee`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(`${BASE_URL}/api/employee`,
+      );
 
       const datas = response.data;
       console.log(datas.data.users)
@@ -80,10 +77,6 @@ const EmployeeList: React.FC = () => {
       setUpdateLoading(true)
       const response = await axios.put(`${BASE_URL}/api/employee/reset_password/${id}`, {
         password: newPassword
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`
-        }
       })
 
       if (response.status === 200) {
@@ -219,11 +212,8 @@ const EmployeeList: React.FC = () => {
     try {
       const token = localStorage.getItem('tokenId');
 
-      const data = await axios.delete(`${BASE_URL}/api/employee/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const data = await axios.delete(`${BASE_URL}/api/employee/${id}`,
+      )
 
       setEmployees(prevEmployees => prevEmployees.filter(emp => emp._id !== id));
       console.log(data.data)

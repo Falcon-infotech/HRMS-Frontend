@@ -5,7 +5,7 @@ import { payrollData, getPayrollsByPeriod, getTotalPayrollAmount } from '../../d
 import employeesData, { Employee } from '../../data/employeeData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts';
 import PageHeader from '../../components/common/PageHeader';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
 
@@ -125,9 +125,7 @@ const PayrollDashboard: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/payroll/get_payroll_data`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-        },
+        
         params: {
           month: selectedMonth,
           year: selectedYear,

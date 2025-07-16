@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { X, Bell, Check } from 'lucide-react';
 import { useNotification } from '../../contexts/NotificationContext';
 import { format } from 'date-fns';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -29,11 +29,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
     const fetchNotification = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${BASE_URL}/api/notifications`, {
-          headers: {
-            Authorization: `${localStorage.getItem('tokenId')}`,
-          },
-        });
+        const response = await axios.get(`${BASE_URL}/api/notifications`);
         const data = response.data;
         setNotificationData(data.data)
         // console.log(data.data);

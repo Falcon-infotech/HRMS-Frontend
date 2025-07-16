@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { leaveTypes } from '../../data/leaveData';
 import PageHeader from '../../components/common/PageHeader';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
 
@@ -21,13 +21,10 @@ const ApplyLeave: React.FC = () => {
 
   const fetchLeaveData = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-        },
-      });
+      const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, );
 
       const leaves = response.data.data || [];
+      // console.log(leaves)
 
       // Count leaves by type
       const totalLeaveCount = leaves.reduce((acc: any, leave: any) => {
@@ -35,6 +32,7 @@ const ApplyLeave: React.FC = () => {
         acc[leaveType] = (acc[leaveType] || 0) + 1;
         return acc;
       }, {});
+      // console.log(totalLeaveCount)
       setLeaveCount(totalLeaveCount);
 
       // Calculate leave balance
@@ -85,11 +83,7 @@ const ApplyLeave: React.FC = () => {
 
     if (validateForm()) {
       try {
-        const response = await axios.post(`${BASE_URL}/api/leaves/apply_leave`, formData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          },
-        });
+        const response = await axios.post(`${BASE_URL}/api/leaves/apply_leave`, formData, );
 
         if (response.status === 201) {
           setFormData({

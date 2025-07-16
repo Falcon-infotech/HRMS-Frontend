@@ -5,6 +5,7 @@ import { RootState } from '../../store/store';
 import { Edit2, PlusCircle, Trash2 } from 'lucide-react';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
+import axios from '../../constants/axiosInstance';
 
 const Holiday = () => {
 
@@ -19,14 +20,9 @@ const Holiday = () => {
     const fetchHolidays = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${BASE_URL}/api/holidays/all_holidays`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-                }
-            });
+            const response = await axios.get(`${BASE_URL}/api/holidays/all_holidays`,);
 
-
-            const data = await response.json();
+            const data =  response.data;
             // console.log(data.data)
             setHolidays(data.data || [])
         } catch (error) {
@@ -44,11 +40,7 @@ const Holiday = () => {
 
     const handleDeleteHoliday = async (id: string) => {
         try {
-            await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-                }
-            });
+            await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`,);
             fetchHolidays();
         } catch (error) {
             console.error("Error deleting holiday:", error);

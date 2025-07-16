@@ -9,7 +9,7 @@ import {
 // import { getEmployeeLeaveRequests, getEmployeeLeaveBalance } from '../../data/leaveData';
 // import { getEmployeePayrolls } from '../../data/payrollData';
 // import { getEmployeePerformanceReviews, getEmployeeAverageRating } from '../../data/performanceData';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
 import { useSelector } from 'react-redux';
@@ -51,11 +51,7 @@ const EmployeeDetail: React.FC = () => {
     const fetchEmployees = async () => {
       try {
         const token = localStorage.getItem('tokenId');
-        const response = await axios.get(`${BASE_URL}/api/employee`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(`${BASE_URL}/api/employee`);
 
         console.log('API response:', response.data);
 

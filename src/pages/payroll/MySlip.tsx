@@ -10,7 +10,7 @@ const MySlip = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [data,setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-  const token = localStorage.getItem('tokenId');
+  const token = localStorage.getItem('accessToken');
   useEffect(() => {
     let fetchPayslips =async () => {
       try {

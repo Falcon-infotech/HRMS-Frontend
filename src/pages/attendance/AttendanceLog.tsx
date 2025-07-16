@@ -5,7 +5,7 @@ import { format, subDays, isToday } from 'date-fns';
 import { attendanceData } from '../../data/attendanceData';
 import employeesData, { departments } from '../../data/employeeData';
 import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import AllUserAttendance from '../../components/AllUserAttendance ';
 
@@ -43,11 +43,8 @@ const AttendanceLog: React.FC = () => {
     const handleAllEmployees = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          },
-        });
+        const response = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`,
+        );
 
         const data = response.data?.data ?? [];
         // console.log("data", data);

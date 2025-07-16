@@ -7,7 +7,7 @@ import { format, getMonth, getYear, addMonths, subMonths } from 'date-fns';
 import { generateCalendarDays, attendanceData, getEmployeeAttendance } from '../../data/attendanceData';
 import employeesData from '../../data/employeeData';
 import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios';
+import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaTimesCircle } from 'react-icons/fa';
 import { FaClock } from 'react-icons/fa6';
@@ -41,11 +41,7 @@ const Attendance: React.FC = () => {
   useEffect(() => {
     const todayAttendance = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`
-          }
-        })
+        const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`,)
         const data = response.data.data
         // console.log(data)
         setTodayAttendanceData(data);
@@ -60,11 +56,7 @@ const Attendance: React.FC = () => {
   useEffect(() => {
     const allUserAttendanceHistory = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`
-          }
-        });
+        const response = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`,);
         const data = response.data.data;
         // console.log(data, "attendcatotaldata")
         setAllAttendanceData(data);
@@ -103,11 +95,7 @@ const Attendance: React.FC = () => {
   useEffect(() => {
     const fetchAllUsers = async (): Promise<any> => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/employee`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`
-          }
-        });
+        const response = await axios.get(`${BASE_URL}/api/employee`,);
         const data = response.data
         setAllUsers(data.data.users)
         // console.log(data.data.users)
@@ -149,11 +137,7 @@ const Attendance: React.FC = () => {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`
-          }
-        });
+        const res = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`,);
         // console.log(res.data.data)
         setAllAttendanceData(res.data.data);
       } catch (error) {

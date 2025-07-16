@@ -71,7 +71,7 @@ const Reports: React.FC = () => {
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!Validate()) return;
-    const token = localStorage.getItem('tokenId')
+    const token = localStorage.getItem('accessToken')
     try {
       setLoading(true);
       const response = await axios.get(
@@ -111,7 +111,7 @@ const Reports: React.FC = () => {
   const handleDownloadLeave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!Validate()) return;
-    const token = localStorage.getItem('tokenId')
+    const token = localStorage.getItem('accessToken')
     try {
       setLoading(true);
       const response = await axios.get(
@@ -151,7 +151,7 @@ const Reports: React.FC = () => {
   const handleDownloadOverview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!Validate()) return;
-    const token = localStorage.getItem('tokenId')
+    const token = localStorage.getItem('accessToken')
     try {
       setLoading(true);
       const response = await axios.get(
@@ -191,7 +191,7 @@ const Reports: React.FC = () => {
   const handleDownloadPayroll = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!Validate()) return;
-    const token = localStorage.getItem('tokenId')
+    const token = localStorage.getItem('accessToken')
     try {
       setLoading(true);
       const response = await axios.get(
