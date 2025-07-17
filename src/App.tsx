@@ -45,6 +45,8 @@ import MySlip from './pages/payroll/MySlip';
 <<<<<<< HEAD
 import axios from 'axios';
 import { BASE_URL } from './constants/api';
+import { useSelector } from 'react-redux';
+import { setAccessToken } from './constants/axiosInstance';
 =======
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
