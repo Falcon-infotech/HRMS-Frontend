@@ -57,7 +57,7 @@ const EmployeeList: React.FC = () => {
       );
 
       const datas = response.data;
-      console.log(datas.data.users)
+      // console.log(datas.data.users)
       setEmployees(datas.data.users)
       setAllEmployees(datas.data.users);
 
