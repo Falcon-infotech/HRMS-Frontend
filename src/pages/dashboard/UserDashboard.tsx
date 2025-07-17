@@ -337,11 +337,6 @@ if (showLoading) setIsStatusLoading(false);    }
 
   const handleCheckIn = async () => {
 
-    const token = localStorage.getItem('tokenId');
- if (!token) {
-    toast.error("Authentication token missing. Please log in again.");
-    return;
-  }
     try {
       setCheckinLoading(true)
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
