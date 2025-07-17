@@ -42,17 +42,11 @@ import MyLeaveStatus from './pages/leave/MyLeaveStatus';
 import SalarySlipForm from './components/SalarySlipDetails';
 import PayslipComponent from './components/PaySlip';
 import MySlip from './pages/payroll/MySlip';
-<<<<<<< HEAD
 import axios from 'axios';
 import { BASE_URL } from './constants/api';
 import { useSelector } from 'react-redux';
-import { setAccessToken } from './constants/axiosInstance';
-import { RootState } from '@reduxjs/toolkit/query';
-=======
-import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { setAccessToken } from './constants/axiosInstance';
->>>>>>> dev
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
