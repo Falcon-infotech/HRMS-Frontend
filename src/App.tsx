@@ -47,6 +47,7 @@ import axios from 'axios';
 import { BASE_URL } from './constants/api';
 import { useSelector } from 'react-redux';
 import { setAccessToken } from './constants/axiosInstance';
+import { RootState } from '@reduxjs/toolkit/query';
 =======
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
