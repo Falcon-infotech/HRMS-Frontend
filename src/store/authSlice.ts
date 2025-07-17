@@ -5,7 +5,7 @@ import { LoginCredentials, LoginResponse, User } from "./authTypes";
 
 
 
-const token = localStorage.getItem('tokenId');
+// const token = localStorage.getItem('tokenId');
 const user = localStorage.getItem('userData');
 
 
@@ -20,10 +20,10 @@ interface AuthState {
 
 const initialState: AuthState = {
     user: localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')!) : null,
-    token: localStorage.getItem('tokenId') || null,
+    token: localStorage.getItem('accessToken') || null,
     loading: false,
     error: null,
-    isAuthenticated: !!localStorage.getItem("tokenId") && !!user
+    isAuthenticated: !!localStorage.getItem("accessToken") && !!user
 };
 
 
@@ -50,7 +50,7 @@ export const authSlice = createSlice({
             state.isAuthenticated = false;
 
             localStorage.removeItem("accessToken")
-            localStorage.removeItem("refreshToken")
+            // localStorage.removeItem("refreshToken")
             localStorage.removeItem("userData")
             localStorage.removeItem("lastCheckInTime")
         }
@@ -67,7 +67,7 @@ export const authSlice = createSlice({
                 state.token = action.payload.token;
                 state.isAuthenticated = true;
                 localStorage.setItem("accessToken", action.payload?.accessToken)
-                localStorage.setItem("refreshToken", action.payload?.refreshToken)
+                // localStorage.setItem("refreshToken", action.payload?.refreshToken)
                 localStorage.setItem("userData", JSON.stringify(action.payload.user))
             })
             .addCase(loginUser.rejected, (state, action) => {
