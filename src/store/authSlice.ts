@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API } from "../constants/api";
 import { LoginCredentials, LoginResponse, User } from "./authTypes";
+import { setAccessToken } from "../constants/axiosInstance";
 
 
 
@@ -57,16 +58,17 @@ export const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(loginUser.pending, (state) => {
+            .addCase(loginUser.pending, (state) => {    
                 state.loading = true
                 state.error = null
             })
             .addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
                 state.loading = false,
                 state.user = action.payload.user
-                state.token = action.payload.token;
+                state.token = action.payload?.accessToken;
                 state.isAuthenticated = true;
                 localStorage.setItem("accessToken", action.payload?.accessToken)
+                setAccessToken(action.payload?.accessToken)
                 // localStorage.setItem("refreshToken", action.payload?.refreshToken)
                 localStorage.setItem("userData", JSON.stringify(action.payload.user))
             })

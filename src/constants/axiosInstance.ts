@@ -5,14 +5,21 @@ const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
+let accessToken: string | null = null;
+export const setAccessToken = (token:any) => {
+  accessToken = token;
+};
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken'); // ✅ always read fresh token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  // const token = localStorage.getItem('accessToken'); // ✅ always read fresh token
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 });
+
+
+
 
 api.interceptors.response.use(
   (res) => res,
@@ -24,7 +31,7 @@ api.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          `${BASE_URL}/refreshToken`,
+          `${BASE_URL}api/auth/refreshToken`,
           {},
           { withCredentials: true }
         );
