@@ -42,12 +42,19 @@ import MyLeaveStatus from './pages/leave/MyLeaveStatus';
 import SalarySlipForm from './components/SalarySlipDetails';
 import PayslipComponent from './components/PaySlip';
 import MySlip from './pages/payroll/MySlip';
+<<<<<<< HEAD
 import axios from 'axios';
 import { BASE_URL } from './constants/api';
+=======
+import { useSelector } from 'react-redux';
+import { RootState } from './store/store';
+import { setAccessToken } from './constants/axiosInstance';
+>>>>>>> dev
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
     const now = new Date();
+
 
     const formatter = new Intl.DateTimeFormat('en-CA', {
       timeZone,
@@ -94,6 +101,14 @@ function App() {
 
     clearSelectedLocalStorageAt1159PM(timeZone);
   }, []);
+const token=useSelector((state:RootState)=>state.auth.token)
+
+useEffect(()=>{
+  if(token){
+    setAccessToken(token)
+  }
+},[token])
+
   return (
     <Router>
       <AuthProvider>
