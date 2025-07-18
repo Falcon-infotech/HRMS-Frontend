@@ -99,10 +99,6 @@ function App() {
     clearSelectedLocalStorageAt1159PM(timeZone);
   }, []);
 const token=useSelector((state:RootState)=>state.auth.token)
-<<<<<<< HEAD
-// const isatuth=useSelector((state:RootState)=>state.auth.isAuthenticated)
-=======
->>>>>>> dev
 
 useEffect(()=>{
   if(token){
