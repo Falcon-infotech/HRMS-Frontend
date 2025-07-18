@@ -271,7 +271,7 @@ const UserDashboard = () => {
         }
       });
 
-      // console.log(res.data.attendance)
+      console.log(res.data.attendance)
       if (res.data?.attendance?.status === "Leave") {
         setIsOnLeave(true)
       }

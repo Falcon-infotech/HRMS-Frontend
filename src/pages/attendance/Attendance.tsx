@@ -10,7 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaTimesCircle } from 'react-icons/fa';
-import { FaClock } from 'react-icons/fa6';
+import { FaClock, FaRegCalendarMinus } from 'react-icons/fa6';
 
 const Attendance: React.FC = () => {
   const { user } = useAuth();
@@ -575,10 +575,10 @@ const Attendance: React.FC = () => {
                               <tr
                                 key={record._id || `${record.employeeId}-${record.date}`}
                                 onClick={() => {
-                                  setAttendanceDataSingle(prev=>({
-                                    ...prev,checkIn:record?.inTime,
-                                    checkOut:record?.outTime,
-                                    workHours:record?.duration,
+                                  setAttendanceDataSingle(prev => ({
+                                    ...prev, checkIn: record?.inTime,
+                                    checkOut: record?.outTime,
+                                    workHours: record?.duration,
                                   }));
                                   setDrawerOpen(true);
                                 }}
@@ -819,12 +819,22 @@ const Attendance: React.FC = () => {
                 </button>
               </div>
 
-              {attendanceDataSingle.status === "Absent" ? (
+              {attendanceDataSingle?.status === "Absent" || attendanceDataSingle?.status === "Leave" ? (
                 // Drawer view for Absent status
                 <div className="text-center text-gray-700 space-y-4">
-                  <FaTimesCircle className="text-4xl text-red-500 mx-auto" />
-                  <p className="text-xl font-semibold">Marked Absent</p>
-                  <p className="text-gray-500">No check-in or check-out was recorded for this date.</p>
+                  {attendanceDataSingle.status === "Absent" ? (
+                    <>
+                      <FaTimesCircle className="text-4xl text-red-500 mx-auto" />
+                      <p className="text-xl font-semibold">Marked Absent</p>
+                      <p className="text-gray-500">No check-in or check-out was recorded for this date.</p>
+                    </>
+                  ) : (
+                    <>
+                      <FaRegCalendarMinus className="text-4xl text-yellow-500 mx-auto" />
+                      <p className="text-xl font-semibold">On Leave</p>
+                      <p className="text-gray-500">You were on approved leave for this date.</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 // Drawer view for other statuses (Present, Half Day, etc.)
@@ -832,28 +842,28 @@ const Attendance: React.FC = () => {
                   {/* Status */}
                   <div className='grid grid-cols-2 sm:grid-cols-2 gap-6 mb-4'>
                     <div className="flex items-start gap-3">
-                    <FaCheckCircle className={`mt-1 text-lg ${attendanceDataSingle.status === 'Present'
-                      ? 'text-green-500'
-                      : attendanceDataSingle.status === 'Half Day'
-                        ? 'text-blue-500'
-                        : attendanceDataSingle.status === 'Leave'
-                          ? 'text-yellow-500'
-                          : 'text-gray-400'
-                      }`} />
-                    <div>
-                      <p className="text-sm text-gray-500">Status</p>
-                      <p className="font-medium text-base">{attendanceDataSingle.status || 'No Data'}</p>
+                      <FaCheckCircle className={`mt-1 text-lg ${attendanceDataSingle.status === 'Present'
+                        ? 'text-green-500'
+                        : attendanceDataSingle.status === 'Half Day'
+                          ? 'text-blue-500'
+                          : attendanceDataSingle.status === 'Leave'
+                            ? 'text-yellow-500'
+                            : 'text-gray-400'
+                        }`} />
+                      <div>
+                        <p className="text-sm text-gray-500">Status</p>
+                        <p className="font-medium text-base">{attendanceDataSingle.status || 'No Data'}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Duration */}
-                  <div className="flex items-start gap-3">
-                    <FaClock className="mt-1 text-blue-500 text-lg" />
-                    <div>
-                      <p className="text-sm text-gray-500">Duration</p>
-                      <p className="font-medium text-base">{attendanceDataSingle.workHours || '-'}</p>
+                    {/* Duration */}
+                    <div className="flex items-start gap-3">
+                      <FaClock className="mt-1 text-blue-500 text-lg" />
+                      <div>
+                        <p className="text-sm text-gray-500">Duration</p>
+                        <p className="font-medium text-base">{attendanceDataSingle.workHours || '-'}</p>
+                      </div>
                     </div>
-                  </div>
 
                   </div>
                   {/* Check-In & Check-Out */}
@@ -865,8 +875,8 @@ const Attendance: React.FC = () => {
                         <p className="text-sm text-gray-500 font-medium">Check-In</p>
                         <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
                         <p className="text-base text-gray-800 font-medium">
-                          {attendanceDataSingle.checkIn
-                            ? format(new Date(attendanceDataSingle.checkIn), 'hh:mm a')
+                          {attendanceDataSingle?.checkIn
+                            ? format(new Date(attendanceDataSingle?.checkIn), 'hh:mm a')
                             : '-'}
                         </p>
                         <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
