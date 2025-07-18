@@ -32,6 +32,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
+        // console.log('Access token expired. Attempting refresh...');
         const res = await axios.post(
           `${BASE_URL}/api/auth/refreshToken`,
           {},
@@ -39,6 +40,7 @@ api.interceptors.response.use(
         );
 
         const newAccessToken = res.data.accessToken;
+        // console.log(newAccessToken, "new token received")
         // localStorage.setItem('accessToken', newAccessToken);
         store.dispatch(updateAccessToken(newAccessToken))
         setAccessToken(newAccessToken)
