@@ -830,7 +830,8 @@ const Attendance: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <FaRegCalendarMinus className="text-4xl text-yellow-500 mx-auto" />
+                      <FaRegCalendarMinus
+                       className="text-4xl text-yellow-500 mx-auto" />
                       <p className="text-xl font-semibold">On Leave</p>
                       <p className="text-gray-500">You were on approved leave for this date.</p>
                     </>

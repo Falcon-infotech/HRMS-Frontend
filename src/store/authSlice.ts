@@ -31,8 +31,10 @@ const initialState: AuthState = {
 
 export const loginUser = createAsyncThunk<LoginResponse, LoginCredentials, { rejectValue: string }>('auth/loginUser', async (credentials, thunkAPI) => {
     try {
-        const response = await axios.post(API.LOGIN, credentials)
-        console.log(response.data)
+        const response = await axios.post(API.LOGIN, credentials, {
+            withCredentials: true
+        })
+
         return response.data
     } catch (error: any) {
         return thunkAPI.rejectWithValue(error.response?.data?.message || 'Login failed')
@@ -57,20 +59,20 @@ export const authSlice = createSlice({
             localStorage.removeItem("userData")
             localStorage.removeItem("lastCheckInTime")
         },
-        updateAccessToken(state,action:PayloadAction<string>){
-            state.token=action.payload;
-            state.isAuthenticated=true
+        updateAccessToken(state, action: PayloadAction<string>) {
+            state.token = action.payload;
+            state.isAuthenticated = true
         }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(loginUser.pending, (state) => {    
+            .addCase(loginUser.pending, (state) => {
                 state.loading = true
                 state.error = null
             })
             .addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
                 state.loading = false,
-                state.user = action.payload.user
+                    state.user = action.payload.user
                 state.token = action.payload?.accessToken;
                 state.isAuthenticated = true;
                 localStorage.setItem("accessToken", action.payload?.accessToken)
@@ -88,5 +90,5 @@ export const authSlice = createSlice({
 
 
 
-export const { logout,updateAccessToken } = authSlice.actions;
+export const { logout, updateAccessToken } = authSlice.actions;
 export default authSlice.reducer
