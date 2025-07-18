@@ -56,6 +56,10 @@ export const authSlice = createSlice({
             // localStorage.removeItem("refreshToken")
             localStorage.removeItem("userData")
             localStorage.removeItem("lastCheckInTime")
+        },
+        updateAccessToken(state,action:PayloadAction<string>){
+            state.token=action.payload;
+            state.isAuthenticated=true
         }
     },
     extraReducers: (builder) => {
@@ -84,5 +88,5 @@ export const authSlice = createSlice({
 
 
 
-export const { logout } = authSlice.actions;
+export const { logout,updateAccessToken } = authSlice.actions;
 export default authSlice.reducer
