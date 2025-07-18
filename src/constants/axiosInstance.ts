@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { BASE_URL } from './api';
+import { store } from '../store/store';
+import { logout, updateAccessToken } from '../store/authSlice';
 
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
 let accessToken: string | null = null;
-export const setAccessToken = (token:any) => {
+export const setAccessToken = (token: any) => {
   accessToken = token;
 };
 
@@ -37,11 +39,15 @@ api.interceptors.response.use(
         );
 
         const newAccessToken = res.data.accessToken;
-        localStorage.setItem('accessToken', newAccessToken); // ✅ save new token
+        // localStorage.setItem('accessToken', newAccessToken);
+        store.dispatch(updateAccessToken(newAccessToken))
+        setAccessToken(newAccessToken)
 
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; // ✅ retry with new token
-        return api(originalRequest); 
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
       } catch (err) {
+        store.dispatch(logout());
+
         console.error('Refresh token failed:', err.message);
       }
     }

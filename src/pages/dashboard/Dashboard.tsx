@@ -58,11 +58,12 @@ const Dashboard: React.FC = () => {
         const data = response.data
         // console.log(data.data.users)
         setCount(data.data.count)
-        const departmentCount = data.data.users.reduce((acc, ele) => {
+        const departmentCount = data?.data?.users?.reduce((acc, ele) => {
           const dept = ele.department;
           acc[dept] = (acc[dept] || 0) + 1;
           return acc;
         }, {});
+
 
         const chartData = Object.entries(departmentCount).map(
           ([department, count]) => ({ department, count })
@@ -117,8 +118,17 @@ const Dashboard: React.FC = () => {
           // }
         });
 
-        const data = await response.data;
-        // console.log(data)
+        const data = response.data;
+        // let preData = response.data.data
+
+        // const presentCount = preData.reduce((acc, elem) => {
+        //   if (elem.status === "Present") {
+        //     acc += 1
+        //   }
+        //   return acc
+        // }, 0)
+
+        // console.log(presentCount, "presentcount")
 
         setTodayStats(data.totalUsers);
 
@@ -128,8 +138,8 @@ const Dashboard: React.FC = () => {
           return acc;
         }, {})
 
-        const present = pieChartData['Present']||0
-        const halfday = pieChartData['Half Day']||0
+        const present = pieChartData['Present'] || 0
+        const halfday = pieChartData['Half Day'] || 0
         // console.log(count)
         const absentCount = Math.max(0, count - (present + halfday));
         // console.log(absentCount)   
