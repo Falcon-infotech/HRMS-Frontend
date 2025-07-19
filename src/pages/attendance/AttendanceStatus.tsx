@@ -52,8 +52,8 @@ const AttendanceStatus = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, );
-                // console.log(res.data.data)
+                const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`,);
+                console.log(res.data.data.attendance)
                 setUser(res.data.data.attendance);
             } catch (error) {
                 console.error('Failed to fetch user', error);
@@ -74,12 +74,12 @@ const AttendanceStatus = () => {
                 const records = res.data?.data?.attendance || [];
                 // console.log(records, "records")
 
-                const mapped: Record<string, { status: string; duration: string; location: string; inTime: string; outTime: string;checkIn:string ;checkOut:string }> = {};
+                const mapped: Record<string, { status: string; duration: string; location: string; inTime: string; outTime: string; checkIn: string; checkOut: string }> = {};
                 records.forEach((record: any) => {
                     mapped[record.date] = {
                         status: record.status,
                         duration: record.duration || '00:00',
-                        checkIn: record.location?.checkIn?.displayName  || 'Unknown',
+                        checkIn: record.location?.checkIn?.displayName || 'Unknown',
                         checkOut: record.location?.checkOut?.displayName || 'Unknown',
                         inTime: record.inTime,
                         outTime: record.outTime
@@ -147,6 +147,16 @@ const AttendanceStatus = () => {
     useEffect(() => {
         fetchStatus()
     }, [])
+
+
+    const formatter = new Intl.DateTimeFormat(undefined, {
+        hour: '2-digit',
+        minute: '2-digit',
+        // second: '2-digit',
+        hour12: true
+    });
+    // const customFormattedDateTime = formatter.format(now);
+    // console.log(customFormattedDateTime);
 
     return (
         <>
@@ -283,8 +293,11 @@ const AttendanceStatus = () => {
                                                 <div className="w-12 h-9 rounded-full bg-gray-200 flex items-center justify-center font-semibold">
                                                     {format(day, 'dd')}
                                                 </div>
-                                                <div className="w-24 text-center">{record?.inTime ? extractHourAndMinute(record.inTime) : '--'}</div>
-                                                <div className="w-24 text-center">{record?.outTime ? extractHourAndMinute(record.outTime) : '--'}</div>
+                                                <div className="w-24 text-center">
+                                                    {record?.inTime ? formatter.format(new Date(record.inTime)) : '--'}
+
+                                                </div>
+                                                <div className="w-24 text-center">{record?.outTime ? formatter.format(new Date(record.outTime)) : '--'}</div>
                                                 <div className="w-24 text-center">{record?.status ?? '--'}</div>
                                                 <div className="w-28 text-center text-green-600">{record?.duration ?? '00:00'}</div>
                                             </div>
