@@ -11,6 +11,7 @@ import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaTimesCircle } from 'react-icons/fa';
 import { FaClock, FaRegCalendarMinus } from 'react-icons/fa6';
+import { recordStats } from 'framer-motion';
 
 const Attendance: React.FC = () => {
   const { user } = useAuth();

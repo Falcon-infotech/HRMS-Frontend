@@ -1,279 +1,3 @@
-// import React, { useState } from 'react'
-// import { useSelector } from 'react-redux';
-// import { RootState } from '../../store/store';
-// import toast from 'react-hot-toast';
-// import axios from 'axios';
-// import { BASE_URL } from '../../constants/api';
-
-// const Profile: React.FC = () => {
-//   const { user } = useSelector((state: RootState) => state.auth);
-
-//   const [loading, setLoading] = useState(false);
-//   const [title, setTitle] = useState("");
-//   const capitalize = (str: string = "") =>
-//     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
-//   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-
-//   const handleFilechange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     if (e.target.files) {
-//       const fileArray = Array.from(e.target.files);
-//       setSelectedFiles((prev) => [...prev, ...fileArray])
-//     }
-//   }
-
-//   const handleDelete = (indexs: number) => {
-//     setSelectedFiles((prev) => prev.filter((_, index) => index !== indexs))
-//   }
-
-//   const tabs = [
-//     "Personal",
-//     "Job",
-//     "Documents",
-//     "Time off",
-//     "Performance",
-//     "Time",
-//     "Tasks",
-//     "More",
-//   ];
-//   const [activeTab, setActiveTab] = useState("Personal");
-
-//   const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setLoading(true);
-
-//     if (selectedFiles.length === 0) {
-//       toast.error('No file selected');
-//       setLoading(false);
-//       return;
-//     }
-
-//     const token = localStorage.getItem("tokenId");
-//     if (!title.trim()) {
-//       toast.error('Please enter a document name');
-//       setLoading(false);
-//       return;
-//     }
-//     try {
-//       let userId = user?._id!;
-//       const formData = new FormData();
-//       selectedFiles.forEach((file) => {
-//         formData.append('files', file);
-//       });
-
-
-
-//       formData.append('userId', userId);
-//       formData.append('title', title);
-
-//       const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
-
-//       console.log(response.data);
-//       toast.success('Files uploaded successfully!');
-//       setSelectedFiles([]);
-//       setTitle("")
-//     } catch (error) {
-//       console.error(error);
-//       toast.error('Upload failed. Please try again.');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-
-
-//   const renderTabContent = () => {
-//     switch (activeTab) {
-//       case "Personal":
-//         return (
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg font-bold text-gray-700">
-//             <div><span className="font-medium">First Name:</span> {capitalize(user?.first_name)}</div>
-//             <div><span className="font-medium">Last Name:</span> {capitalize(user?.last_name)}</div>
-//             <div><span className="font-medium">Email:</span> {user?.email}</div>
-//             <div>
-//               <span className="font-medium">Status:</span>{' '}
-//               <span
-//                 className={`inline-block px-2 py-0.5 rounded text-white text-sm font-semibold ${user?.status === 'active' ? 'bg-green-500' : 'bg-red-500'
-//                   }`}
-//               >
-//                 {capitalize(user?.status)}
-//               </span>
-//             </div>
-//             <div><span className="font-medium">Role:</span> {capitalize(user?.role)}</div>
-//             <div><span className="font-medium">Joining Date:</span> {formatDate(user?.joining_date)}</div>
-//             <div className="md:col-span-2">
-
-//               <p className="">
-//                 <span className="font-medium">Address : </span>
-//                 {user?.address?.address_line}, {user?.address?.village}, {user?.address?.city}, {user?.address?.state}, {user?.address?.country}
-//               </p>
-//             </div>
-//           </div>
-//         );
-//       case "Job":
-//         return (
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg font-bold text-gray-700">
-//             <div><span className="font-medium">Department:</span> {user?.department}</div>
-//             <div><span className="font-medium">Designation:</span> {user?.designation}</div>
-//             <div><span className="font-medium">Salary:</span> ₹{user?.salary}</div>
-//           </div>
-//         );
-
-
-//       case "Documents":
-//         return (
-//           <div className="space-y-6">
-//             <div>
-//               <h3 className="text-lg font-semibold">Upload Document</h3>
-//               <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
-//                 <div>
-//                   <label className="cursor-pointer bg-blue-600 text-white w-max px-4 py-2 rounded hover:bg-blue-700 transition">
-//                     Select File
-//                     <input
-//                       type="file"
-//                       className="hidden"
-//                       onChange={handleFilechange}
-//                     />
-//                   </label>
-
-//                 </div>
-
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700">Document Name</label>
-//                   <input
-//                     type="text"
-//                     placeholder="e.g. Resume, Offer Letter"
-//                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-//                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
-//                   />
-//                 </div>
-//                 <button
-//                   type="submit"
-//                   disabled={loading || !title.trim()}
-//                   className={`px-4 py-2 rounded-md text-white ${loading || !title.trim() ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-//                 >
-//                   {loading ? "Uploading..." : "Upload"}
-//                 </button>
-
-
-//                 {selectedFiles.length > 0 && (
-//                   <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-//                     <h4 className="text-lg font-semibold mb-3 text-gray-800">Selected Documents</h4>
-//                     <ul className="space-y-3">
-//                       {selectedFiles.map((file, index) => (
-//                         <li
-//                           key={index}
-//                           className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md px-4 py-2 hover:shadow-sm transition"
-//                         >
-//                           <div className="text-gray-700 text-sm">
-//                             📄 <span className="font-medium">{file.name}</span> – {(file.size / 1024).toFixed(2)} KB
-//                           </div>
-//                           <button
-//                             type="button"
-//                             onClick={() => handleDelete(index)}
-//                             className="text-red-500 hover:text-red-600 text-sm font-semibold"
-//                           >
-//                             Remove
-//                           </button>
-//                         </li>
-//                       ))}
-//                     </ul>
-//                   </div>
-//                 )}
-
-//               </form>
-//             </div>
-
-//             {/* Uploaded documents list */}
-//             {/* <div>
-//       <h3 className="text-lg font-semibold mb-2">Uploaded Documents</h3>
-//       <ul className="space-y-2">
-//         {[
-//           { name: 'Resume.pdf', uploadedAt: '2025-05-01' },
-//           { name: 'Offer_Letter.pdf', uploadedAt: '2025-05-03' },
-//         ].map((doc, index) => (
-//           <li
-//             key={index}
-//             className="flex items-center justify-between p-3 bg-gray-50 rounded border"
-//           >
-//             <div>
-//               <p className="font-medium">{doc.name}</p>
-//               <p className="text-sm text-gray-500">Uploaded on {doc.uploadedAt}</p>
-//             </div>
-//             <button className="text-blue-600 hover:underline">Download</button>
-//           </li>
-//         ))}
-//       </ul>
-//     </div> */}
-//           </div>
-//         )
-//       default:
-//         return (
-//           <p className="text-gray-600 mt-2">This is the content for the "{activeTab}" tab.</p>
-//         );
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-full mx-auto bg-white rounded-md shadow-md overflow-hidden">
-//       {/* Cover Image */}
-//       <div className='h-60 relative bg-gray-200'>
-//         <img
-//           src="https://img.freepik.com/free-vector/paper-style-dynamic-lines-background_23-2149008629.jpg?semt=ais_hybrid&w=740"
-//           alt="Cover"
-//           className="w-full h-full object-cover"
-//         />
-//         {/* Profile Picture */}
-//         <div className='absolute -bottom-20 left-6'>
-//           <img
-//             src="https://img.freepik.com/premium-vector/man-professional-business-casual-young-avatar-icon-illustration_1277826-623.jpg?ga=GA1.1.1218145876.1747648595&semt=ais_hybrid&w=740"
-//             alt="Profile"
-//             className="w-32 h-32 rounded-full border-4 border-gray-300 object-cover"
-//           />
-//         </div>
-//       </div>
-
-//       {/* Name and Role */}
-//       <div className="mt-20 px-6 pb-4">
-//         <h1 className="text-2xl font-semibold">
-//           {capitalize(user?.first_name) + " " + capitalize(user?.last_name)}
-//         </h1>
-//         <p className="text-gray-600">{user?.designation}</p>
-//       </div>
-
-//       {/* Tabs */}
-//       <div className="flex space-x-4 px-6 py-3 border-b overflow-x-auto scrollbar-hide">
-//         {tabs.map((tab) => (
-//           <button
-//             key={tab}
-//             onClick={() => setActiveTab(tab)}
-//             className={`px-3 py-1 text-sm font-medium rounded ${activeTab === tab
-//               ? "bg-gray-200 text-black"
-//               : "text-gray-500 hover:text-black"
-//               }`}
-//           >
-//             {tab}
-//           </button>
-//         ))}
-//       </div>
-
-//       {/* Tab Content */}
-//       <div className="p-6">{renderTabContent()}</div>
-//     </div>
-//   );
-// };
-
-// export default Profile;
-
-
-
 
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -303,7 +27,12 @@ const EmployeeDetail: React.FC = () => {
   const id = user?._id;
   // console.log(user)
 
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [edit, setEdit] = useState(false)
+
   const [department, setDepartment] = useState('');
+  const [imageUrlPic, setImageUrlPic] = useState(null);
 
 
   const [address, setAddress] = useState({
@@ -314,6 +43,39 @@ const EmployeeDetail: React.FC = () => {
     country: '',
     village: '',
   });
+
+
+
+  const getProfilePic =
+    async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/uploadByUserId/${user?._id}`)
+        const data = response.data;
+        if (data.success && Array.isArray(data.uploads)) {
+          const profilePics = data.uploads.filter(upload => upload.title === "profile");
+
+          const sorted = profilePics.sort(
+            (a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)
+          )
+
+          const latestProfilePic = sorted[0];
+          // console.log(latestProfilePic?.files[0]?.url)
+
+          setImageUrlPic(latestProfilePic?.files[0]?.url)
+
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+
+  useEffect(() => {
+    getProfilePic()
+  }, [])
+
+
+
   useEffect(() => {
     if (employee?.address) {
       setAddress({
@@ -354,6 +116,7 @@ const EmployeeDetail: React.FC = () => {
 
 
   ////////////////////
+  const [editDressloading, setEditAddressLoading] = useState(false);
   const handleSave = async () => {
     if (!/^\d{6}$/.test(address.pincode)) {
       toast.error('Pincode must be exactly 6 digits');
@@ -361,6 +124,7 @@ const EmployeeDetail: React.FC = () => {
     }
 
     try {
+      setEditAddressLoading(true)
       await axios.patch(`${BASE_URL}/api/employee/update_profile_by_self`, {
         address
       }, {
@@ -373,10 +137,12 @@ const EmployeeDetail: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       toast.error(err)
+    } finally {
+      setEditAddressLoading(false)
     }
   };
   ////////////////////
-
+  const [departmentLoading, setDepartmentLoading] = useState(false);
   const handleDepartmentSave = async () => {
     if (!department.trim()) {
       toast.error('Department cannot be empty');
@@ -384,6 +150,7 @@ const EmployeeDetail: React.FC = () => {
     }
 
     try {
+      setDepartmentLoading(true)
       await axios.patch(`${BASE_URL}/api/employee/update_profile_by_self`, {
         department
       }, {
@@ -396,6 +163,8 @@ const EmployeeDetail: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       toast.error(err?.response?.data?.message || 'Something went wrong');
+    } finally {
+      setDepartmentLoading(false)
     }
   };
   ////////
@@ -491,40 +260,50 @@ const EmployeeDetail: React.FC = () => {
 
   // const attendanceRate = totalWorkdays > 0 ? Math.round((presentDays / totalWorkdays) * 100) : 0;
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageUrl(file)
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl); // Show preview
+      setEdit(true)
+    }
+  };
+
+
   const handleImageUpload = async () => {
-  // if (!imageFile) return toast.error("No file selected");
 
-  const formData = new FormData();
-  // formData.append("file", imageFile);
-  // formData.append("userId", user?._id); // adjust as needed
-  formData.append("title", "profile");
+    const formData = new FormData();
+    formData.append("files", imageUrl);
+    formData.append("title", "profile");
+    // formData.append("userId", user?._id); // adjust as needed
 
-  try {
-    const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("tokenId")}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    try {
+      const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    const imageUrl = response.data.imageUrl;
+      // const imageUrl = response.data.imageUrl;
+      // console.log(imageUrl)
 
-    // Update UI
-    // setEmploy(prev => ({ ...prev, avatar: imageUrl }));
 
-    // Save to backend profile (if needed)
-    await axios.put(`${BASE_URL}/api/user/update`, {
-      userId: user?._id,
-      avatar: imageUrl,
-    });
 
-    toast.success("Image uploaded successfully");
+      toast.success("Image uploaded successfully");
+      getProfilePic();
 
-  } catch (error) {
-    console.error(error);
-    toast.error("Upload failed");
-  }
-};
+    } catch (error) {
+      console.error(error);
+      toast.error("Upload failed");
+    } finally {
+      setEdit(false)
+    }
+  };
+
+
+
+
 
 
   return (
@@ -541,17 +320,27 @@ const EmployeeDetail: React.FC = () => {
                   type="file"
                   accept="image/*"
                   className="hidden" // re-enable this to hide default file input styling
-                  // onChange={handleImage} // assumes you have this function
+                  onChange={handleFileChange} // assumes you have this function
                 />
               </label></div>
-              {employee.avatar ? (
-                <img src={employee?.avatar} alt={`${employee?.first_name} ${employee?.last_name}`} className="w-full h-full object-cover" />
+
+              {employee.uploads ? (
+                <img src={previewUrl || imageUrlPic || 'https://contacts.zoho.in/file?ID=60028830319&fs=thumb'} alt={`${employee?.first_name} ${employee?.last_name}`} className="w-full h-full object-contain" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-3xl font-bold">
                   {employee?.role === "admin" ? employee?.first_name[0] : employee?.first_name[0]}
                 </div>
               )}
             </div>
+            {edit && <div>
+              <button
+                className="bg-blue-600 text-white px-3 py-1 rounded-lg shadow-md hover:bg-blue-700 transition"
+                onClick={handleImageUpload}
+                disabled={departmentLoading}
+              >
+                save
+              </button>
+            </div>}
             <h1 className="text-xl font-bold text-neutral-800 text-center">{employee?.first_name || employee?.name} {employee?.last_name}</h1>
             <p className="text-neutral-600 mt-1 text-center">{employee?.designation}</p>
             <div className="mt-3">
@@ -797,32 +586,46 @@ const EmployeeDetail: React.FC = () => {
                   </div>
                   {isDepartmentModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                      <div className="bg-white p-6 rounded-lg w-full max-w-md">
-                        <h2 className="text-lg font-bold mb-4">Edit Department</h2>
-                        <input
-                          value={department}
-                          onChange={(e) => setDepartment(e.target.value)}
-                          placeholder="Department"
-                          className="w-full border p-2 rounded"
-                        />
+                      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-8">
+                        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Edit Department</h2>
 
-                        <div className="mt-4 flex justify-end gap-2">
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <label
+                              htmlFor="department"
+                              className="text-sm font-medium text-gray-700 col-span-1 text-right"
+                            >
+                              Department:
+                            </label>
+                            <input
+                              id="department"
+                              value={department}
+                              onChange={(e) => setDepartment(e.target.value)}
+                              placeholder="Enter department"
+                              className="col-span-2 w-full border border-gray-300 px-3 py-2 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-8 flex justify-end gap-4">
                           <button
-                            className="bg-gray-300 px-3 py-1 rounded"
+                            className="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition"
                             onClick={() => setIsDepartmentModalOpen(false)}
                           >
                             Cancel
                           </button>
                           <button
-                            className="bg-blue-600 text-white px-4 py-1 rounded"
+                            className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
                             onClick={handleDepartmentSave}
+                            disabled={departmentLoading}
                           >
-                            Save
+                            {departmentLoading ? 'Saving...' : 'Save'}
                           </button>
                         </div>
                       </div>
                     </div>
                   )}
+
 
 
                   {/* {employee.emergencyContact && (
@@ -1336,70 +1139,57 @@ const EmployeeDetail: React.FC = () => {
             </div>
             {isModalOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-lg w-full max-w-md">
-                  <h2 className="text-lg font-bold mb-4">Edit Address</h2>
-                  <div className="space-y-3">
-                    <input
-                      name="address_line"
-                      value={address.address_line || ''}
-                      onChange={handleInputChange}
-                      placeholder="Address Line"
-                      className="w-full border p-2 rounded"
-                    />
-                    <input
-                      name="village"
-                      value={address.village || ''}
-                      onChange={handleInputChange}
-                      placeholder="Village"
-                      className="w-full border p-2 rounded"
-                    />
-                    <input
-                      name="city"
-                      value={address.city || ''}
-                      onChange={handleInputChange}
-                      placeholder="City"
-                      className="w-full border p-2 rounded"
-                    />
-                    <input
-                      name="state"
-                      value={address.state || ''}
-                      onChange={handleInputChange}
-                      placeholder="State"
-                      className="w-full border p-2 rounded"
-                    />
-                    <input
-                      name="pincode"
-                      value={address.pincode || ''}
-                      onChange={handleInputChange}
-                      placeholder="Pincode"
-                      className="w-full border p-2 rounded"
-                    />
-                    <input
-                      name="country"
-                      value={address.country || ''}
-                      onChange={handleInputChange}
-                      placeholder="Country"
-                      className="w-full border p-2 rounded"
-                    />
-                  </div>
+                <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl p-8">
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-6">Edit Address</h2>
 
-                  <div className="mt-4 flex justify-end gap-2">
+                  <form className="grid grid-cols-1 gap-5">
+                    {[
+                      { name: 'address_line', label: 'Address Line' },
+                      { name: 'village', label: 'Village' },
+                      { name: 'city', label: 'City' },
+                      { name: 'state', label: 'State' },
+                      { name: 'pincode', label: 'Pincode' },
+                      { name: 'country', label: 'Country' },
+                    ].map(({ name, label }) => (
+                      <div key={name} className="grid grid-cols-3 items-center gap-4">
+                        <label
+                          htmlFor={name}
+                          className="text-sm font-medium text-gray-700 col-span-1 text-right"
+                        >
+                          {label}:
+                        </label>
+                        <input
+                          id={name}
+                          name={name}
+                          value={address[name] || ''}
+                          onChange={handleInputChange}
+                          placeholder={`Enter ${label.toLowerCase()}`}
+                          className="col-span-2 w-full border border-gray-300 px-3 py-2 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                      </div>
+                    ))}
+                  </form>
+
+                  <div className="mt-8 flex justify-end gap-4">
                     <button
-                      className="bg-gray-300 px-3 py-1 rounded"
+                      type="button"
+                      className="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition"
                       onClick={() => setIsModalOpen(false)}
                     >
                       Cancel
                     </button>
                     <button
-                      className="bg-blue-600 text-white px-4 py-1 rounded"
+                      type="button"
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
                       onClick={handleSave}
                     >
-                      Save
+                      {editDressloading ? "Saving..." : "Save"}
                     </button>
                   </div>
                 </div>
               </div>
             )}
+
           </div>
         </div>
       </div>
