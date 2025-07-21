@@ -99,7 +99,7 @@ const Attendance: React.FC = () => {
         const response = await axios.get(`${BASE_URL}/api/employee`,);
         const data = response.data
         setAllUsers(data.data.users)
-        // console.log(data.data.users)
+        console.log(data.data.users)
       } catch (error) {
         console.error('Error fetching all users:', error);
       }
@@ -409,7 +409,7 @@ const Attendance: React.FC = () => {
                   <option value="">All Employees</option>
                   {allUsers.map(employee => (
                     <option key={employee.id} value={employee.userId}>
-                      {employee.userId}
+                      {employee?.first_name} {employee?.last_name}
                     </option>
                   ))}
                 </select>
