@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, Filter, Plus, ArrowUpDown, Download, RefreshCw, MoreHorizontal } from 'lucide-react';
-import { leaveRequests, leaveBalances, leaveTypes } from '../../data/leaveData';
+import {  leaveBalances, leaveTypes } from '../../data/leaveData';
 import employeesData from '../../data/employeeData';
 import PageHeader from '../../components/common/PageHeader';
 import axios from '../../constants/axiosInstance';
@@ -91,7 +91,7 @@ const LeaveManagement: React.FC = () => {
     currentPage * itemsPerPage
   );
   const [searchTerm, setSearchTerm] = useState('')
-  const totalPages = Math.ceil(leaveRequests.length / itemsPerPage);
+  const totalPages = Math.ceil(allLeaveRequests.length / itemsPerPage);
 
 
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -519,7 +519,7 @@ const renderPageNumbers = () => {
               <p className="text-sm text-neutral-700">
                 Showing <span className="font-medium">1</span> to{' '}
                 <span className="font-medium">{paginatedRequests.length}</span> of{' '}
-                <span className="font-medium">{leaveRequests.length}</span> results
+                <span className="font-medium">{allLeaveRequests.length}</span> results
               </p>
             </div>
             <div>

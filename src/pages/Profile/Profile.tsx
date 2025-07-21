@@ -51,6 +51,7 @@ const EmployeeDetail: React.FC = () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/uploadByUserId/${user?._id}`)
         const data = response.data;
+        // console.log(data)
         if (data.success && Array.isArray(data.uploads)) {
           const profilePics = data.uploads.filter(upload => upload.title === "profile");
 
@@ -59,9 +60,9 @@ const EmployeeDetail: React.FC = () => {
           )
 
           const latestProfilePic = sorted[0];
-          // console.log(latestProfilePic?.files[0]?.url)
+          // console.log(latestProfilePic)
 
-          setImageUrlPic(latestProfilePic?.files[0]?.url)
+          setImageUrlPic(latestProfilePic)
 
         }
       } catch (error) {
@@ -279,11 +280,22 @@ const EmployeeDetail: React.FC = () => {
     // formData.append("userId", user?._id); // adjust as needed
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+
+
+      if (imageUrlPic) {
+        const response = await axios.put(`${BASE_URL}/api/update_upload/${imageUrlPic?._id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+      } else {
+        const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
 
       // const imageUrl = response.data.imageUrl;
       // console.log(imageUrl)
@@ -298,6 +310,7 @@ const EmployeeDetail: React.FC = () => {
       toast.error("Upload failed");
     } finally {
       setEdit(false)
+      setPreviewUrl("")
     }
   };
 
@@ -325,7 +338,7 @@ const EmployeeDetail: React.FC = () => {
               </label></div>
 
               {employee.uploads ? (
-                <img src={previewUrl || imageUrlPic || 'https://contacts.zoho.in/file?ID=60028830319&fs=thumb'} alt={`${employee?.first_name} ${employee?.last_name}`} className="w-full h-full object-contain" />
+                <img src={previewUrl || imageUrlPic?.files[0]?.url || 'https://contacts.zoho.in/file?ID=60028830319&fs=thumb'} alt={`${employee?.first_name} ${employee?.last_name}`} className="w-full h-full object-contain" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-3xl font-bold">
                   {employee?.role === "admin" ? employee?.first_name[0] : employee?.first_name[0]}
