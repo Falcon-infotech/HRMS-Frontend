@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../constants/axiosInstance';
 import { BASE_URL } from '../constants/api';
 
 const LeaveDetails = () => {
@@ -14,9 +14,6 @@ const LeaveDetails = () => {
     const fetchLeaves = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/api/leaves/leaves_byId/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          },
         });
         setLeaves(res.data.data);
       } catch (error) {

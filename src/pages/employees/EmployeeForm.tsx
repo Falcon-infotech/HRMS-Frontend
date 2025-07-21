@@ -54,7 +54,7 @@ const EmployeeForm: React.FC = () => {
   });
   const { user } = useSelector((state: RootState) => state.auth)
 
-console.log(user)
+// console.log(user)
 
   const [documents, setDocuments] = useState<{ name: string; type: string }[]>([]);
   const [activeTab, setActiveTab] = useState('basic');

@@ -99,7 +99,7 @@ const Attendance: React.FC = () => {
         const response = await axios.get(`${BASE_URL}/api/employee`,);
         const data = response.data
         setAllUsers(data.data.users)
-        console.log(data.data.users)
+        // console.log(data.data.users)
       } catch (error) {
         console.error('Error fetching all users:', error);
       }
