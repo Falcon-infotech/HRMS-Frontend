@@ -53,7 +53,7 @@ const AttendanceStatus = () => {
         const fetchUser = async () => {
             try {
                 const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`,);
-                console.log(res.data.data.attendance)
+                // console.log(res.data.data.attendance)
                 setUser(res.data.data.attendance);
             } catch (error) {
                 console.error('Failed to fetch user', error);

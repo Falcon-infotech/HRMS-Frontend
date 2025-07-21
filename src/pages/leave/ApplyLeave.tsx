@@ -42,7 +42,7 @@ const ApplyLeave: React.FC = () => {
       //   const remainingBalance = Math.max(0, maxLeave - approvedLeaves.length);
       //   setLeaveBalance(remainingBalance);
       // }
-      console.log(response.data.leaveBalance);
+      // console.log(response.data.leaveBalance);
       setLeaveBalance(response.data.leaveBalance || 0);
     } catch (error) {
       console.error('Error fetching leave balance:', error);
