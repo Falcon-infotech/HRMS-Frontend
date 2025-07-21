@@ -18,16 +18,72 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
   const totalItems = selectedUser?.attendanceHistory.length || 0;
   const totalPages2 = Math.ceil(totalItems / itemsPerPage);
 
-  const paginatedData = selectedUser?.attendanceHistory.slice(
-    (currentPage2 - 1) * itemsPerPage,
-    currentPage2 * itemsPerPage
-  );
+  // const paginatedData = selectedUser?.attendanceHistory.slice(
+  //   (currentPage2 - 1) * itemsPerPage,
+  //   currentPage2 * itemsPerPage
+  // );
+
+
+  const renderPageNumbers = () => {
+    let pageNumbers = []
+    let startPage = Math.max(1, currentPage2 - 1);
+    let endPage = Math.min(totalPages2, currentPage2 + 1);
+    if (endPage - startPage < 3) {
+      startPage = Math.max(1, endPage - 3);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn flex gap-5 ${i === currentPage2 ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  }
+  const renderPageNumbers2 = () => {
+    let pageNumbers = []
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, currentPage + 1);
+    if (endPage - startPage < 3) {
+      startPage = Math.max(1, endPage - 3);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn flex gap-5 ${i === currentPage ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  }
+
+
+
+
+
+  const paginatedData = selectedUser
+    ? [...selectedUser.attendanceHistory] // copy to avoid mutating original
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // newest first
+      .slice((currentPage2 - 1) * itemsPerPage, currentPage2 * itemsPerPage)
+    : [];
+
+  console.log(paginatedData)
 
   const handlePrevious = () => currentPage > 1 && setCurrentPage(p => p - 1);
   const handleNext = () => currentPage < totalPages && setCurrentPage(p => p + 1);
   const handleUserSelect = (userId) => {
     setSelectedUserId(userId === selectedUserId ? null : userId);
-    setCurrentPage2(1); 
+    setCurrentPage2(1);
   };
   const handlePageSelect = (page) => {
     if (page !== currentPage) {
@@ -178,7 +234,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
                     Previous
                   </button>
 
-                  {[...Array(totalPages2)].map((_, i) => (
+                  {/* {[...Array(totalPages2)].map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrentPage2(i + 1)}
@@ -186,7 +242,8 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
                     >
                       {i + 1}
                     </button>
-                  ))}
+                  ))} */}
+                  {renderPageNumbers()}
 
                   <button
                     onClick={() => setCurrentPage2((prev) => Math.min(prev + 1, totalPages2))}
