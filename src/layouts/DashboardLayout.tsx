@@ -5,7 +5,8 @@ import {
   DollarSign, Award, Briefcase, BarChart2, Settings, LogOut, Search, Sun, Moon,
   LogOutIcon,
   PartyPopper,
-  CalendarCheck
+  CalendarCheck,
+  LocateIcon
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -98,6 +99,7 @@ const DashboardLayout: React.FC = () => {
       ]
     },
     { name: 'Holidays', href: '/holidays', icon: PartyPopper },
+    { name: 'Location', href: '/location', icon: LocateIcon },
 
     {
       name: 'Payroll', href: '/payroll', icon: DollarSign, children: [
