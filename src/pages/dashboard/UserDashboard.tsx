@@ -24,6 +24,7 @@ const UserDashboard = () => {
 
   const [attendanceData, setAttendanceData] = useState<any>({});
   const [checkinLoading, setCheckinLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   //
   // const [selectedDate, setSelectedDate] = useState(new Date());
   // const [showCalendar, setShowCalendar] = useState(false);
@@ -59,7 +60,7 @@ const UserDashboard = () => {
 
   const fetchHolidays = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/holidays/all_holidays`, 
+      const response = await axios.get(`${BASE_URL}/api/holidays/all_holidays`,
       );
 
 
@@ -157,7 +158,7 @@ const UserDashboard = () => {
     const fetchAttendance = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, {
-         
+
         });
         const records = res.data?.data?.attendance || [];
         // console.log(records, "records")
@@ -193,7 +194,7 @@ const UserDashboard = () => {
   //   }
   // };
 
-// console.log("first")
+  // console.log("first")
 
   // const weekRange = `${weekData[0]?.fullDate?.toLocaleDateString('en-GB', {
   //   day: '2-digit',
@@ -262,7 +263,7 @@ const UserDashboard = () => {
 
 
   const fetchStatus = async (showLoading: boolean = true) => {
-  if (showLoading) setIsStatusLoading(true);
+    if (showLoading) setIsStatusLoading(true);
 
     try {
       const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
@@ -290,7 +291,8 @@ const UserDashboard = () => {
         setCheckInTime(storedCheckIn);
       }
     } finally {
-if (showLoading) setIsStatusLoading(false);    }
+      if (showLoading) setIsStatusLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -340,8 +342,8 @@ if (showLoading) setIsStatusLoading(false);    }
     try {
       setCheckinLoading(true)
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject,{
-          enableHighAccuracy:true
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true
         })
       })
       const payload = {
@@ -363,16 +365,16 @@ if (showLoading) setIsStatusLoading(false);    }
     } catch (error: any) {
       console.error("❌ Check-in Error:", error);
 
-    if (axios.isAxiosError(error)) {
-      const errorMessage = error.response?.data?.message || "Something went wrong.";
-      console.log("🔴 API 400 Error Response:", error.response?.data);
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || "Something went wrong.";
+        console.log("🔴 API 400 Error Response:", error.response?.data);
 
-      toast.error(`❌ ${errorMessage}`);
-    } else if (error.code === 1) {
-      toast.error("🚫 Location permission denied. Please allow GPS access.");
-    } else {
-      toast.error("⚠️ Failed to check in. Please try again.");
-    }
+        toast.error(`❌ ${errorMessage}`);
+      } else if (error.code === 1) {
+        toast.error("🚫 Location permission denied. Please allow GPS access.");
+      } else {
+        toast.error("⚠️ Failed to check in. Please try again.");
+      }
       toast.error('Error checking in', error);
     } finally {
       setCheckinLoading(false)
@@ -382,6 +384,7 @@ if (showLoading) setIsStatusLoading(false);    }
   const handleCheckOut = async () => {
     const token = localStorage.getItem('tokenId');
     try {
+      setCheckoutLoading(true)
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject)
       })
@@ -407,6 +410,8 @@ if (showLoading) setIsStatusLoading(false);    }
       toast.success('Checked out successfully');
     } catch (error) {
       toast.error('Error checking out');
+    } finally {
+      setCheckoutLoading(false)
     }
   };
   //  useEffect(() => {
@@ -564,7 +569,9 @@ if (showLoading) setIsStatusLoading(false);    }
                 <div className="mt-6 text-center">
                   {isOnLeave ? (
                     <>
-                      <p className="text-red-500 font-semibold mb-3">You are on leave today. Check-in is disabled.</p>
+                      <p className="text-red-500 font-semibold mb-3">
+                        You are on leave today. Check-in is disabled.
+                      </p>
                       <button
                         className="bg-gray-400 text-white px-6 py-2 rounded-lg shadow cursor-not-allowed"
                         disabled
@@ -572,33 +579,38 @@ if (showLoading) setIsStatusLoading(false);    }
                         Check In
                       </button>
                     </>
+                  ) : !checkInTime ? (
+                    <button
+                      onClick={handleCheckIn}
+                      className="bg-green-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
+                      disabled={checkinLoading}
+                    >
+                      {checkinLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
+                          <span>Checking-In...</span>
+                        </div>
+                      ) : (
+                        "Check In"
+                      )}
+                    </button>
+                  ) : !checkoutLoading ? (
+                    <button
+                      onClick={handleCheckOut}
+                      className={`${hasCheckedOut ? "bg-blue-500" : "bg-red-500"
+                        } hover:bg-blue-400 text-white px-6 py-2 rounded-lg shadow transition duration-300`}
+                      disabled={hasCheckedOut}
+                    >
+                      {hasCheckedOut ? "Checked Out" : "Check Out"}
+                    </button>
                   ) : (
-                    !checkInTime ? (
-                      <button
-                        onClick={handleCheckIn}
-                        className="bg-green-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition duration-300"
-                        disabled={checkinLoading}
-                      >
-                        {checkinLoading ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
-                            <span>Checking-In...</span>
-                          </div>
-                        ) : (
-                          "Check In"
-                        )}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleCheckOut}
-                        className={`${hasCheckedOut ? "bg-blue-500" : "bg-red-500"} hover:bg-blue-400 text-white px-6 py-2 rounded-lg shadow transition duration-300`}
-                        disabled={hasCheckedOut}
-                      >
-                        {hasCheckedOut ? 'Checked Out' : 'Check Out'}
-                      </button>
-                    )
+                    <div className="flex items-center gap-2 justify-center px-6 py-2 bg-blue-500 rounded-lg">
+                      <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
+                      <span className='text-white'>Checking-Out...</span>
+                    </div>
                   )}
                 </div>
+
 
               </div>
             </div>

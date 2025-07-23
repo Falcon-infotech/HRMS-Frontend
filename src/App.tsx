@@ -45,6 +45,8 @@ import MySlip from './pages/payroll/MySlip';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { setAccessToken } from './constants/axiosInstance';
+import { Braces } from 'lucide-react';
+import Branch from './components/Branch';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -173,6 +175,8 @@ useEffect(()=>{
               <Route path="/employees/:id" element={<EmployeeDetail />} />
               <Route path="/employees/new" element={<EmployeeForm />} />
               <Route path="/employees/edit/:id" element={<EmployeeForm />} />
+              <Route path="/branch" element={<Branch />} />
+
             </Route>
 
             <Route element={<ProtectedRoute requiredRole={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>
