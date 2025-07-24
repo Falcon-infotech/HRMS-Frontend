@@ -25,7 +25,7 @@ const EmployeeDetail: React.FC = () => {
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth)
   const id = user?._id;
-  // console.log(user)
+  console.log(user)
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -100,7 +100,7 @@ const EmployeeDetail: React.FC = () => {
       const response = await axios.get(`${BASE_URL}/api/employee/${id}`,
       );
 
-      console.log('API response:', response.data.data);
+      // console.log('API response:', response.data.data);
 
       setEmployees(response.data.data);
     } catch (error) {
@@ -341,7 +341,8 @@ const EmployeeDetail: React.FC = () => {
                 <img src={previewUrl || imageUrlPic?.files[0]?.url || 'https://contacts.zoho.in/file?ID=60028830319&fs=thumb'} alt={`${employee?.first_name} ${employee?.last_name}`} className="w-full h-full object-contain" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-3xl font-bold">
-                  {employee?.role === "admin" ? employee?.first_name[0] : employee?.first_name[0]}
+                  {employee?.first_name ? employee.first_name[0] : ''}
+                  {/* {employee?.role === "admin" ? employee?.first_name[0] : employee?.first_name[0]} */}
                 </div>
               )}
             </div>

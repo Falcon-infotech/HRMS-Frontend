@@ -5,7 +5,8 @@ import {
   DollarSign, Award, Briefcase, BarChart2, Settings, LogOut, Search, Sun, Moon,
   LogOutIcon,
   PartyPopper,
-  CalendarCheck
+  CalendarCheck,
+  LocateIcon
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -98,6 +99,7 @@ const DashboardLayout: React.FC = () => {
       ]
     },
     { name: 'Holidays', href: '/holidays', icon: PartyPopper },
+    { name: 'Branch', href: '/branch', icon: LocateIcon },
 
     {
       name: 'Payroll', href: '/payroll', icon: DollarSign, children: [
@@ -147,8 +149,11 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings","Branch"];
           return !restrictedSections.includes(item.name);
+        }
+        if(user?.role==="hr"){
+          return item.name!=="Branch"
         }
         return true;
 
@@ -173,6 +178,7 @@ const DashboardLayout: React.FC = () => {
             children: item.children.filter(child => child.name !== "Payroll Dashboard")
           };
         }
+       
         return item
       })
 

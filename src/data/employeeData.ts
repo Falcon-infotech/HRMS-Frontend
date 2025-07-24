@@ -19,6 +19,7 @@ export interface Employee {
   pincode?: string;
   country?: string;
   role?: string;
+  branch?:"";
   salary: number;
   empployeeId: string;
   village?: string;

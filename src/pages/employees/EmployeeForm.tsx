@@ -35,7 +35,8 @@ const EmployeeForm: React.FC = () => {
     pincode: '',
     country: '',
     empployeeId: "",
-    id: ""
+    id: "",
+    branch: ""
   });
 
   const [emergencyContact, setEmergencyContact] = useState({
@@ -54,12 +55,13 @@ const EmployeeForm: React.FC = () => {
   });
   const { user } = useSelector((state: RootState) => state.auth)
 
-// console.log(user)
+  console.log(user)
 
   const [documents, setDocuments] = useState<{ name: string; type: string }[]>([]);
   const [activeTab, setActiveTab] = useState('basic');
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [editValue, setEditValue] = useState([]);
+  const[branches,setBranches]=useState([])
 
   useEffect(() => {
     // console.log(isEditMode);
@@ -102,7 +104,8 @@ const EmployeeForm: React.FC = () => {
               salary: emp.salary || 0,
               empployeeId: emp._id || '',
               village: emp?.address?.village,
-              id: emp.userId
+              id: emp.userId,
+              branch:emp?.branch
             });
 
             // if (existingEmployee.emergencyContact) {
@@ -202,6 +205,7 @@ const EmployeeForm: React.FC = () => {
     if (!employee.city?.trim()) errors.city = 'City is required';
     if (!employee.id?.trim()) errors.id = 'Employee ID is required';
     if (!employee.salary || employee.salary <= 0) errors.salary = 'Salary is required and must be a positive number';
+    if(! employee.branch?.trim()) errors.branch = 'Branch is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -233,16 +237,17 @@ const EmployeeForm: React.FC = () => {
           pincode: employee.pincode || ''
         },
         userId: employee.id || '',
+        branch: employee?.branch || ""
       };
 
       try {
         const token = localStorage.getItem("tokenId")
         console.log("running")
         if (isEditMode && id) {
-          const response = await axios.put(`${BASE_URL}/api/employee/${id}`, payload, );
+          const response = await axios.put(`${BASE_URL}/api/employee/${id}`, payload,);
           toast.success("Employee updated successfully")
         } else {
-          const response = await axios.post(`${BASE_URL}/api/auth/register`, payload, );
+          const response = await axios.post(`${BASE_URL}/api/auth/register`, payload,);
           toast.success("Employee created successfully")
         }
         // const successMessage = isEditMode
@@ -295,7 +300,7 @@ const EmployeeForm: React.FC = () => {
 
   const loaddepartments = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/employee/department`, );
+      const response = await axios.get(`${BASE_URL}/api/employee/department`,);
       setDepartment(response.data.data);
       console.log(response.data.data)
     } catch (error) {
@@ -306,7 +311,7 @@ const EmployeeForm: React.FC = () => {
 
   const loaddesignations = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/employee/designation`, );
+      const response = await axios.get(`${BASE_URL}/api/employee/designation`,);
       setDesignations(response.data.data);
       console.log(response.data.data)
 
@@ -356,10 +361,22 @@ const EmployeeForm: React.FC = () => {
     }
   };
 
+   const fetchLocations = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/branch`)
+      setBranches(response.data.branches || [])
+      console.log(response.data?.branches)
+    } catch (error) {
+      console.error('Error fetching branches:', error)
+    } finally {
+    }
+  }
+
 
   useEffect(() => {
     loaddepartments();
     loaddesignations();
+    fetchLocations()
   }, [])
 
 
@@ -547,6 +564,28 @@ const EmployeeForm: React.FC = () => {
                       {formErrors.phone && (
                         <p className="mt-1 text-sm text-red-600">{formErrors.phone}</p>
                       )}
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="branch" className="form-label">Branch *</label>
+                      <select
+                        id="branch"
+                        name="branch"
+                        className="form-input"
+                        value={employee.branch}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select a Branch</option>
+                        {branches.map((c, index) => (
+                          <option key={index} value={c.branchName}>
+                            {c?.branchName}
+                          </option>
+                        ))}
+                      </select>
+                      {
+                        formErrors.branch && (
+                          <p className="mt-1 text-sm text-red-600">{formErrors.branch}</p>
+                        )
+                      }
                     </div>
                   </div>
                 </div>
@@ -963,8 +1002,8 @@ const EmployeeForm: React.FC = () => {
                               type="file"
                               className="hidden"
                               accept="image/*"
-                              // value={images}
-                              // onChange={handleImage}
+                            // value={images}
+                            // onChange={handleImage}
                             />
                           </label>
                           <p className="mt-1 text-xs text-neutral-500">PNG, JPG or GIF up to 2MB</p>

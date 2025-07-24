@@ -47,6 +47,8 @@ import { BASE_URL } from './constants/api';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { setAccessToken } from './constants/axiosInstance';
+import { Braces } from 'lucide-react';
+import Branch from './components/Branch';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -98,15 +100,15 @@ function App() {
 
     clearSelectedLocalStorageAt1159PM(timeZone);
   }, []);
-const token=useSelector((state:RootState)=>state.auth.token)
+  const token = useSelector((state: RootState) => state.auth.token)
 
-useEffect(()=>{
-  if(token){
-    setAccessToken(token)
+  useEffect(() => {
+    if (token) {
+      setAccessToken(token)
 
-    // console.log("first",isatuth)
-  }
-},[token])
+      // console.log("first",isatuth)
+    }
+  }, [token])
 
   return (
     <Router>
@@ -174,6 +176,15 @@ useEffect(()=>{
               <Route path="/employees/:id" element={<EmployeeDetail />} />
               <Route path="/employees/new" element={<EmployeeForm />} />
               <Route path="/employees/edit/:id" element={<EmployeeForm />} />
+              <Route
+                path="/branch"
+                element={
+                  <ProtectedRoute requiredRole={['admin']}>
+                    <Branch />
+                  </ProtectedRoute>
+                }
+              />
+
             </Route>
 
             <Route element={<ProtectedRoute requiredRole={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>
