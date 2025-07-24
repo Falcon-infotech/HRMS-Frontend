@@ -99,15 +99,15 @@ function App() {
 
     clearSelectedLocalStorageAt1159PM(timeZone);
   }, []);
-const token=useSelector((state:RootState)=>state.auth.token)
+  const token = useSelector((state: RootState) => state.auth.token)
 
-useEffect(()=>{
-  if(token){
-    setAccessToken(token)
+  useEffect(() => {
+    if (token) {
+      setAccessToken(token)
 
-    // console.log("first",isatuth)
-  }
-},[token])
+      // console.log("first",isatuth)
+    }
+  }, [token])
 
   return (
     <Router>
@@ -175,7 +175,14 @@ useEffect(()=>{
               <Route path="/employees/:id" element={<EmployeeDetail />} />
               <Route path="/employees/new" element={<EmployeeForm />} />
               <Route path="/employees/edit/:id" element={<EmployeeForm />} />
-              <Route path="/branch" element={<Branch />} />
+              <Route
+                path="/branch"
+                element={
+                  <ProtectedRoute requiredRole={['admin']}>
+                    <Branch />
+                  </ProtectedRoute>
+                }
+              />
 
             </Route>
 

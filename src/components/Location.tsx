@@ -51,6 +51,7 @@ const Location = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/branch`)
       setBranches(response.data.branches || [])
+      console.log(response.data?.branches)
     } catch (error) {
       console.error('Error fetching branches:', error)
     } finally {

@@ -9,7 +9,7 @@ const Branch = () => {
 
   const tabs = [
     { id: 1, name: 'Organization Setup' },
-    { id: 2, name: 'Users' },
+    // { id: 2, name: 'Users' },
   ]
 
   const [activeTab, setActiveTab] = useState(tabs[0].name)

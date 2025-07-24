@@ -36,7 +36,7 @@ const EmployeeForm: React.FC = () => {
     country: '',
     empployeeId: "",
     id: "",
-    // branch: ""
+    branch: ""
   });
 
   const [emergencyContact, setEmergencyContact] = useState({
@@ -55,12 +55,13 @@ const EmployeeForm: React.FC = () => {
   });
   const { user } = useSelector((state: RootState) => state.auth)
 
-  // console.log(user)
+  console.log(user)
 
   const [documents, setDocuments] = useState<{ name: string; type: string }[]>([]);
   const [activeTab, setActiveTab] = useState('basic');
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [editValue, setEditValue] = useState([]);
+  const[branches,setBranches]=useState([])
 
   useEffect(() => {
     // console.log(isEditMode);
@@ -204,7 +205,7 @@ const EmployeeForm: React.FC = () => {
     if (!employee.city?.trim()) errors.city = 'City is required';
     if (!employee.id?.trim()) errors.id = 'Employee ID is required';
     if (!employee.salary || employee.salary <= 0) errors.salary = 'Salary is required and must be a positive number';
-    // if(! employee.branch?.trim()) errors.branch = 'Branch is required';
+    if(! employee.branch?.trim()) errors.branch = 'Branch is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -236,7 +237,7 @@ const EmployeeForm: React.FC = () => {
           pincode: employee.pincode || ''
         },
         userId: employee.id || '',
-        // branch:employee?.branch || ""
+        branch: employee?.branch || ""
       };
 
       try {
@@ -360,10 +361,22 @@ const EmployeeForm: React.FC = () => {
     }
   };
 
+   const fetchLocations = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/branch`)
+      setBranches(response.data.branches || [])
+      console.log(response.data?.branches)
+    } catch (error) {
+      console.error('Error fetching branches:', error)
+    } finally {
+    }
+  }
+
 
   useEffect(() => {
     loaddepartments();
     loaddesignations();
+    fetchLocations()
   }, [])
 
 
@@ -558,19 +571,19 @@ const EmployeeForm: React.FC = () => {
                         id="branch"
                         name="branch"
                         className="form-input"
-                        // value={employee.branch}
-                        // onChange={handleInputChange}
+                        value={employee.branch}
+                        onChange={handleInputChange}
                       >
                         <option value="">Select a Branch</option>
-                        {country.countries.map((c, index) => (
-                          <option key={index} value={c}>
-                            {c}
+                        {branches.map((c, index) => (
+                          <option key={index} value={c.branchName}>
+                            {c?.branchName}
                           </option>
                         ))}
                       </select>
                       {
-                        formErrors.country && (
-                          <p className="mt-1 text-sm text-red-600">{formErrors.country}</p>
+                        formErrors.branch && (
+                          <p className="mt-1 text-sm text-red-600">{formErrors.branch}</p>
                         )
                       }
                     </div>

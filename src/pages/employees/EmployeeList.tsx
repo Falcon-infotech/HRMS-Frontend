@@ -364,6 +364,12 @@ const EmployeeList: React.FC = () => {
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
+                <th className="cursor-pointer" onClick={() => handleSort('branch')}>
+                  <div className="flex items-center">
+                    Branch
+                    <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
                 <th className="cursor-pointer" onClick={() => handleSort('joiningDate')}>
                   <div className="flex items-center">
                     Joining Date
@@ -420,6 +426,9 @@ const EmployeeList: React.FC = () => {
                     </td>
                     <td>
                       <span className="text-sm">{employee.designation}</span>
+                    </td>
+                    <td>
+                      <span className="text-sm">{employee?.branch||""}</span>
                     </td>
                     <td>
                       <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>

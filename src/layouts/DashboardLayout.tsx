@@ -149,8 +149,11 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings","Branch"];
           return !restrictedSections.includes(item.name);
+        }
+        if(user?.role==="hr"){
+          return item.name!=="Branch"
         }
         return true;
 
@@ -175,6 +178,7 @@ const DashboardLayout: React.FC = () => {
             children: item.children.filter(child => child.name !== "Payroll Dashboard")
           };
         }
+       
         return item
       })
 
