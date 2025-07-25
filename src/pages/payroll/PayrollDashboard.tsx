@@ -9,6 +9,9 @@ import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
 
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 
 const PayrollDashboard: React.FC = () => {
@@ -125,7 +128,7 @@ const PayrollDashboard: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/payroll/get_payroll_data`, {
-        
+
         params: {
           month: selectedMonth,
           year: selectedYear,
@@ -137,8 +140,8 @@ const PayrollDashboard: React.FC = () => {
       setEmployeesfilter(response.data.data || []);
 
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
+      if (axios?.isAxiosError(error)) {
+        if (error?.response?.status === 404) {
           console.warn("No payroll data found for selected filters.");
           setEmployees([]);
         } else {
@@ -156,6 +159,31 @@ const PayrollDashboard: React.FC = () => {
     handlefilter()
   }, [])
 
+  const [loadingDownload, setLoadingDownload] = useState(false);
+
+
+  const ExoprtReport = async () => {
+    try {
+      setLoadingDownload(true);
+      const workSheet = XLSX.utils.json_to_sheet(employees)
+
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, workSheet, 'Sheet1')
+
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" })
+
+      const data = new Blob([excelBuffer], { type: "application/octet-stream" })
+      let filename = `${selectedMonth}_${selectedYear}_Payroll Report.xlsx`
+      console.log()
+      saveAs(data, filename)
+    } catch (error) {
+      console.error('Error downloading data:', error);
+
+    } finally {
+      setLoadingDownload(false)
+    }
+  }
+
 
 
   useEffect(() => {
@@ -166,7 +194,7 @@ const PayrollDashboard: React.FC = () => {
 
       employee?.userId?.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee?.userId?.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${employee?.userId?.first_name || ''} ${employee?.userId?.last_name || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) 
+      `${employee?.userId?.first_name || ''} ${employee?.userId?.last_name || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
 
       // employee?.month?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -214,9 +242,35 @@ const PayrollDashboard: React.FC = () => {
         title="Payroll Dashboard"
         description="Manage and track employee payroll"
         actions={
-          <button className="btn btn-primary flex items-center">
-            <Download size={16} className="mr-1" />
+          employees.length > 0 && <button
+            className="btn btn-primary flex items-center gap-2"
+            onClick={ExoprtReport}
+            disabled={loadingDownload}
+          >
+            <Download size={16} />
             Export Report
+            {loadingDownload && (
+              <svg
+                className="animate-spin h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                ></path>
+              </svg>
+            )}
           </button>
         }
       />
