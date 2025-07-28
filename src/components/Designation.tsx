@@ -68,9 +68,9 @@ const Designation = () => {
   }, [isOpen])
 
   return (
-    <div className="p-6">
+    <div className="py-6">
       <div className="flex justify-between mb-10">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Designations</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-4 max-md:text-base">Designations</h1>
         {/* <button className='bg-primary-600 text-white px-2 rounded-xl flex items-center'>Create New Designation <span><MdAdd className='w-12 h-8'/></span></button> */}
       </div>
 
