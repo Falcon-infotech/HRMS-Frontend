@@ -64,12 +64,12 @@ const Location = () => {
   }, [])
 
   return (
-    <div className="p-6">
+    <div className="py-6">
       <div className="flex justify-between items-center mb-10">
-        <h1 className="text-2xl font-bold text-gray-800">Branch Locations</h1>
+        <h1 className="text-2xl font-bold text-gray-800 max-md:text-sm">Branch Locations</h1>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-700 transition"
+          className="bg-primary-600 text-white md:px-4 md:py-2 px-2 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-700 transition max-md:text-xs text-nowrap"
         >
           <MdAdd className="w-5 h-5" />
           Create New Branch
