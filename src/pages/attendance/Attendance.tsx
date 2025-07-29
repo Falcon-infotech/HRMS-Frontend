@@ -866,7 +866,7 @@ const Attendance: React.FC = () => {
                         <p className="font-medium text-base">{attendanceDataSingle.workHours || '-'}</p>
                       </div>
                     </div>
-
+                          
                   </div>
                   {/* Check-In & Check-Out */}
                   <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
@@ -877,7 +877,7 @@ const Attendance: React.FC = () => {
                         <p className="text-sm text-gray-500 font-medium">Check-In</p>
                         <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
                         <p className="text-base text-gray-800 font-medium">
-                          {attendanceDataSingle?.checkIn
+                          { attendanceDataSingle?.checkIn
                             ? format(new Date(attendanceDataSingle?.checkIn), 'hh:mm a')
                             : '-'}
                         </p>
