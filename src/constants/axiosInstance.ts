@@ -59,7 +59,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; // ✅ retry with new token
         return api(originalRequest);
       } catch (err) {
-        // store.dispatch(logout());
+        store.dispatch(logout());
 
 
       }
