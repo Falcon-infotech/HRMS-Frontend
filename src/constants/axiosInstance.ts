@@ -50,7 +50,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (err) {
-        // store.dispatch(logout());
+        store.dispatch(logout());
 
         console.error('Refresh token failed:', err.message);
       }
