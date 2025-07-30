@@ -219,7 +219,7 @@ const UserDashboard = () => {
     };
 
     fetchAttendance();
-  }, [handleCheckIn]);
+  }, []);
 
   const weekData = getCurrentWeekDates();
 
