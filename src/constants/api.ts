@@ -14,10 +14,10 @@
 // export const BASE_URL = 'https://hrms-backend-yrrr.onrender.com';
 
 //latest
-export const BASE_URL = 'https://my-app-production-1884.up.railway.app';
+// export const BASE_URL = 'https://my-app-production-1884.up.railway.app';
 
 //aws
-// export const BASE_URL = 'https://backend.falconinfotech.co';
+export const BASE_URL = 'https://backend.falconinfotech.co';
 
 
 
