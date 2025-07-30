@@ -12,6 +12,24 @@ export const setAccessToken = (token: any) => {
   accessToken = token;
 };
 
+
+let isRefreshing: Boolean = false
+let failedQueue: any[] = []
+
+
+
+const processQueue = (error: any, token: null | string = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error)
+    } else {
+      prom.resolve(token)
+    }
+  })
+
+  failedQueue = []
+}
+
 api.interceptors.request.use((config) => {
   // const token = localStorage.getItem('accessToken'); // ✅ always read fresh token
   if (accessToken) {
@@ -31,7 +49,22 @@ api.interceptors.response.use(
     if (error.response?.status === 401 &&
       error.response?.data?.message === 'TokenExpired' &&
       !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          })
+      }
       originalRequest._retry = true;
+      isRefreshing = true;
+
+
 
       try {
         console.log('Access token expired. Attempting refresh...');
@@ -47,12 +80,17 @@ api.interceptors.response.use(
         store.dispatch(updateAccessToken(newAccessToken))
         setAccessToken(newAccessToken)
 
+        processQueue(null, newAccessToken)
+
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
-      } catch (err) {
+      } catch (err: any) {
+        processQueue(err, null);
         store.dispatch(logout());
 
         console.error('Refresh token failed:', err.message);
+      } finally {
+        isRefreshing = false;
       }
     }
 

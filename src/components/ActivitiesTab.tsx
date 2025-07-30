@@ -8,7 +8,8 @@ const ActivitiesTab = React.memo(({ userDetails, weekData, holidatsThisMonth, ch
 }) => {
   const capitalize = (str: string) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-
+  
+// console.log(weekData)
   return (
     <div className="space-y-6">
       {/* Greeting */}
@@ -46,7 +47,7 @@ const ActivitiesTab = React.memo(({ userDetails, weekData, holidatsThisMonth, ch
                 >
                   {item.dateNum}
                 </div>
-                <div className={`text-xs ${item.color}`}>{item.status}</div>
+                <div className={`text-xs ${item.status==="-" ? "text-orange-500" :item.color}`}>{item.status==="-" ?"Absent":item.status}</div>
               </div>
             ))}
           </div>

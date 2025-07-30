@@ -14,11 +14,7 @@ const [ids , setId] = useState<string | undefined>(id);
     if (type === "update") {
       const fetchData = async () => {
         try {
-          const res = await axios.get(`${BASE_URL}/api/payroll/get_salary_slip/${id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            }
-          });
+          const res = await axios.get(`${BASE_URL}/api/payroll/get_salary_slip/${id}`,);
           console.log(res.data);
           setId(res.data.data.userId._id)
           setFormData(prev=>({

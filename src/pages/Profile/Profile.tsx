@@ -25,7 +25,7 @@ const EmployeeDetail: React.FC = () => {
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth)
   const id = user?._id;
-  console.log(user)
+  // console.log(user)
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -49,7 +49,7 @@ const EmployeeDetail: React.FC = () => {
   const getProfilePic =
     async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/uploadByUserId/${user?._id}`)
+        const response = await axios.get(`${BASE_URL}/api/upload/uploadByUserId/${user?._id}`)
         const data = response.data;
         // console.log(data)
         if (data.success && Array.isArray(data.uploads)) {
