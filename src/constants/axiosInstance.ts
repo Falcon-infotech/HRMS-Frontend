@@ -14,6 +14,24 @@ export const setAccessToken = (token: any) => {
   accessToken = token;
 };
 
+
+let isRefreshing: Boolean = false
+let failedQueue: any[] = []
+
+
+
+const processQueue = (error: any, token: null | string = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error)
+    } else {
+      prom.resolve(token)
+    }
+  })
+
+  failedQueue = []
+}
+
 api.interceptors.request.use((config) => {
   // const token = localStorage.getItem('accessToken'); // ✅ always read fresh token
   if (accessToken) {
@@ -35,7 +53,23 @@ api.interceptors.response.use(
       error.response?.data?.message === 'TokenExpired' &&
       !originalRequest._retry) {
 
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          })
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
+
+
 
       try {
         console.log('Access token expired. Attempting refresh...');
@@ -46,21 +80,20 @@ api.interceptors.response.use(
         );
 
         const newAccessToken = res.data.accessToken;
-
-
-
         console.log(newAccessToken, "new token received")
-
-        // localStorage.setItem('accessToken', newAccessToken);
-
         store.dispatch(updateAccessToken(newAccessToken))
         setAccessToken(newAccessToken)
-        // localStorage.setItem('accessToken', newAccessToken); // ✅ save new token
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; // ✅ retry with new token
-        return api(originalRequest);
-      } catch (err) {
-        store.dispatch(logout());
+        processQueue(null, newAccessToken)
 
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        return api(originalRequest);
+      } catch (err: any) {
+        processQueue(err, null);
+        store.dispatch(logout());
+        console.error('Refresh token failed:', err.message);
+      } finally {
+        isRefreshing = false;
 
       }
     }

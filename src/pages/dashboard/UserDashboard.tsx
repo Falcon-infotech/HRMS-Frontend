@@ -126,8 +126,10 @@ const UserDashboard = () => {
               : 'text-gray-400';
       } else if (isWeekend) {
         status = 'Weekend';
-        color = 'text-orange-500';
-      } else {
+        color = 'text-red-500';
+      }
+      
+      else {
         status = '-';
         color = 'text-green-600';
       }
@@ -153,6 +155,49 @@ const UserDashboard = () => {
   //   );
   // })
 
+  const handleCheckIn = async () => {
+
+    try {
+      setCheckinLoading(true)
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true
+        })
+      })
+      const payload = {
+        location: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }
+      };
+      const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, payload,
+      )
+      // console.log(response.data)
+      const inTime = response.data?.attendance?.inTime;
+
+      setCheckInTime(inTime);
+      localStorage.setItem('lastCheckInTime', inTime);
+      // setCheckInTime(response.data.attendance.inTime);
+      toast.success('Checked in successfully');
+      fetchStatus(false);
+    } catch (error: any) {
+      console.error("❌ Check-in Error:", error);
+
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || "Something went wrong.";
+        console.log("🔴 API 400 Error Response:", error.response?.data);
+
+        toast.error(`❌ ${errorMessage}`);
+      } else if (error.code === 1) {
+        toast.error("🚫 Location permission denied. Please allow GPS access.");
+      } else {
+        toast.error("⚠️ Failed to check in. Please try again.");
+      }
+      toast.error('Error checking in', error);
+    } finally {
+      setCheckinLoading(false)
+    }
+  };
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -174,7 +219,7 @@ const UserDashboard = () => {
     };
 
     fetchAttendance();
-  }, []);
+  }, [handleCheckIn]);
 
   const weekData = getCurrentWeekDates();
 
@@ -237,11 +282,13 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          }
-        });
+        const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`,
+        //    {
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        //   }
+        // }
+      );
         // console.log(res.data.data)
         setUser(res.data.data.attendance);
       } catch (error) {
@@ -266,11 +313,13 @@ const UserDashboard = () => {
     if (showLoading) setIsStatusLoading(true);
 
     try {
-      const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-        }
-      });
+      const res = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`,
+        //  {
+        // headers: {
+        //   Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
+        // }
+      // }
+    );
 
       // console.log(res.data.attendance)
       if (res.data?.attendance?.status === "Leave") {
@@ -337,49 +386,6 @@ const UserDashboard = () => {
 
   // made changes here for attendence statas update
 
-  const handleCheckIn = async () => {
-
-    try {
-      setCheckinLoading(true)
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true
-        })
-      })
-      const payload = {
-        location: {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        }
-      };
-      const response = await axios.post(`${BASE_URL}/api/attendance/check_in`, payload,
-      )
-      // console.log(response.data)
-      const inTime = response.data?.attendance?.inTime;
-
-      setCheckInTime(inTime);
-      localStorage.setItem('lastCheckInTime', inTime);
-      // setCheckInTime(response.data.attendance.inTime);
-      toast.success('Checked in successfully');
-      fetchStatus(false);
-    } catch (error: any) {
-      console.error("❌ Check-in Error:", error);
-
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || "Something went wrong.";
-        console.log("🔴 API 400 Error Response:", error.response?.data);
-
-        toast.error(`❌ ${errorMessage}`);
-      } else if (error.code === 1) {
-        toast.error("🚫 Location permission denied. Please allow GPS access.");
-      } else {
-        toast.error("⚠️ Failed to check in. Please try again.");
-      }
-      toast.error('Error checking in', error);
-    } finally {
-      setCheckinLoading(false)
-    }
-  };
 
   const handleCheckOut = async () => {
     const token = localStorage.getItem('tokenId');
