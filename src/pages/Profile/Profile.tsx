@@ -25,7 +25,7 @@ const EmployeeDetail: React.FC = () => {
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth)
   const id = user?._id;
-  // console.log(user)
+  console.log(id)
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -100,7 +100,7 @@ const EmployeeDetail: React.FC = () => {
       const response = await axios.get(`${BASE_URL}/api/employee/${id}`,
       );
 
-      // console.log('API response:', response.data.data);
+      console.log('API response:', response.data.data);
 
       setEmployees(response.data.data);
     } catch (error) {
