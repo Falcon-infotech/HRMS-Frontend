@@ -27,6 +27,7 @@ const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState(getDashboardData());
   const [count, setCount] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [todayattendanceData, setTodayAttendanceData] = useState<any[]>([]);
 
   //  const renderTabContent = () => {
   //     switch (activeTab) {
@@ -80,6 +81,22 @@ const Dashboard: React.FC = () => {
     handlefetch()
   }, [])
   // console.log(dashboardData.attendanceSummary)
+
+
+  useEffect(() => {
+    const todayAttendance = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`,)
+        const data = response.data.data
+        console.log(data)
+        setTodayAttendanceData(data);
+      } catch (error) {
+        console.error('Error fetching today\'s attendance:', error);
+      }
+    }
+    todayAttendance();
+
+  }, [])
 
   const fetchHolidays = async () => {
     // console.log("first")
@@ -228,45 +245,83 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2  gap-4 mb-8">
-        <OverviewCard
-          title="Total Employees"
-          value={count}
-          icon={Users}
-          // change="+4% from last month"
-          changeType="positive"
-          link="/employees"
-        />
-        <OverviewCard
-          title="Attendance Today"
-          value={
-            count > 0
-              ? `${Math.round((todayStats / count) * 100)}%`
-              : '0%'
-          }
-          icon={Calendar}
-          // change="+2% from yesterday"
-          changeType="positive"
-          link="/attendance"
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+        {/* Left side with two cards stacked */}
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 max-h-18">
+          <OverviewCard
+            title="Total Employees"
+            value={count}
+            icon={Users}
+            changeType="positive"
+            link="/employees"
+          />
+          <OverviewCard
+            title="Attendance Today"
+            value={
+              count > 0
+                ? `${Math.round((todayStats / count) * 100)}%`
+                : '0%'
+            }
+            icon={Calendar}
+            changeType="positive"
+            link="/attendance"
+          />
+        </div>
 
-        {/* <OverviewCard
-          title="Leave Requests"
-          value={dashboardData.leaveStats.pending}
-          icon={FileText}
-          // change="3 new requests"
-          changeType="neutral"
-          link="/leave"
-        />
-        <OverviewCard
-          title="Open Positions"
-          value="7"
-          icon={Briefcase}
-          // change="+2 from last month"
-          changeType="positive"
-          link="/recruitment/jobs" */}
-        {/* /> */}
+        {/* Right side: Attendance Card */}
+        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6 overflow-x-auto max-h-96 relative">
+          <h3 className="text-lg font-semibold mb-4">Today's Attendance</h3>
+          <div className="space-y-3 overflow-y-auto h-full">
+            {todayattendanceData.slice(0, 5).map((item) => {
+              const { user, date, inTime, status } = item;
+              const email = user.email;
+              const emailFirstLetter = email?.charAt(0).toUpperCase();
+
+              return (
+                <div
+                  key={user.userId}
+                  className="flex items-center justify-between p-2 border-b border-neutral-100 min-w-[300px]"
+                >
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-neutral-200 mr-3 text-sm font-medium text-white bg-blue-500">
+                      {emailFirstLetter}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{email}</p>
+                      <p className="text-xs text-neutral-500">{new Date(date).toDateString()}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <span
+                      className={`badge ${status === 'Present'
+                          ? 'bg-green-100 text-green-800'
+                          : status === 'Absent'
+                            ? 'bg-red-100 text-red-800'
+                            : status === 'Half-day'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : status === 'Leave'
+                                ? 'bg-blue-100 text-blue-800'
+                                : status === 'Holiday'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-neutral-100 text-neutral-800'
+                        } px-2 py-1 rounded text-xs font-medium`}
+                    >
+                      {status}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 text-center">
+            <Link to="/attendance/log" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+              View All Employees
+            </Link>
+          </div>
+        </div>
       </div>
+
 
       {/* Charts and Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -415,6 +470,8 @@ const Dashboard: React.FC = () => {
             })}
           </div>
         </div>
+
+
 
         {/* <div className="max-w-md mx-auto mt-10">
       <div className="flex border-b border-gray-300">
