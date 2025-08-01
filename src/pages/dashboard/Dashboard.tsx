@@ -269,7 +269,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Right side: Attendance Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6 overflow-x-auto max-h-96 relative">
+        <div className="bg-white rounded-lg shadow-sm border border-grey-200 p-6 overflow-x-auto max-h-96 relative">
           <h3 className="text-lg font-semibold mb-4">Today's Attendance</h3>
           <div className="space-y-3 overflow-y-auto h-full">
             {todayattendanceData.slice(0, 5).map((item) => {

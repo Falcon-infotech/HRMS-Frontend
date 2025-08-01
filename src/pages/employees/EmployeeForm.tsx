@@ -61,7 +61,7 @@ const EmployeeForm: React.FC = () => {
   const [activeTab, setActiveTab] = useState('basic');
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [editValue, setEditValue] = useState([]);
-  const[branches,setBranches]=useState([])
+  const [branches, setBranches] = useState([])
 
   useEffect(() => {
     // console.log(isEditMode);
@@ -105,7 +105,7 @@ const EmployeeForm: React.FC = () => {
               empployeeId: emp._id || '',
               village: emp?.address?.village,
               id: emp.userId,
-              branch:emp?.branch
+              branch: emp?.branch
             });
 
             // if (existingEmployee.emergencyContact) {
@@ -196,7 +196,12 @@ const EmployeeForm: React.FC = () => {
     if (!employee.last_name?.trim()) errors.lastName = 'Last name is required';
     if (!employee.email?.trim()) errors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(employee.email)) errors.email = 'Email is invalid';
-    if (!employee.phone?.length === 0) errors.phone = 'Phone number is required';
+    if (!employee.phone || employee.phone.trim().length === 0) {
+      errors.phone = 'Phone number is required';
+    } else if (!/^\+?\d{7,15}$/.test(employee.phone)) {
+      errors.phone =
+        'Phone number must contain only digits with no spaces or special characters. Spaces between numbers are not allowed.';
+    }
     if (!employee.department?.trim()) errors.department = 'Department is required';
     if (!employee.designation?.trim()) errors.designation = 'Designation is required';
     if (!employee.joiningDate?.trim()) errors.joiningDate = 'Joining date is required';
@@ -205,7 +210,7 @@ const EmployeeForm: React.FC = () => {
     if (!employee.city?.trim()) errors.city = 'City is required';
     if (!employee.id?.trim()) errors.id = 'Employee ID is required';
     if (!employee.salary || employee.salary <= 0) errors.salary = 'Salary is required and must be a positive number';
-    if(! employee.branch?.trim()) errors.branch = 'Branch is required';
+    if (!employee.branch?.trim()) errors.branch = 'Branch is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -361,7 +366,7 @@ const EmployeeForm: React.FC = () => {
     }
   };
 
-   const fetchLocations = async () => {
+  const fetchLocations = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/branch`)
       setBranches(response.data.branches || [])
@@ -561,8 +566,8 @@ const EmployeeForm: React.FC = () => {
                         required
                         disabled={isEditMode}
                       />
-                      {formErrors.phone && (
-                        <p className="mt-1 text-sm text-red-600">{formErrors.phone}</p>
+                      {formErrors.password && (
+                        <p className="mt-1 text-sm text-red-600">{formErrors.password}</p>
                       )}
                     </div>
                     <div className="form-group">

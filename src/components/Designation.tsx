@@ -102,7 +102,7 @@ const Designation = () => {
                   }}
                 >
                   <td className="px-6 py-4 border">{d.name}</td>
-                  <td className="px-6 py-4 border">{d.associatedUsersCount || 0}</td>
+                  <td className="px-6 py-4 border text-primary-500">{d.associatedUsersCount || 0}</td>
                 </tr>
               ))}
             </tbody>
