@@ -98,7 +98,7 @@ const Department = () => {
             <thead className="bg-gray-100 text-gray-700 font-semibold uppercase tracking-wide">
               <tr>
                 <th className="px-6 py-3 border">Department Name</th>
-                <th className="px-6 py-3 border">Associated Users</th>
+                <th className="px-6 py-3 border ">Associated Users</th>
               </tr>
             </thead>
             <tbody>
@@ -109,7 +109,7 @@ const Department = () => {
                   onClick={() => handleRowClick(dept._id)}
                 >
                   <td className="px-6 py-4 border">{dept?.name}</td>
-                  <td className="px-6 py-4 border">{dept?.associatedUsersCount || 0}</td>
+                  <td className="px-6 py-4 border text-primary-500">{dept?.associatedUsersCount || 0}</td>
                 </tr>
               ))}
             </tbody>
