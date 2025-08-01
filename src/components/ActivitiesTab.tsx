@@ -8,6 +8,17 @@ const ActivitiesTab = React.memo(({ userDetails, weekData, holidatsThisMonth, ch
 }) => {
   const capitalize = (str: string) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+
+
+  function getGreeing(){
+    const hour=new Date().getHours();
+    if(hour<12){
+      return "Good Morning";
+    }else if(hour<17){
+      return "Good Afternoon";
+    }
+    return "Good Evening";
+  }
   
 // console.log(weekData)
   return (
@@ -15,7 +26,7 @@ const ActivitiesTab = React.memo(({ userDetails, weekData, holidatsThisMonth, ch
       {/* Greeting */}
       <div className="flex justify-between items-center p-6 bg-white rounded-xl shadow">
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">Good Morning <span className="text-blue-600">{userDetails?.name || capitalize(userDetails?.first_name) + " " + capitalize(userDetails?.last_name)}</span></h2>
+          <h2 className="text-xl font-semibold text-gray-800">{getGreeing()} <span className="text-blue-600">{userDetails?.name || capitalize(userDetails?.first_name) + " " + capitalize(userDetails?.last_name)}</span></h2>
           <p className="text-gray-500">Have a productive day!</p>
         </div>
         <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
