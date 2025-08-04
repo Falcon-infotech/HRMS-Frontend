@@ -47,7 +47,18 @@ const DashboardLayout: React.FC = () => {
       } finally {
       }
     }
-    unread()
+          unread()
+
+
+    let timer=setInterval(() => {
+      unread()
+
+    }, 1000 * 60 * 5); 
+
+
+    return ()=>{
+      clearInterval(timer)
+    }
   }, [])
 
   useEffect(() => {
@@ -149,11 +160,11 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings","Branch"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch"];
           return !restrictedSections.includes(item.name);
         }
-        if(user?.role==="hr"){
-          return item.name!=="Branch"
+        if (user?.role === "hr") {
+          return item.name !== "Branch"
         }
         return true;
 
@@ -178,7 +189,7 @@ const DashboardLayout: React.FC = () => {
             children: item.children.filter(child => child.name !== "Payroll Dashboard")
           };
         }
-       
+
         return item
       })
 
@@ -352,7 +363,7 @@ const DashboardLayout: React.FC = () => {
               >
                 <Bell size={20} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-error-500"></span>
+                  <span className="absolute top-0 right-1 block h-[18px] w-[18px] rounded-full bg-error-500 text-[11px] text-white font-bold">{unreadNotifications}</span>
                 )}
               </button>
 
