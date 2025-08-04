@@ -6,7 +6,8 @@ import {
   LogOutIcon,
   PartyPopper,
   CalendarCheck,
-  LocateIcon
+  LocateIcon,
+  UserX
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -47,16 +48,16 @@ const DashboardLayout: React.FC = () => {
       } finally {
       }
     }
-          unread()
+    unread()
 
 
-    let timer=setInterval(() => {
+    let timer = setInterval(() => {
       unread()
 
-    }, 1000 * 60 * 5); 
+    }, 1000 * 60 * 5);
 
 
-    return ()=>{
+    return () => {
       clearInterval(timer)
     }
   }, [])
@@ -87,6 +88,13 @@ const DashboardLayout: React.FC = () => {
         { name: 'Add Employee', href: '/employees/new' }
       ]
     },
+    {
+      name: 'Deleted Employees',
+      href: '/deleted',
+      icon: UserX,
+    }
+    ,
+
     {
       name: 'Attendance',
       href: '/attendance',
@@ -160,12 +168,14 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch", "Deleted Employees"];
           return !restrictedSections.includes(item.name);
         }
         if (user?.role === "hr") {
-          return item.name !== "Branch"
+          const restrictedSections = ["Branch", "Deleted Employees"];
+          return !restrictedSections.includes(item.name);
         }
+
         return true;
 
 
