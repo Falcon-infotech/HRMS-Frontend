@@ -6,7 +6,8 @@ import {
   LogOutIcon,
   PartyPopper,
   CalendarCheck,
-  LocateIcon
+  LocateIcon,
+  UserX
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -48,6 +49,17 @@ const DashboardLayout: React.FC = () => {
       }
     }
     unread()
+
+
+    let timer = setInterval(() => {
+      unread()
+
+    }, 1000 * 60 * 5);
+
+
+    return () => {
+      clearInterval(timer)
+    }
   }, [])
 
   useEffect(() => {
@@ -73,9 +85,17 @@ const DashboardLayout: React.FC = () => {
       icon: Users,
       children: [
         { name: 'All Employees', href: '/employees' },
-        { name: 'Add Employee', href: '/employees/new' }
+        { name: 'Add Employee', href: '/employees/new' },
+        {
+          name: 'Deleted Employees',
+          href: '/deleted',
+          icon: UserX,
+        }
+        ,
       ]
     },
+
+
     {
       name: 'Attendance',
       href: '/attendance',
@@ -149,12 +169,14 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings","Branch"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch", "Deleted Employees"];
           return !restrictedSections.includes(item.name);
         }
-        if(user?.role==="hr"){
-          return item.name!=="Branch"
+        if (user?.role === "hr") {
+          const restrictedSections = ["Branch", "Deleted Employees"];
+          return !restrictedSections.includes(item.name);
         }
+
         return true;
 
 
@@ -178,7 +200,7 @@ const DashboardLayout: React.FC = () => {
             children: item.children.filter(child => child.name !== "Payroll Dashboard")
           };
         }
-       
+
         return item
       })
 
@@ -350,9 +372,11 @@ const DashboardLayout: React.FC = () => {
                 className="p-2 rounded-md text-neutral-600 hover:bg-neutral-100 relative"
                 onClick={() => setNotificationOpen(true)}
               >
-                <Bell size={20} />
+                <Bell size={22} style={{
+
+                }} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-error-500"></span>
+                  <span className="absolute top-0 right-1 block h-[18px] w-[22px]  rounded-full bg-error-500 text-[11px] text-white font-bold">{unreadNotifications}</span>
                 )}
               </button>
 

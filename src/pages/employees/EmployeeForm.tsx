@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Upload, Plus, Trash2 } from 'lucide-react';
-import employeesData, { Employee, country, departments, designations } from '../../data/employeeData';
+import employeesData, { Employee, country, countryCodes, departments, designations } from '../../data/employeeData';
 import axios from '../../constants/axiosInstance';
 import { API, BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
@@ -17,6 +17,8 @@ const EmployeeForm: React.FC = () => {
   const [isCustomDepartment, setIsCustomDepartment] = useState(false);
   const [desinations, setDesignations] = useState([]);
   const [department, setDepartment] = useState([]);
+  const [countryCode, setCountryCode] = useState('+91');
+
   const [employee, setEmployee] = useState<Partial<Employee>>({
     first_name: '',
     last_name: '',
@@ -55,7 +57,7 @@ const EmployeeForm: React.FC = () => {
   });
   const { user } = useSelector((state: RootState) => state.auth)
 
-  console.log(user)
+  // console.log(user)
 
   const [documents, setDocuments] = useState<{ name: string; type: string }[]>([]);
   const [activeTab, setActiveTab] = useState('basic');
@@ -84,6 +86,7 @@ const EmployeeForm: React.FC = () => {
 
           if (existingEmployee.data) {
             const emp = existingEmployee.data;
+            console.log(emp)
 
             setEmployee({
               first_name: emp.first_name || '',
@@ -198,10 +201,7 @@ const EmployeeForm: React.FC = () => {
     else if (!/\S+@\S+\.\S+/.test(employee.email)) errors.email = 'Email is invalid';
     if (!employee.phone || employee.phone.trim().length === 0) {
       errors.phone = 'Phone number is required';
-    } else if (!/^\+?\d{7,15}$/.test(employee.phone)) {
-      errors.phone =
-        'Phone number must contain only digits with no spaces or special characters. Spaces between numbers are not allowed.';
-    }
+    } 
     if (!employee.department?.trim()) errors.department = 'Department is required';
     if (!employee.designation?.trim()) errors.designation = 'Designation is required';
     if (!employee.joiningDate?.trim()) errors.joiningDate = 'Joining date is required';
@@ -223,7 +223,7 @@ const EmployeeForm: React.FC = () => {
       const payload = {
         first_name: employee.first_name || '',
         last_name: employee.last_name || '',
-        phone: employee.phone || '',
+        phone: `${countryCode}${employee.phone}` || '',
         email: employee.email || '',
         password: employee.password,
         department: employee.department || '',
@@ -307,7 +307,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee/department`,);
       setDepartment(response.data.data);
-      console.log(response.data.data)
+      // console.log(response.data.data)
     } catch (error) {
       console.error("Error fetching departments:", error);
     }
@@ -318,7 +318,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee/designation`,);
       setDesignations(response.data.data);
-      console.log(response.data.data)
+      // console.log(response.data.data)
 
     } catch (error) {
       console.error("Error fetching designations:", error);
@@ -370,7 +370,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/branch`)
       setBranches(response.data.branches || [])
-      console.log(response.data?.branches)
+      // console.log(response.data?.branches)
     } catch (error) {
       console.error('Error fetching branches:', error)
     } finally {
@@ -540,19 +540,38 @@ const EmployeeForm: React.FC = () => {
                     </div>
                     <div className="form-group">
                       <label htmlFor="phone" className="form-label">Phone Number *</label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        className={`form-input ${formErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                        value={employee.phone || ''}
-                        onChange={handleInputChange}
-                        required
-                      />
+
+                      <div className="flex gap-2">
+                        {/* Country Code Dropdown */}
+                        <select
+                          value={countryCode}
+                          onChange={(e) => setCountryCode(e.target.value)}
+                          className="form-input max-w-[140px]"
+                        >
+                          {countryCodes.map(({ code, country }, idx) => (
+                            <option key={idx} value={code}>
+                              {code} ({country})
+                            </option>
+                          ))}
+                        </select>
+
+                        {/* Phone Input */}
+                        <input
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          className={`form-input flex-1 ${formErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                          value={employee.phone || ''}
+                          onChange={(e) => setEmployee({ ...employee, phone: e.target.value })}
+                          required
+                        />
+                      </div>
+
                       {formErrors.phone && (
                         <p className="mt-1 text-sm text-red-600">{formErrors.phone}</p>
                       )}
                     </div>
+
                     <div className="form-group">
                       <label htmlFor="phone" className="form-label">Password *</label>
                       <input

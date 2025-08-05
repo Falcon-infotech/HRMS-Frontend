@@ -49,6 +49,7 @@ import { RootState } from './store/store';
 import { setAccessToken } from './constants/axiosInstance';
 import { Braces } from 'lucide-react';
 import Branch from './components/Branch';
+import DeletedUsers from './components/DeletedUsers';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -181,6 +182,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole={['admin']}>
                     <Branch />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/deleted"
+                element={
+                  <ProtectedRoute requiredRole={['admin']}>
+                    <DeletedUsers/>
                   </ProtectedRoute>
                 }
               />

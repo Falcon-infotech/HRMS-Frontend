@@ -19,7 +19,7 @@ const MySlip = () => {
         const resonse = await axios.get(`${BASE_URL}/api/payroll/get_singleUser_payroll_data/${user._id}`
         )
         const data = await resonse.data;
-        console.log(data)
+        // console.log(data)
         setData(data.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);

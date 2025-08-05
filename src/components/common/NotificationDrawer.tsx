@@ -12,7 +12,7 @@ interface NotificationDrawerProps {
 }
 
 const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }) => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const [notificationData, setNotificationData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -22,8 +22,8 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
     markAllAsRead,
     removeNotification,
     clearAllNotifications,
-  } 
-  = useNotification();
+  }
+    = useNotification();
 
   useEffect(() => {
     const fetchNotification = async () => {
@@ -115,9 +115,9 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
     e.stopPropagation();
     handleMarkAsRead(notification._id);
     onClose();
-   if (notification?.link) {
-    navigate(notification.link);
-  } 
+    if (notification?.link) {
+      navigate(notification.link);
+    }
   }
 
   return (
@@ -184,7 +184,10 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
                       <div className="mt-2 flex space-x-2">
                         {!notification?.isRead && (
                           <button
-                            onClick={() => handleMarkAsRead(notification?._id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMarkAsRead(notification?._id);
+                            }}
                             className={`text-xs text-primary-600 hover:text-primary-800 flex items-center`}
                           >
                             <Check className="h-3 w-3 mr-1" />
@@ -192,8 +195,10 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
                           </button>
                         )}
                         <button
-                          onClick={() => dismiss(notification?._id)}
-                          className="text-xs text-neutral-500 hover:text-neutral-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dismiss(notification?._id);
+                          }} className="text-xs text-neutral-500 hover:text-neutral-700"
                         >
                           Dismiss
                         </button>

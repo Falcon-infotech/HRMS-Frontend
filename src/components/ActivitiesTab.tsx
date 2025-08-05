@@ -9,7 +9,7 @@ const ActivitiesTab = React.memo(({ userDetails, weekData, holidatsThisMonth, ch
   const capitalize = (str: string) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
-
+// console.log(weekData)
   function getGreeing(){
     const hour=new Date().getHours();
     if(hour<12){

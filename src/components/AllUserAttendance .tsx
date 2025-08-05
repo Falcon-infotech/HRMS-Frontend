@@ -83,7 +83,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
       .slice((currentPage2 - 1) * itemsPerPage, currentPage2 * itemsPerPage)
     : [];
 
-  console.log(paginatedData)
+  // console.log(paginatedData)
 
   const handlePrevious = () => currentPage > 1 && setCurrentPage(p => p - 1);
   const handleNext = () => currentPage < totalPages && setCurrentPage(p => p + 1);
