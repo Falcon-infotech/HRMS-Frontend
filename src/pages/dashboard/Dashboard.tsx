@@ -88,7 +88,7 @@ const Dashboard: React.FC = () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`,)
         const data = response.data.data
-        console.log(data)
+        // console.log(data)
         setTodayAttendanceData(data);
       } catch (error) {
         console.error('Error fetching today\'s attendance:', error);
@@ -146,8 +146,9 @@ const Dashboard: React.FC = () => {
         // }, 0)
 
         // console.log(presentCount, "presentcount")
-
-        setTodayStats(data.totalUsers);
+        // console.log(data)
+        setTodayStats(data.data.filter((item: any) => item.status !== 'Absent').length);
+        // setTodayStats(data.totalUsers);
 
         const pieChartData = data.data.reduce((acc, ele) => {
           const count = ele.status;
@@ -164,7 +165,7 @@ const Dashboard: React.FC = () => {
         const pie: any = Object.entries(pieChartData).map(([status, count]) => ({
           status,
           count
-        }));
+        }));``
         // console.log(pie)
         setTodayTotalattencepie(pie)
       } catch (error) {
@@ -294,16 +295,16 @@ const Dashboard: React.FC = () => {
                   <div>
                     <span
                       className={`badge ${status === 'Present'
-                          ? 'bg-green-100 text-green-800'
-                          : status === 'Absent'
-                            ? 'bg-red-100 text-red-800'
-                            : status === 'Half-day'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : status === 'Leave'
-                                ? 'bg-blue-100 text-blue-800'
-                                : status === 'Holiday'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : 'bg-neutral-100 text-neutral-800'
+                        ? 'bg-green-100 text-green-800'
+                        : status === 'Absent'
+                          ? 'bg-red-100 text-red-800'
+                          : status === 'Half-day'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : status === 'Leave'
+                              ? 'bg-blue-100 text-blue-800'
+                              : status === 'Holiday'
+                                ? 'bg-purple-100 text-purple-800'
+                                : 'bg-neutral-100 text-neutral-800'
                         } px-2 py-1 rounded text-xs font-medium`}
                     >
                       {status}

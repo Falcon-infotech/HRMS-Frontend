@@ -307,7 +307,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee/department`,);
       setDepartment(response.data.data);
-      console.log(response.data.data)
+      // console.log(response.data.data)
     } catch (error) {
       console.error("Error fetching departments:", error);
     }
@@ -318,7 +318,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee/designation`,);
       setDesignations(response.data.data);
-      console.log(response.data.data)
+      // console.log(response.data.data)
 
     } catch (error) {
       console.error("Error fetching designations:", error);
@@ -370,7 +370,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/branch`)
       setBranches(response.data.branches || [])
-      console.log(response.data?.branches)
+      // console.log(response.data?.branches)
     } catch (error) {
       console.error('Error fetching branches:', error)
     } finally {

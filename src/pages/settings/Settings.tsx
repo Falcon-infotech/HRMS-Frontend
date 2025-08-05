@@ -11,7 +11,7 @@ const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
 // const darkMode=useSelector((state:RootState)=>state.settings.data)
 const darkMode = useSelector((state: RootState) => state.settings.data.darkMode);
-console.log("darkMode",darkMode)
+// console.log("darkMode",darkMode)
 
 
   const settingsSections = [

@@ -212,11 +212,11 @@ const EmployeeList: React.FC = () => {
     try {
       const token = localStorage.getItem('tokenId');
 
-      const data = await axios.delete(`${BASE_URL}/api/employee/${id}`,
+      const data = await axios.patch(`${BASE_URL}/api/employee/${id}`,
       )
 
       setEmployees(prevEmployees => prevEmployees.filter(emp => emp._id !== id));
-      console.log(data.data)
+      // console.log(data.data)
     } catch (error) {
       console.log(error)
     }

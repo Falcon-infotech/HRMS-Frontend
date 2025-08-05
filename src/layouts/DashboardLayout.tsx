@@ -85,15 +85,16 @@ const DashboardLayout: React.FC = () => {
       icon: Users,
       children: [
         { name: 'All Employees', href: '/employees' },
-        { name: 'Add Employee', href: '/employees/new' }
+        { name: 'Add Employee', href: '/employees/new' },
+        {
+          name: 'Deleted Employees',
+          href: '/deleted',
+          icon: UserX,
+        }
+        ,
       ]
     },
-    {
-      name: 'Deleted Employees',
-      href: '/deleted',
-      icon: UserX,
-    }
-    ,
+
 
     {
       name: 'Attendance',
@@ -371,9 +372,11 @@ const DashboardLayout: React.FC = () => {
                 className="p-2 rounded-md text-neutral-600 hover:bg-neutral-100 relative"
                 onClick={() => setNotificationOpen(true)}
               >
-                <Bell size={20} />
+                <Bell size={22} style={{
+
+                }} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-0 right-1 block h-[18px] w-[18px] rounded-full bg-error-500 text-[11px] text-white font-bold">{unreadNotifications}</span>
+                  <span className="absolute top-0 right-1 block h-[18px] w-[22px]  rounded-full bg-error-500 text-[11px] text-white font-bold">{unreadNotifications}</span>
                 )}
               </button>
 

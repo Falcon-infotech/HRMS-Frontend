@@ -151,7 +151,7 @@ const UserDashboard = () => {
 
       setCheckInTime(inTime);
       localStorage.setItem('lastCheckInTime', inTime);
-      // setCheckInTime(response.data.attendance.inTime);
+      // setCheckInTime(response.data.attendance.inTime)??;
       toast.success('Checked in successfully');
       await fetchAttendance();
       fetchStatus(false);
