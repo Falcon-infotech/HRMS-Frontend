@@ -130,7 +130,6 @@ const EmployeeList: React.FC = () => {
 
   useEffect(() => {
     let filteredEmployees = [...allEmployees]
-
     // Search filter
     if (searchTerm) {
       filteredEmployees = filteredEmployees.filter(employee =>
@@ -173,6 +172,7 @@ const EmployeeList: React.FC = () => {
     });
 
     setEmployees(filteredEmployees);
+  setCurrentPage(1)
   }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy, allEmployees]);
 
   const handleSort = (field: keyof Employee) => {
