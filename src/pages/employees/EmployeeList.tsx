@@ -130,7 +130,6 @@ const EmployeeList: React.FC = () => {
 
   useEffect(() => {
     let filteredEmployees = [...allEmployees]
-
     // Search filter
     if (searchTerm) {
       filteredEmployees = filteredEmployees.filter(employee =>
@@ -173,6 +172,7 @@ const EmployeeList: React.FC = () => {
     });
 
     setEmployees(filteredEmployees);
+    setCurrentPage(1)
   }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy, allEmployees]);
 
   const handleSort = (field: keyof Employee) => {
@@ -428,7 +428,7 @@ const EmployeeList: React.FC = () => {
                       <span className="text-sm">{employee.designation}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{employee?.branch||""}</span>
+                      <span className="text-sm">{employee?.branch || ""}</span>
                     </td>
                     <td>
                       <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
@@ -441,7 +441,7 @@ const EmployeeList: React.FC = () => {
                     <td>
                       <div className="flex items-center space-x-2">
                         <Link to={`/payroll/addSlip/${employee._id}`} className="text-neutral-500 hover:text-primary-600 relative" title="Payroll-details">
-                          <FaFileInvoiceDollar  size={18} className='' />
+                          <FaFileInvoiceDollar size={18} className='' />
                         </Link>
                         {user?.role === "admin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" >
                           <MdLockReset size={18} onClick={() => {
