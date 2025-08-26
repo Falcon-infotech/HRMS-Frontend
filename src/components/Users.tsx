@@ -4,87 +4,55 @@ import React, { useState } from 'react'
 import Location from './Location'
 import Designation from './Designation'
 import Department from './Department'
-import { Menu } from 'lucide-react'
 
-type SidebarItem = {
+type TabItem = {
   name: string
   icon: React.ElementType
-  children?: { name: string }[]
 }
 
 const Users = () => {
-  const sidebar: SidebarItem[] = [
+  const tabs: TabItem[] = [
     { name: 'Location', icon: Locate },
     { name: 'Designation', icon: MdBadge },
-    { name: 'Department', icon: MdApartment }
+    { name: 'Department', icon: MdApartment },
+    // Example extra tabs
+    // { name: 'Team', icon: MdApartment },
+    // { name: 'Role', icon: MdApartment },
+    // { name: 'Shift', icon: MdApartment }
   ]
 
-  const [openDropdown, setOpenDropdown] = useState<Record<string, boolean>>({})
   const [activeTab, setActiveTab] = useState("Location")
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-
-  const handleToggle = (name: string) => {
-    setOpenDropdown(prev => ({
-      ...prev,
-      [name]: !prev[name]
-    }))
-  }
 
   return (
-    <div className="flex flex-col md:flex-row w-full h-full min-h-screen">
-      {/* Mobile Header */}
-      <div className="flex items-center justify-between bg-gray-100 px-4 py-3 md:hidden">
-        <h1 className="text-xl font-bold">{activeTab}</h1>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-          <Menu className="w-6 h-6 text-gray-700" />
-        </button>
+    <div className="flex flex-col w-full h-full min-h-screen bg-white">
+      {/* Scrollable Top Tabs */}
+      <div className="flex border-b border-gray-200 bg-gray-50 overflow-x-auto scrollbar-hide">
+        <div className="flex whitespace-nowrap">
+          {tabs.map(({ name, icon: Icon }) => (
+            <button
+              key={name}
+              onClick={() => setActiveTab(name)}
+              className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === name
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-600 hover:text-blue-500 hover:border-blue-300'
+              }`}
+            >
+              {/* <Icon className="w-5 h-5 shrink-0" /> */}
+              {name}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Sidebar */}
-      <aside
-        className={`
-          ${sidebarOpen ? 'block' : 'hidden'} 
-          md:block 
-          w-full md:w-1/5 border-r border-gray-300 bg-gray-50 p-4
-        `}
-      >
-        <nav className="space-y-4">
-          {sidebar.map(({ name, icon: Icon, children }) => (
-            <div key={name}>
-              <button
-                className={`w-full flex items-center gap-3 text-left font-semibold hover:text-blue-600 focus:outline-none transition text-lg hover:bg-gray-200 py-2 rounded-xl ${activeTab === name ? "text-primary-600" : "text-gray-700"}`}
-                onClick={() => {
-                  children && handleToggle(name)
-                  setActiveTab(name)
-                  setSidebarOpen(false) // Auto-close on mobile
-                }}
-              >
-                <Icon className="w-5 h-5" />
-                {name}
-              </button>
-
-              {children && openDropdown[name] && (
-                <ul className="ml-8 mt-2 space-y-2">
-                  {children.map((child) => (
-                    <li
-                      key={child.name}
-                      className="text-sm text-gray-600 hover:text-blue-500 cursor-pointer transition"
-                    >
-                      {child.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 p-6 bg-white">
+      {/* Tab Content */}
+      <main className="flex-1 p-6">
         {activeTab === "Location" && <Location />}
         {activeTab === "Designation" && <Designation />}
         {activeTab === "Department" && <Department />}
+        {/* {activeTab === "Team" && <p>Team content here...</p>}
+        {activeTab === "Role" && <p>Role content here...</p>}
+        {activeTab === "Shift" && <p>Shift content here...</p>} */}
       </main>
     </div>
   )

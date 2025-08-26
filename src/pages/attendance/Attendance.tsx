@@ -803,114 +803,116 @@ const Attendance: React.FC = () => {
               onClick={() => setDrawerOpen(false)}
             />
 
-            {/* Bottom Drawer */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl p-6 h-[40%] overflow-y-auto animate-slideUp transition-all">
-              <div className="flex flex-col items-center mb-6 border-b pb-2 text-center">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <FaCalendarAlt className="text-blue-600 text-lg" />
-                  <h3 className="text-xl font-semibold">
-                    {attendanceDataSingle.date && format(attendanceDataSingle?.date, 'EEEE, MMMM d, yyyy')}
-                  </h3>
+            {/* Center Modal */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg h-auto max-h-[80%] overflow-y-auto animate-fadeIn relative">
+
+                {/* Header */}
+                <div className="flex flex-col items-center mb-6 border-b pb-2 text-center">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <FaCalendarAlt className="text-blue-600 text-lg" />
+                    <h3 className="text-xl font-semibold">
+                      {attendanceDataSingle?.date && format(attendanceDataSingle?.date, 'EEEE, MMMM d, yyyy')}
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setDrawerOpen(false)}
+                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    ✕
+                  </button>
                 </div>
-                <button
-                  onClick={() => setDrawerOpen(false)}
-                  className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  ✕
-                </button>
+
+                {/* Content */}
+                {attendanceDataSingle?.status === "Absent" || attendanceDataSingle?.status === "Leave" ? (
+                  <div className="text-center text-gray-700 space-y-4">
+                    {attendanceDataSingle.status === "Absent" ? (
+                      <>
+                        <FaTimesCircle className="text-4xl text-red-500 mx-auto" />
+                        <p className="text-xl font-semibold">Marked Absent</p>
+                        <p className="text-gray-500">No check-in or check-out was recorded for this date.</p>
+                      </>
+                    ) : (
+                      <>
+                        <FaRegCalendarMinus className="text-4xl text-yellow-500 mx-auto" />
+                        <p className="text-xl font-semibold">On Leave</p>
+                        <p className="text-gray-500">You were on approved leave for this date.</p>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-6 text-gray-700 max-w-md mx-auto">
+                    {/* Status & Duration */}
+                    <div className="grid grid-cols-2 gap-6 mb-4">
+                      <div className="flex items-start gap-3">
+                        <FaCheckCircle
+                          className={`mt-1 text-lg ${attendanceDataSingle.status === 'Present'
+                              ? 'text-green-500'
+                              : attendanceDataSingle.status === 'Half Day'
+                                ? 'text-blue-500'
+                                : attendanceDataSingle.status === 'Leave'
+                                  ? 'text-yellow-500'
+                                  : 'text-gray-400'
+                            }`}
+                        />
+                        <div>
+                          <p className="text-sm text-gray-500">Status</p>
+                          <p className="font-medium text-base">{attendanceDataSingle.status || 'No Data'}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <FaClock className="mt-1 text-blue-500 text-lg" />
+                        <div>
+                          <p className="text-sm text-gray-500">Duration</p>
+                          <p className="font-medium text-base">{attendanceDataSingle.workHours || '-'}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Check-In & Check-Out */}
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="flex items-start gap-3 p-4 rounded">
+                        <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 w-20" />
+                        <div>
+                          <p className="text-sm text-gray-500 font-medium">Check-In</p>
+                          <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
+                          <p className="text-base text-gray-800 font-medium">
+                            {attendanceDataSingle?.checkIn
+                              ? format(new Date(attendanceDataSingle?.checkIn), 'hh:mm a')
+                              : '-'}
+                          </p>
+                          <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
+                          <p className="text-sm text-gray-700">
+                            {attendanceDataSingle?.location?.checkIn?.displayName || 'Location not available'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3 p-4 rounded">
+                        <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 w-20" />
+                        <div>
+                          <p className="text-sm text-gray-500 font-medium">Check-Out</p>
+                          <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
+                          <p className="text-base text-gray-800 font-medium">
+                            {attendanceDataSingle.checkOut && attendanceDataSingle.checkOut !== "-"
+                              ? format(new Date(attendanceDataSingle.checkOut), 'hh:mm a')
+                              : '-'}
+                          </p>
+                          <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
+                          <p className="text-sm text-gray-700">
+                            {attendanceDataSingle?.location?.checkOut?.displayName || 'Location not available'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {attendanceDataSingle?.status === "Absent" || attendanceDataSingle?.status === "Leave" ? (
-                // Drawer view for Absent status
-                <div className="text-center text-gray-700 space-y-4">
-                  {attendanceDataSingle.status === "Absent" ? (
-                    <>
-                      <FaTimesCircle className="text-4xl text-red-500 mx-auto" />
-                      <p className="text-xl font-semibold">Marked Absent</p>
-                      <p className="text-gray-500">No check-in or check-out was recorded for this date.</p>
-                    </>
-                  ) : (
-                    <>
-                      <FaRegCalendarMinus
-                       className="text-4xl text-yellow-500 mx-auto" />
-                      <p className="text-xl font-semibold">On Leave</p>
-                      <p className="text-gray-500">You were on approved leave for this date.</p>
-                    </>
-                  )}
-                </div>
-              ) : (
-                // Drawer view for other statuses (Present, Half Day, etc.)
-                <div className="space-y-6 text-gray-700 max-w-md mx-auto">
-                  {/* Status */}
-                  <div className='grid grid-cols-2 sm:grid-cols-2 gap-6 mb-4'>
-                    <div className="flex items-start gap-3">
-                      <FaCheckCircle className={`mt-1 text-lg ${attendanceDataSingle.status === 'Present'
-                        ? 'text-green-500'
-                        : attendanceDataSingle.status === 'Half Day'
-                          ? 'text-blue-500'
-                          : attendanceDataSingle.status === 'Leave'
-                            ? 'text-yellow-500'
-                            : 'text-gray-400'
-                        }`} />
-                      <div>
-                        <p className="text-sm text-gray-500">Status</p>
-                        <p className="font-medium text-base">{attendanceDataSingle.status || 'No Data'}</p>
-                      </div>
-                    </div>
-
-                    {/* Duration */}
-                    <div className="flex items-start gap-3">
-                      <FaClock className="mt-1 text-blue-500 text-lg" />
-                      <div>
-                        <p className="text-sm text-gray-500">Duration</p>
-                        <p className="font-medium text-base">{attendanceDataSingle.workHours || '-'}</p>
-                      </div>
-                    </div>
-                          
-                  </div>
-                  {/* Check-In & Check-Out */}
-                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
-                    {/* Check-In */}
-                    <div className="flex items-start gap-3  p-4 rounded">
-                      <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 w-20" />
-                      <div>
-                        <p className="text-sm text-gray-500 font-medium">Check-In</p>
-                        <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
-                        <p className="text-base text-gray-800 font-medium">
-                          { attendanceDataSingle?.checkIn
-                            ? format(new Date(attendanceDataSingle?.checkIn), 'hh:mm a')
-                            : '-'}
-                        </p>
-                        <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
-                        <p className="text-sm text-gray-700">
-                          {attendanceDataSingle?.location?.checkIn?.displayName || 'Location not available'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Check-Out */}
-                    <div className="flex items-start gap-3  p-4 rounded">
-                      <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 w-20" />
-                      <div>
-                        <p className="text-sm text-gray-500 font-medium">Check-Out</p>
-                        <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
-                        <p className="text-base text-gray-800 font-medium">
-                          {attendanceDataSingle.checkOut && attendanceDataSingle.checkOut !== "-"
-                            ? format(new Date(attendanceDataSingle.checkOut), 'hh:mm a')
-                            : '-'}
-                        </p>
-                        <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
-                        <p className="text-sm text-gray-700">
-                          {attendanceDataSingle?.location?.checkOut?.displayName || 'Location not available'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </>
         ) : null}
+
 
       </div>
       {/* 

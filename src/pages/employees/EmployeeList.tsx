@@ -172,7 +172,11 @@ const EmployeeList: React.FC = () => {
     });
 
     setEmployees(filteredEmployees);
+<<<<<<< HEAD
     setCurrentPage(1)
+=======
+  setCurrentPage(1)
+>>>>>>> main
   }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy, allEmployees]);
 
   const handleSort = (field: keyof Employee) => {

@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { BASE_URL } from './api';
 import { store } from '../store/store';
+
 import { logout, updateAccessToken } from '../store/authSlice';
+
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -46,9 +48,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     console.log("entered here 401")
+
     if (error.response?.status === 401 &&
       error.response?.data?.message === 'TokenExpired' &&
       !originalRequest._retry) {
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
@@ -61,6 +65,7 @@ api.interceptors.response.use(
             return Promise.reject(err);
           })
       }
+
       originalRequest._retry = true;
       isRefreshing = true;
 
@@ -76,21 +81,20 @@ api.interceptors.response.use(
 
         const newAccessToken = res.data.accessToken;
         console.log(newAccessToken, "new token received")
-        // localStorage.setItem('accessToken', newAccessToken);
         store.dispatch(updateAccessToken(newAccessToken))
         setAccessToken(newAccessToken)
-
         processQueue(null, newAccessToken)
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
         return api(originalRequest);
       } catch (err: any) {
         processQueue(err, null);
         store.dispatch(logout());
-
         console.error('Refresh token failed:', err.message);
       } finally {
         isRefreshing = false;
+
       }
     }
 

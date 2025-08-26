@@ -38,7 +38,7 @@ const AuthLayout: React.FC = () => {
             </p>
           </div>
         </div>
-        <div className="text-white text-opacity-80 text-sm">
+        <div className="text-black text-opacity-80 text-sm">
           © 2025 HRMS. All rights reserved.
         </div>
       </div>

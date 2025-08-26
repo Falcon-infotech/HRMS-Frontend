@@ -157,92 +157,106 @@ const Calendar = ({ attendanceData }) => {
           />
 
           {/* Bottom Drawer */}
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl p-6 h-[60%] overflow-y-auto animate-slideUp transition-all">
-            <div className="flex flex-col items-center mb-6 border-b pb-2 text-center">
-              <div className="flex items-center gap-2 text-gray-700">
-                <FaCalendarAlt className="text-blue-600 text-lg" />
-                <h3 className="text-xl font-semibold">
-                  {format(selectedDate.day, 'EEEE, MMMM d, yyyy')}
-                </h3>
-              </div>
-              <button
+          {drawerOpen && (
+            <>
+              {/* Overlay */}
+              <div
+                className="fixed inset-0 bg-black bg-opacity-40 z-40"
                 onClick={() => setDrawerOpen(false)}
-                className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 text-2xl"
-              >
-                ✕
-              </button>
-            </div>
+              />
 
-            <div className="space-y-6 text-gray-700 max-w-md mx-auto">
-              {/* Status */}
-              <div className='grid grid-cols-2 sm:grid-cols-2 gap-6 mb-4'>
-                <div className="flex items-start gap-3">
-                <FaCheckCircle className={`mt-1 text-lg ${selectedDate.status === 'Present'
-                  ? 'text-green-500'
-                  : selectedDate.status === 'Half Day'
-                    ? 'text-blue-500'
-                    : selectedDate.status === 'Leave'
-                      ? 'text-yellow-500'
-                      : selectedDate.status === 'Absent'
-                        ? 'text-red-500'
-                        : 'text-gray-400'
-                  }`} />
-                <div>
-                  <p className="text-sm text-gray-500">Status</p>
-                  <p className="font-medium text-base">{selectedDate.status || 'No Data'}</p>
-                </div>
-              </div>
+              {/* Center Modal */}
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg h-auto max-h-[80%] overflow-y-auto animate-fadeIn relative">
 
-              {/* Duration */}
-              <div className="flex items-start gap-3">
-                <FaClock className="mt-1 text-blue-500 text-lg" />
-                <div>
-                  <p className="text-sm text-gray-500">Duration</p>
-                  <p className="font-medium text-base">{selectedDate.duration || '-'}</p>
-                </div>
-              </div>
-              </div>
+                  {/* Header */}
+                  <div className="flex flex-col items-center mb-6 border-b pb-2 text-center">
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <FaCalendarAlt className="text-blue-600 text-lg" />
+                      <h3 className="text-xl font-semibold">
+                        {format(selectedDate.day, 'EEEE, MMMM d, yyyy')}
+                      </h3>
+                    </div>
+                    <button
+                      onClick={() => setDrawerOpen(false)}
+                      className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 text-2xl"
+                    >
+                      ✕
+                    </button>
+                  </div>
 
-              {/* Location (Check-in & Check-out) */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
-                {/* Check-In */}
-                <div className="flex items-start gap-3  p-4 rounded">
-                  <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Check-In</p>
-                    <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
-                    <p className="text-base text-gray-800 font-medium">
-                      {selectedDate.inTime ? format(new Date(selectedDate.inTime), 'hh:mm a') : '-'}
-                    </p>
-                    <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
-                    <p className="text-sm text-gray-700">
-                      {selectedDate.checkIn || 'Location not available'}
-                    </p>
+                  {/* Content */}
+                  <div className="space-y-6 text-gray-700 max-w-md mx-auto">
+                    {/* Status & Duration */}
+                    <div className="grid grid-cols-2 gap-6 mb-4">
+                      <div className="flex items-start gap-3">
+                        <FaCheckCircle
+                          className={`mt-1 text-lg ${selectedDate.status === 'Present'
+                              ? 'text-green-500'
+                              : selectedDate.status === 'Half Day'
+                                ? 'text-blue-500'
+                                : selectedDate.status === 'Leave'
+                                  ? 'text-yellow-500'
+                                  : selectedDate.status === 'Absent'
+                                    ? 'text-red-500'
+                                    : 'text-gray-400'
+                            }`}
+                        />
+                        <div>
+                          <p className="text-sm text-gray-500">Status</p>
+                          <p className="font-medium text-base">{selectedDate.status || 'No Data'}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <FaClock className="mt-1 text-blue-500 text-lg" />
+                        <div>
+                          <p className="text-sm text-gray-500">Duration</p>
+                          <p className="font-medium text-base">{selectedDate.duration || '-'}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Check-In & Check-Out */}
+                    <div className="grid grid-cols-2 gap-6">
+                      {/* Check-In */}
+                      <div className="flex items-start gap-3 p-4 rounded">
+                        <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 shrink-0" />
+                        <div>
+                          <p className="text-sm text-gray-500 font-medium">Check-In</p>
+                          <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
+                          <p className="text-base text-gray-800 font-medium">
+                            {selectedDate.inTime ? format(new Date(selectedDate.inTime), 'hh:mm a') : '-'}
+                          </p>
+                          <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
+                          <p className="text-sm text-gray-700">
+                            {selectedDate.checkIn || 'Location not available'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Check-Out */}
+                      <div className="flex items-start gap-3 p-4 rounded">
+                        <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 shrink-0" />
+                        <div>
+                          <p className="text-sm text-gray-500 font-medium">Check-Out</p>
+                          <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
+                          <p className="text-base text-gray-800 font-medium">
+                            {selectedDate.outTime ? format(new Date(selectedDate.outTime), 'hh:mm a') : '-'}
+                          </p>
+                          <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
+                          <p className="text-sm text-gray-700">
+                            {selectedDate.checkOut || 'Location not available'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                {/* Check-Out */}
-                <div className="flex items-start gap-3  p-4 rounded">
-                  <FaMapMarkerAlt className="text-rose-500 text-lg mt-1 shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Check-Out</p>
-                    <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
-                    <p className="text-base text-gray-800 font-medium">
-                      {selectedDate.outTime ? format(new Date(selectedDate.outTime), 'hh:mm a') : '-'}
-                    </p>
-                    <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
-                    <p className="text-sm text-gray-700">
-                      {selectedDate.checkOut || 'Location not available'}
-                    </p>
-                  </div>
-                </div>
               </div>
+            </>
+          )}
 
-
-
-
-            </div>
-          </div>
         </>
       )}
 

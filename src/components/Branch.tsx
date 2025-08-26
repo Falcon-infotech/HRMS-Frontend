@@ -17,7 +17,7 @@ const Branch = () => {
   return (
     <div className="w-full">
       {/* Header with Back Button and Tabs */}
-      <div className="h-12 bg-gray-600 rounded flex items-center px-4">
+      {/* <div className="h-12 bg-gray-600 rounded flex items-center px-4">
         <ArrowLeftCircle
           className="text-white w-7 h-7 cursor-pointer hover:text-sky-500 transition duration-300"
           onClick={() => navigate(-1)}
@@ -38,12 +38,12 @@ const Branch = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Tab Content */}
       <div className="">
         {activeTab === 'Organization Setup' && <Users />}
-        {activeTab === 'Users' && <OrganizationSetup />}
+        {/* {activeTab === 'Users' && <OrganizationSetup />} */}
       </div>
     </div>
   )
