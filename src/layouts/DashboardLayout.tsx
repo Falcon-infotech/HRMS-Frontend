@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import axios from '../constants/axiosInstance';
 import { BASE_URL } from '../constants/api';
+import { MdOutlineImportExport, MdOutlineReport } from 'react-icons/md';
 
 const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -142,6 +143,7 @@ const DashboardLayout: React.FC = () => {
     // },
     { name: 'Reports', href: '/reports', icon: BarChart2 },
     { name: 'Daily Reports', href: '/dailyreports', icon: BarChart },
+    { name: "Employees Daily Report", href: '/allEmloyeesTask', icon: MdOutlineImportExport },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
@@ -171,11 +173,11 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch", "Deleted Employees"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch", "Deleted Employees","Employees Daily Report"];
           return !restrictedSections.includes(item.name);
         }
         if (user?.role === "hr") {
-          const restrictedSections = ["Branch", "Deleted Employees"];
+          const restrictedSections = ["Branch", "Deleted Employees","Employees Daily Report"];
           return !restrictedSections.includes(item.name);
         }
 
