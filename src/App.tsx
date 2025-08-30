@@ -51,6 +51,9 @@ import { Braces } from 'lucide-react';
 import Branch from './components/Branch';
 import DeletedUsers from './components/DeletedUsers';
 import DailyReport from './components/DailyReport';
+import MyReort from './components/MyReort';
+import MyReport from './components/MyReort';
+import EmployeesDailyReport from './components/EmployeesDailyReport';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -163,7 +166,18 @@ function App() {
 
               {/* Reports */}
               <Route path="/reports" element={<Reports />} />
-              <Route path="/dailyreports" element={<DailyReport />} />
+              <Route path="/dailyreports" element={<MyReport />} />
+              <Route path="/createTask" element={<DailyReport />} />
+
+              <Route
+                path="/allEmloyeesTask"
+                element={
+                  <ProtectedRoute requiredRole={['admin']}>
+                    <EmployeesDailyReport />
+
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Settings */}
               <Route path="/settings" element={<Settings />} />
@@ -191,7 +205,7 @@ function App() {
                 path="/deleted"
                 element={
                   <ProtectedRoute requiredRole={['admin']}>
-                    <DeletedUsers/>
+                    <DeletedUsers />
                   </ProtectedRoute>
                 }
               />
