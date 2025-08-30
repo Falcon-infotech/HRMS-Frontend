@@ -7,7 +7,8 @@ import {
   PartyPopper,
   CalendarCheck,
   LocateIcon,
-  UserX
+  UserX,
+  BarChart
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -140,6 +141,7 @@ const DashboardLayout: React.FC = () => {
     //   ]
     // },
     { name: 'Reports', href: '/reports', icon: BarChart2 },
+    { name: 'Daily Reports', href: '/dailyreports', icon: BarChart },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 

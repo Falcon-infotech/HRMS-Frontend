@@ -50,6 +50,7 @@ import { setAccessToken } from './constants/axiosInstance';
 import { Braces } from 'lucide-react';
 import Branch from './components/Branch';
 import DeletedUsers from './components/DeletedUsers';
+import DailyReport from './components/DailyReport';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -162,6 +163,7 @@ function App() {
 
               {/* Reports */}
               <Route path="/reports" element={<Reports />} />
+              <Route path="/dailyreports" element={<DailyReport />} />
 
               {/* Settings */}
               <Route path="/settings" element={<Settings />} />
