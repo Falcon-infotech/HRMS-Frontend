@@ -168,6 +168,7 @@ function App() {
               <Route path="/reports" element={<Reports />} />
               <Route path="/dailyreports" element={<MyReport />} />
               <Route path="/createTask" element={<DailyReport />} />
+              <Route path="/createTask/:id/:taskid" element={<DailyReport />} />
 
               <Route
                 path="/allEmloyeesTask"

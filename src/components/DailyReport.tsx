@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import api from "../constants/axiosInstance"
 import { API, BASE_URL } from "../constants/api"
 import toast from "react-hot-toast"
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import DOMPurify from "dompurify";
+import { useParams } from "react-router-dom";
 
 type Task = {
   date: string
@@ -16,6 +20,11 @@ type Task = {
 type TaskErrors = Partial<Record<keyof Task, string>>
 
 export default function DailyReportForm() {
+
+  const { id, taskid } = useParams();
+
+  const isEdit = !!id;
+  const isTaskEdit = !!taskid;
   // ✅ Form state
   const [task, setTask] = useState<Task>({
     date: "",
@@ -28,7 +37,6 @@ export default function DailyReportForm() {
   })
   const [department, setDepartment] = useState([]);
   const [loading, setLoading] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
 
   const loaddepartments = async () => {
     try {
@@ -41,6 +49,7 @@ export default function DailyReportForm() {
   }
 
   const [formErrors, setFormErrors] = useState<TaskErrors>({})
+  const [resetCounter, setResetCounter] = useState(0)
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -62,8 +71,34 @@ export default function DailyReportForm() {
     if (!task.concernedDepartment.trim()) errors.concernedDepartment = "Department is required"
     if (!task.objective.trim()) errors.objective = "Objective is required"
     if (!task.status) errors.status = "Status is required"
+    if (!task.remark.trim()) errors.remark = "Remark is required"
     return errors
   }
+
+  useEffect(() => {
+    if (isEdit && isTaskEdit) {
+      const fetchTask = async () => {
+        try {
+          const response = await api.get(`${BASE_URL}/api/daily_reports/${id}`);
+          const report = response.data.report;
+          const match = report.reports.find((item: any) => item._id === taskid);
+          setTask({
+            date: match.date,
+            taskGiven: match.taskGiven,
+            taskGivenBy: match.taskGivenBy,
+            concernedDepartment: match.concernedDepartment,
+            objective: match.objective,
+            remark: match.remark,
+            status: match.status,
+          });
+          console.log(match)
+        } catch (error) {
+          console.error("Error fetching task:", error);
+        }
+      };
+      fetchTask();
+    }
+  }, [id, taskid])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -74,38 +109,46 @@ export default function DailyReportForm() {
     }
     setLoading(true)
     try {
-      const response = await api.post(`${BASE_URL}/api/daily_reports/create`, task)
-      if (response.status === 201) {
-        toast.success("task created successfully")
+      const cleanTask = {
+        ...task,
+        taskGiven: DOMPurify.sanitize(task.taskGiven, { ALLOWED_TAGS: [] }),
+        objective: DOMPurify.sanitize(task.objective, { ALLOWED_TAGS: [] }),
+        remark: DOMPurify.sanitize(task.remark, { ALLOWED_TAGS: [] }),
+      };
+      if (isEdit && isTaskEdit) {
+        const response = await api.put(`${BASE_URL}/api/daily_reports/update_report/${id}/${taskid}`, cleanTask)
+        if (response.status === 200) {
+          toast.success("task updated successfully")
+        }
+      } else {
+        const response = await api.post(`${BASE_URL}/api/daily_reports/create`, cleanTask)
+        if (response.status === 201) {
+          toast.success("task created successfully")
 
+        }
+        setTask({
+          concernedDepartment: "",
+          date: "",
+          objective: "",
+          remark: "",
+          status: "",
+          taskGiven: "",
+          taskGivenBy: ""
+        })
+        setResetCounter(prev => prev + 1)
       }
-      setTask({
-        concernedDepartment: "",
-        date: "",
-        objective: "",
-        remark: "",
-        status: "",
-        taskGiven: "",
-        taskGivenBy: ""
-      })
     } catch (error) {
       console.error(error)
     } finally {
       setLoading(false)
     }
   }
+  const handleQuillChange = (field: string, value: string) => {
+
+    setTask({ ...task, [field]: value })
+  }
 
 
-  // const handleView=async()=>{
-  //   setIsOpen(true)
-  //   try {
-  //     const response=await api.get(`${BASE_URL}/api/daily_reports/all`)
-  //     const data=response.data
-  //     console.log(data)
-  //   } catch (error) {
-      
-  //   }
-  // }
 
   return (
     <>
@@ -135,35 +178,6 @@ export default function DailyReportForm() {
               {formErrors.date && <p className="mt-1 text-sm text-red-600">{formErrors.date}</p>}
             </div>
 
-            {/* Task Given */}
-            <div className="form-group">
-              <label htmlFor="taskGiven" className="form-label">Task Given *</label>
-              <textarea
-                id="taskGiven"
-                name="taskGiven"
-                className={`form-input ${formErrors.taskGiven ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                value={task.taskGiven}
-                onChange={handleInputChange}
-                required
-                rows={1}
-              />
-              {formErrors.taskGiven && <p className="mt-1 text-sm text-red-600">{formErrors.taskGiven}</p>}
-            </div>
-
-            {/* Task Given By */}
-            <div className="form-group">
-              <label htmlFor="taskGivenBy" className="form-label">Task Given By *</label>
-              <input
-                type="text"
-                id="taskGivenBy"
-                name="taskGivenBy"
-                className={`form-input ${formErrors.taskGivenBy ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                value={task.taskGivenBy}
-                onChange={handleInputChange}
-                required
-              />
-              {formErrors.taskGivenBy && <p className="mt-1 text-sm text-red-600">{formErrors.taskGivenBy}</p>}
-            </div>
 
             {/* Concerned Department */}
             <div className="form-group">
@@ -193,38 +207,6 @@ export default function DailyReportForm() {
                 </p>
               )}
             </div>
-
-
-
-            {/* Objective */}
-            <div className="form-group ">
-              <label htmlFor="objective" className="form-label">Objective *</label>
-              <textarea
-                id="objective"
-                name="objective"
-                className={`form-input ${formErrors.objective ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                rows={2}
-                value={task.objective}
-                onChange={handleInputChange}
-                required
-              />
-              {formErrors.objective && <p className="mt-1 text-sm text-red-600">{formErrors.objective}</p>}
-            </div>
-
-            {/* Remark */}
-            <div className="form-group ">
-              <label htmlFor="remark" className="form-label">Remark</label>
-              <textarea
-                id="remark"
-                name="remark"
-                className="form-input"
-                rows={2}
-                value={task.remark}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            {/* Status */}
             <div className="form-group">
               <label htmlFor="status" className="form-label">Status *</label>
               <select
@@ -242,6 +224,63 @@ export default function DailyReportForm() {
               </select>
               {formErrors.status && <p className="mt-1 text-sm text-red-600">{formErrors.status}</p>}
             </div>
+
+
+            {/* Task Given By */}
+            <div className="form-group">
+              <label htmlFor="taskGivenBy" className="form-label">Task Given By *</label>
+              <input
+                type="text"
+                id="taskGivenBy"
+                name="taskGivenBy"
+                className={`form-input ${formErrors.taskGivenBy ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
+                value={task.taskGivenBy}
+                onChange={handleInputChange}
+                required
+              />
+              {formErrors.taskGivenBy && <p className="mt-1 text-sm text-red-600">{formErrors.taskGivenBy}</p>}
+            </div>
+
+          </div>
+          <div className="my-6 grid grid-cols-1 gap-6">
+            {/* Task Given */}
+            <div className="form-group">
+              <label htmlFor="taskGiven" className="form-label">Task Given *</label>
+              <ReactQuill
+                key={resetCounter + "-taskGiven"}
+                theme="snow"
+                value={task.taskGiven}
+                onChange={(value) => handleQuillChange("taskGiven", value)}
+                placeholder="Write something here..."
+              />
+              {formErrors.taskGiven && <p className="mt-1 text-sm text-red-600">{formErrors.taskGiven}</p>}
+            </div>
+
+            {/* Objective */}
+            <div className="form-group ">
+              <label htmlFor="objective" className="form-label">Objective *</label>
+              <ReactQuill
+                key={resetCounter + "-objective"}
+                theme="snow"
+                value={task.objective}
+                onChange={(value) => handleQuillChange("objective", value)}
+                placeholder="Write something here..."
+              />
+              {formErrors.objective && <p className="mt-1 text-sm text-red-600">{formErrors.objective}</p>}
+            </div>
+
+            {/* Remark */}
+            <div className="form-group ">
+              <label htmlFor="remark" className="form-label">Remark</label>
+              <ReactQuill
+                key={resetCounter + "-remark"}
+                theme="snow"
+                value={task.remark}
+                onChange={(value) => handleQuillChange("remark", value)}
+                placeholder="Write something here..."
+              />
+              {formErrors.remark && <p className="mt-1 text-sm text-red-600">{formErrors.remark}</p>}
+            </div>
           </div>
         </div>
 
@@ -256,31 +295,7 @@ export default function DailyReportForm() {
           </button>
         </div>
       </form>
-      {/* {
-        isOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-30 z-40" onClick={() => setIsOpen(false)}>
-          </div>
-        )
-      }
-       <div
-        className={`fixed top-0 right-0 h-full w-1/2 max-sm:w-full bg-white shadow-lg transform transition-transform duration-300 z-50 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="p-4 flex justify-between items-center border-b">
-          <h2 className="text-lg font-semibold">Designation Details</h2>
-          <button
-            onClick={() => {
-              setIsOpen(false)
-            }}
-            className="text-gray-600 hover:text-red-500 text-xl font-bold"
-          >
-            &times;
-          </button>
-        </div>
 
-       
-      </div> */}
     </>
   )
 }
