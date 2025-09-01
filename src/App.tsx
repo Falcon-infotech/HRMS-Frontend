@@ -54,6 +54,7 @@ import DailyReport from './components/DailyReport';
 import MyReort from './components/MyReort';
 import MyReport from './components/MyReort';
 import EmployeesDailyReport from './components/EmployeesDailyReport';
+import SingleReport from './components/SingleUserReport';
 
 function App() {
   function clearSelectedLocalStorageAt1159PM(timeZone: any) {
@@ -175,6 +176,15 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole={['admin']}>
                     <EmployeesDailyReport />
+
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/allEmloyeesTask/:id"
+                element={
+                  <ProtectedRoute requiredRole={['admin']}>
+                    <SingleReport />
 
                   </ProtectedRoute>
                 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../constants/axiosInstance";
 import { BASE_URL } from "../constants/api";
+import { Link } from "react-router-dom";
 
 const EmployeesDailyReport = () => {
   const [reports, setReports] = useState([]);
@@ -34,6 +35,7 @@ const EmployeesDailyReport = () => {
               <th className="px-4 py-3 border">Objective</th>
               <th className="px-4 py-3 border">Remark</th>
               <th className="px-4 py-3 border">Status</th>
+              <th className="px-4 py-3 border">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -101,6 +103,9 @@ const EmployeesDailyReport = () => {
                         {task.status}
                       </div>
                     ))}
+                  </td>
+                  <td className="px-4 py-3 border">
+                   <Link to={"/allEmloyeesTask/" + report._id}>View</Link>
                   </td>
                 </tr>
               ))
