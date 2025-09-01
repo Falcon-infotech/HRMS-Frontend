@@ -46,6 +46,7 @@ const MyReport = () => {
               <th className="px-4 py-3 border">Objective</th>
               <th className="px-4 py-3 border">Remark</th>
               <th className="px-4 py-3 border">Status</th>
+              <th className="px-4 py-3 border">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -63,17 +64,18 @@ const MyReport = () => {
                     <td className="px-4 py-3 border">{task.remark}</td>
                     <td className="px-4 py-3 border">
                       <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          task.status === "In Progress"
+                        className={`px-2 py-1 rounded text-xs font-medium ${task.status === "In Progress"
                             ? "bg-yellow-100 text-yellow-700"
                             : task.status === "Completed"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-700"
-                        }`}
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-700"
+                          }`}
                       >
                         {task.status}
                       </span>
                     </td>
+                    <td className="px-4 py-3 border"><Link to={`/createTask/${report._id}/${task._id}`}><button className="bg-sky-500 text-white px-4 py-1 rounded">Edit</button></Link></td>
+
                   </tr>
                 ))
               )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../constants/axiosInstance";
 import { BASE_URL } from "../constants/api";
+import { Link } from "react-router-dom";
 
 const EmployeesDailyReport = () => {
   const [reports, setReports] = useState([]);
@@ -34,47 +35,80 @@ const EmployeesDailyReport = () => {
               <th className="px-4 py-3 border">Objective</th>
               <th className="px-4 py-3 border">Remark</th>
               <th className="px-4 py-3 border">Status</th>
+              <th className="px-4 py-3 border">Action</th>
             </tr>
           </thead>
           <tbody>
             {reports.length > 0 ? (
-              reports.map((report) =>
-                report.reports.map((task) => (
-                  <tr key={task._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 border">
-                      {new Date(report.date).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 border">
-                      {report.userId?.email || "N/A"}
-                    </td>
-                    <td className="px-4 py-3 border">
-                      {report.userId?.role || "N/A"}
-                    </td>
-                    <td className="px-4 py-3 border">{task.taskGiven}</td>
-                    <td className="px-4 py-3 border">{task.taskGivenBy}</td>
-                    <td className="px-4 py-3 border">
-                      {task.concernedDepartment}
-                    </td>
-                    <td className="px-4 py-3 border">{task.objective}</td>
-                    <td className="px-4 py-3 border">{task.remark}</td>
-                    <td className="px-4 py-3 border">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          task.status === "In Progress"
+              reports.map((report) => (
+                <tr key={report._id} className="hover:bg-gray-50">
+                  {/* Date */}
+                  <td className="px-4 py-3 border">
+                    {new Date(report.date).toLocaleDateString()}
+                  </td>
+
+                  {/* UserId info */}
+                  <td className="px-4 py-3 border">{report.userId?.email || "N/A"}</td>
+                  <td className="px-4 py-3 border">{report.userId?.role || "N/A"}</td>
+
+                  {/* Task Given */}
+                  <td className="px-4 py-3 border">
+                    {report.reports.map((task) => (
+                      <div key={task._id} dangerouslySetInnerHTML={{ __html: task.taskGiven }} />
+                    ))}
+                  </td>
+
+                  {/* Task Given By */}
+                  <td className="px-4 py-3 border">
+                    {report.reports.map((task) => (
+                      <div key={task._id}>{task.taskGivenBy}</div>
+                    ))}
+                  </td>
+
+                  {/* Department */}
+                  <td className="px-4 py-3 border">
+                    {report.reports.map((task) => (
+                      <div key={task._id}>{task.concernedDepartment}</div>
+                    ))}
+                  </td>
+
+                  {/* Objective */}
+                  <td className="px-4 py-3 border">
+                    {report.reports.map((task) => (
+                      <div key={task._id} dangerouslySetInnerHTML={{ __html: task.objective }} />
+                    ))}
+                  </td>
+
+                  {/* Remark */}
+                  <td className="px-4 py-3 border">
+                    {report.reports.map((task) => (
+                      <div key={task._id} dangerouslySetInnerHTML={{ __html: task.remark }} />
+                    ))}
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-4 py-3 border flex flex-col">
+                    {report.reports.map((task) => (
+                      <div
+                        key={task._id}
+                        className={`px-2 py-1 my-1 inline-block rounded text-xs font-medium ${task.status === "In Progress"
                             ? "bg-yellow-100 text-yellow-700"
                             : task.status === "Completed"
-                            ? "bg-green-100 text-green-700"
-                            : task.status === "Pending"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-gray-100 text-gray-700"
-                        }`}
+                              ? "bg-green-100 text-green-700"
+                              : task.status === "Pending"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-gray-100 text-gray-700"
+                          }`}
                       >
                         {task.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )
+                      </div>
+                    ))}
+                  </td>
+                  <td className="px-4 py-3 border">
+                   <Link to={"/allEmloyeesTask/" + report._id}>View</Link>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
                 <td
@@ -85,6 +119,7 @@ const EmployeesDailyReport = () => {
                 </td>
               </tr>
             )}
+
           </tbody>
         </table>
       </div>
