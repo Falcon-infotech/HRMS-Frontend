@@ -4,7 +4,7 @@ import { BASE_URL } from "../constants/api";
 
 const HolidayForm = ({ isEdit = false, existingData = {}, holidayId = null, onSuccess }) => {
     const safeExistingData = existingData || {};
-
+    const [branches, setBranches] = useState([]);
 
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
@@ -16,20 +16,19 @@ const HolidayForm = ({ isEdit = false, existingData = {}, holidayId = null, onSu
     };
     const [formData, setFormData] = useState({
         date: formatDate(safeExistingData.date) || "",
-        reason: safeExistingData.reason || ""
+        reason: safeExistingData.reason || "",
+        isOptional: safeExistingData?.isOptional || false,
+        branch: safeExistingData?.branch || "",
     });
 
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({
             ...prev,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.type === "checkbox" ? e.target.checked : e.target.value
         }));
     };
 
-    useEffect(() => {
-        console.log(formData)
-    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,6 +43,19 @@ const HolidayForm = ({ isEdit = false, existingData = {}, holidayId = null, onSu
             console.error("Error saving holiday", error);
         }
     };
+
+
+    useEffect(() => {
+        const fetchBranch = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/api/branch`);
+                setBranches(response.data.branches);
+            } catch (error) {
+                console.error("Error fetching branches", error);
+            }
+        };
+        fetchBranch();
+    }, []);
 
     return (
         <form
@@ -70,7 +82,7 @@ const HolidayForm = ({ isEdit = false, existingData = {}, holidayId = null, onSu
 
             <div>
                 <label className="block text-sm font-medium text-gray-700">
-                    Reason <span className="text-red-500">*</span>      
+                    Reason <span className="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
@@ -82,6 +94,33 @@ const HolidayForm = ({ isEdit = false, existingData = {}, holidayId = null, onSu
                     className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
             </div>
+
+            <div className=" flex flex-col">
+                <label htmlFor="">Branch</label>
+                <select className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" name="branch" value={formData.branch} onChange={handleChange}
+                >
+                    <option value="">Select Branch</option>
+                    {branches.map((branch) => (
+                        <option key={branch.id} value={branch._id}>
+                            {branch?.branchName}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700">
+                    Optional <span className="text-red-500">*</span>
+                </label>
+                <input
+                    type="checkbox"
+                    name="isOptional"
+                    checked={formData.isOptional}
+                    onChange={handleChange}
+                    // className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-10 h-4"
+                />
+            </div>
+
 
             <div className="flex justify-center sm:justify-end">
                 <button
