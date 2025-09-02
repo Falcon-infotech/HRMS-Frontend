@@ -91,7 +91,7 @@ export default function DailyReportForm() {
             remark: match.remark,
             status: match.status,
           });
-          console.log(match)
+          // console.log(match)
         } catch (error) {
           console.error("Error fetching task:", error);
         }
@@ -135,7 +135,7 @@ export default function DailyReportForm() {
           taskGiven: "",
           taskGivenBy: ""
         })
-        setResetCounter(prev => prev + 1)
+        setResetCounter(pre => prev + 1)
       }
     } catch (error) {
       console.error(error)
@@ -171,7 +171,7 @@ export default function DailyReportForm() {
                 id="date"
                 name="date"
                 className={`form-input ${formErrors.date ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                value={task.date}
+                value={task.date || ""}
                 onChange={handleInputChange}
                 required
               />
@@ -188,7 +188,7 @@ export default function DailyReportForm() {
                 id="concernedDepartment"
                 name="concernedDepartment"
                 className={`form-input ${formErrors.concernedDepartment ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                value={task.concernedDepartment}
+                value={task.concernedDepartment || ""}
                 onChange={handleInputChange}
                 required
               >
@@ -213,7 +213,7 @@ export default function DailyReportForm() {
                 id="status"
                 name="status"
                 className={`form-input ${formErrors.status ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                value={task.status}
+                value={task.status || ""}
                 onChange={handleInputChange}
                 required
               >
@@ -234,7 +234,7 @@ export default function DailyReportForm() {
                 id="taskGivenBy"
                 name="taskGivenBy"
                 className={`form-input ${formErrors.taskGivenBy ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                value={task.taskGivenBy}
+                value={task.taskGivenBy || ""}
                 onChange={handleInputChange}
                 required
               />
@@ -249,7 +249,7 @@ export default function DailyReportForm() {
               <ReactQuill
                 key={resetCounter + "-taskGiven"}
                 theme="snow"
-                value={task.taskGiven}
+                value={task.taskGiven ? `<p>${task.taskGiven}</p>` : ""}
                 onChange={(value) => handleQuillChange("taskGiven", value)}
                 placeholder="Write something here..."
               />
@@ -262,7 +262,7 @@ export default function DailyReportForm() {
               <ReactQuill
                 key={resetCounter + "-objective"}
                 theme="snow"
-                value={task.objective}
+                value={task.objective ? `<p>${task.objective}</p>` : ""}
                 onChange={(value) => handleQuillChange("objective", value)}
                 placeholder="Write something here..."
               />
@@ -275,7 +275,7 @@ export default function DailyReportForm() {
               <ReactQuill
                 key={resetCounter + "-remark"}
                 theme="snow"
-                value={task.remark}
+                value={task.remark ? `<p>${task.remark}</p>` : ""}
                 onChange={(value) => handleQuillChange("remark", value)}
                 placeholder="Write something here..."
               />
