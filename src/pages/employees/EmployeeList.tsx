@@ -38,6 +38,7 @@ const EmployeeList: React.FC = () => {
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
   const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+  // console.log(currentEmployees)
 
   const totalPages = Math.ceil(employees.length / employeesPerPage);
   const [editpass, setEditPass] = useState(false);
@@ -57,7 +58,7 @@ const EmployeeList: React.FC = () => {
       );
 
       const datas = response.data;
-      // console.log(datas.data.users)
+      console.log(datas.data.users)
       setEmployees(datas.data.users)
       setAllEmployees(datas.data.users);
 
@@ -445,7 +446,7 @@ const EmployeeList: React.FC = () => {
                         <Link to={`/payroll/addSlip/${employee._id}`} className="text-neutral-500 hover:text-primary-600 relative" title="Payroll-details">
                           <FaFileInvoiceDollar size={18} className='' />
                         </Link>
-                        {user?.role === "admin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" >
+                        {user?.role === "superAdmin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" >
                           <MdLockReset size={18} onClick={() => {
                             setSelectedEmployeeId(employee._id);
                             setEditPass(true)
@@ -467,7 +468,9 @@ const EmployeeList: React.FC = () => {
                           <Trash2 size={18} />
                         </button>
                         <div className="relative inline-block text-left">
-                          <div className="relative inline-block text-left">
+                          {
+                            user?.role === "superAdmin" && (
+                              <div className="relative inline-block text-left">
                             <button
                               onClick={() => toggleDropdown(employee._id)}
                               className="text-neutral-500 hover:text-primary-600"
@@ -477,7 +480,7 @@ const EmployeeList: React.FC = () => {
                             </button>
 
                             {
-                              user?.role === "admin" && dropdownOpenId === employee._id && (
+                              user?.role === "superAdmin" && dropdownOpenId === employee._id && (
                                 <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10 p-2">
                                   <label className="block text-sm text-gray-700 mb-1">Role:</label>
                                   <select
@@ -493,6 +496,8 @@ const EmployeeList: React.FC = () => {
                             }
 
                           </div>
+                            )
+                          }
                         </div>
                       </div>
                     </td>

@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
 
 const EmployeeForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -201,7 +203,7 @@ const EmployeeForm: React.FC = () => {
     else if (!/\S+@\S+\.\S+/.test(employee.email)) errors.email = 'Email is invalid';
     if (!employee.phone || employee.phone.trim().length === 0) {
       errors.phone = 'Phone number is required';
-    } 
+    }
     if (!employee.department?.trim()) errors.department = 'Department is required';
     if (!employee.designation?.trim()) errors.designation = 'Designation is required';
     if (!employee.joiningDate?.trim()) errors.joiningDate = 'Joining date is required';
@@ -223,11 +225,11 @@ const EmployeeForm: React.FC = () => {
       const payload = {
         first_name: employee.first_name || '',
         last_name: employee.last_name || '',
-        phone: `${countryCode}${employee.phone}` || '',
+        phone: employee.phone,
         email: employee.email || '',
         password: employee.password,
         department: employee.department || '',
-        role: 'employee',
+        // role: 'employee',
         designation: employee.designation || '',
         joining_date: new Date(employee.joiningDate || '').toISOString(),
         salary: employee.salary || 0,
@@ -369,7 +371,7 @@ const EmployeeForm: React.FC = () => {
   const fetchLocations = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/branch`)
-      setBranches(response.data.branches || [])
+      setBranches(response?.data?.branches || [])
       // console.log(response.data?.branches)
     } catch (error) {
       console.error('Error fetching branches:', error)
@@ -541,9 +543,9 @@ const EmployeeForm: React.FC = () => {
                     <div className="form-group">
                       <label htmlFor="phone" className="form-label">Phone Number *</label>
 
-                      <div className="flex gap-2">
+                      <div className="flex">
                         {/* Country Code Dropdown */}
-                        <select
+                        {/* <select
                           value={countryCode}
                           onChange={(e) => setCountryCode(e.target.value)}
                           className="form-input max-w-[140px]"
@@ -553,10 +555,10 @@ const EmployeeForm: React.FC = () => {
                               {code} ({country})
                             </option>
                           ))}
-                        </select>
+                        </select> */}
 
                         {/* Phone Input */}
-                        <input
+                        {/* <input
                           type="tel"
                           id="phone"
                           name="phone"
@@ -564,7 +566,13 @@ const EmployeeForm: React.FC = () => {
                           value={employee.phone || ''}
                           onChange={(e) => setEmployee({ ...employee, phone: e.target.value })}
                           required
+                        /> */}
+                        <PhoneInput
+                          value={employee?.phone || ""}
+                          onChange={(value) => setEmployee({ ...employee, phone: value || "" })}
+                          className="w-full [&>input]:w-full [&>input]:flex-1"
                         />
+
                       </div>
 
                       {formErrors.phone && (
@@ -600,7 +608,7 @@ const EmployeeForm: React.FC = () => {
                       >
                         <option value="">Select a Branch</option>
                         {branches.map((c, index) => (
-                          <option key={index} value={c.branchName}>
+                          <option key={index} value={c._id}>
                             {c?.branchName}
                           </option>
                         ))}

@@ -112,7 +112,7 @@ const UserDashboard = () => {
 
   const fetchAttendance = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, {
+      const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`, {
 
       });
       const records = res.data?.data?.attendance || [];
@@ -243,7 +243,7 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`,
+        const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`,
           //    {
           //   headers: {
           //     Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
