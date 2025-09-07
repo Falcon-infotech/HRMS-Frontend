@@ -11,7 +11,6 @@ import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaTimesCircle } from 'react-icons/fa';
 import { FaClock, FaRegCalendarMinus } from 'react-icons/fa6';
-import { recordStats } from 'framer-motion';
 
 const Attendance: React.FC = () => {
   const { user } = useAuth();
@@ -21,7 +20,7 @@ const Attendance: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const [selectedUserAttendance, setSelectedUserAttendance] = useState([]);
-
+  const [attendanceByDate, setAttendanceByDate] = useState<any[]>([]);
   const [attendanceDataSingle, setAttendanceDataSingle] = useState<any[]>([]);
   const handleMonthChange = (offset: number) => {
     if (offset > 0) {
@@ -35,9 +34,26 @@ const Attendance: React.FC = () => {
   const [allattendanceData, setAllAttendanceData] = useState<any[]>([]);
   const [dailyAttendance, setDailyAttendance] = useState<any[]>([]);// for calender daily attendance data
 
-  // calender part
+  useEffect(() => {
+    if (!selectedDate) return;
+    const formatted = format(selectedDate, 'yyyy-MM-dd')
+    const handleFetch = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/api/attendance/all_users_attendance_by_date?date=${formatted}`
+        );
+        const data = response.data.data;
+        setAttendanceByDate(data);
+      } catch (error) {
+        console.error("Error fetching attendance by date:", error);
+      }
+    };
+
+    handleFetch();
+  }, [selectedDate]);
 
 
+  
 
   useEffect(() => {
     const todayAttendance = async () => {
@@ -170,13 +186,13 @@ const Attendance: React.FC = () => {
   }
 
 
-  useEffect(() => {
-    if (selectedDate && allattendanceData.length > 0) {
-      const filtered = thatday(selectedDate);
-      // console.log(filtered, " filtered")
-      setDailyAttendance(filtered);
-    }
-  }, [selectedDate, allattendanceData]);
+  // useEffect(() => {
+  //   if (selectedDate && allattendanceData.length > 0) {
+  //     const filtered = thatday(selectedDate);
+  //     // console.log(filtered, " filtered")
+  //     setDailyAttendance(filtered);
+  //   }
+  // }, [selectedDate, allattendanceData]);
 
   // Example usage:
   // const current = thatday("2025-05-31");
@@ -353,6 +369,7 @@ const Attendance: React.FC = () => {
 
 
 
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -456,7 +473,7 @@ const Attendance: React.FC = () => {
           </div>
 
           {/* Attendance Details */}
-          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6 max-h-[600px] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">
                 {format(selectedDate, 'EEEE, MMMM d, yyyy')} Details
@@ -465,7 +482,7 @@ const Attendance: React.FC = () => {
 
             {selectedEmployee === '' ? (
               // === Show attendance of all employees ===
-              Array.isArray(dailyAttendance) && dailyAttendance.length > 0 ? (
+              Array.isArray(attendanceByDate) && attendanceByDate.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="table">
                     <thead>
@@ -478,15 +495,15 @@ const Attendance: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {dailyAttendance.map((record) => (
-                        <tr key={record._id || `${record.employeeId}-${record.date}`} onClick={() => {
+                      {attendanceByDate?.map((record) => (
+                        <tr key={record._id} onClick={() => {
                           setAttendanceDataSingle(record)
                           setDrawerOpen(true);
                         }
                         } className="cursor-pointer hover:bg-neutral-50">
-                          <td>{record.employeeName}</td>
+                          <td>{record?.user?.firstName} {record?.user?.lastName}</td>
                           <td>
-                            <span className={`badge ${record.status === 'Present' ? 'badge-success' :
+                            <span className={`badge ${record?.status === 'Present' ? 'badge-success' :
                               record.status === 'Absent' ? 'badge-danger' :
                                 record.status === 'Half-day' ? 'badge-warning' :
                                   record.status === 'Leave' ? 'badge-info' :
@@ -495,9 +512,10 @@ const Attendance: React.FC = () => {
                               {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                             </span>
                           </td>
-                          <td>{record.checkIn ? extractHourAndMinute(record.checkIn) : '--'}</td>
-                          <td>{record.checkOut ? extractHourAndMinute(record.checkOut) : '--'}</td>
-                          <td>{record.workHours ? `${record.workHours} hrs` : '--'}</td>
+                          <td>{record.inTime ? extractHourAndMinute(record?.inTime) : '--'}</td>
+                          {/* <td>{record.outTime ? extractHourAndMinute(record?.outTime) : '--'}</td> */}
+                          <td>{record.date ? (record?.date) : '--'}</td>
+                          <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -512,120 +530,78 @@ const Attendance: React.FC = () => {
               )
             ) : (
 
-              selectedUserAttendance ? (
-                // <div className="bg-neutral-50 rounded-lg p-6">
-                //   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                //     <div>
-                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Status</h4>
-                //       <span className={`badge ${selectedDateAttendance.status === 'present' ? 'badge-success' :
-                //         selectedDateAttendance.status === 'absent' ? 'badge-danger' :
-                //           selectedDateAttendance.status === 'half-day' ? 'badge-warning' :
-                //             selectedDateAttendance.status === 'leave' ? 'badge-info' :
-                //               'bg-neutral-100 text-neutral-800'
-                //         }`}>
-                //         {selectedDateAttendance.status.charAt(0).toUpperCase() + selectedDateAttendance.status.slice(1)}
-                //       </span>
-                //     </div>
+              // selectedUserAttendance ? (
+              //   <>
+              //     {selectedUserAttendance.some(record => record.date === format(selectedDate, 'yyyy-MM-dd')) ? (
+              //       <div className="overflow-x-auto">
+              //         <table className="table">
+              //           <thead>
+              //             <tr>
+              //               <th>Employee</th>
+              //               <th>Status</th>
+              //               <th>Check In</th>
+              //               <th>Check Out</th>
+              //               <th>Working Hours</th>
+              //             </tr>
+              //           </thead>
+              //           <tbody>
+              //             {selectedUserAttendance
+              //               .filter(record => record.date === format(selectedDate, 'yyyy-MM-dd'))
+              //               .map(record => (
+              //                 <tr
+              //                   key={record._id || `${record.employeeId}-${record.date}`}
+              //                   onClick={() => {
+              //                     setAttendanceDataSingle(prev => ({
+              //                       ...prev, checkIn: record?.inTime,
+              //                       checkOut: record?.outTime,
+              //                       workHours: record?.duration,
+              //                     }));
+              //                     setDrawerOpen(true);
+              //                   }}
+              //                   className="cursor-pointer hover:bg-neutral-50"
+              //                 >
+              //                   <td>{selectedEmployee}</td>
+              //                   <td>
+              //                     <span
+              //                       className={`badge ${record.status === 'Present'
+              //                         ? 'badge-success'
+              //                         : record.status === 'Absent'
+              //                           ? 'badge-danger'
+              //                           : record.status === 'Half-day'
+              //                             ? 'badge-warning'
+              //                             : record.status === 'Leave'
+              //                               ? 'badge-info'
+              //                               : 'bg-neutral-100 text-neutral-800'
+              //                         }`}
+              //                     >
+              //                       {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+              //                     </span>
+              //                   </td>
+              //                   <td>{record.inTime ? extractHourAndMinute(record.inTime) : '--'}</td>
+              //                   <td>{record.outTime ? extractHourAndMinute(record.outTime) : '--'}</td>
+              //                   <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
+              //                 </tr>
+              //               ))}
+              //           </tbody>
+              //         </table>
+              //       </div>
+              //     ) : (
+              //       <div className="text-center py-12">
+              //         <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
+              //         <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
+              //         <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
+              //       </div>
+              //     )}
+              //   </>
 
-                //     <div>
-                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Check In</h4>
-                //       <div className="flex items-center">
-                //         <Clock size={16} className="text-neutral-500 mr-2" />
-                //         <span className="text-lg">{selectedDateAttendance.checkIn || 'N/A'}</span>
-                //       </div>
-                //     </div>
-
-                //     <div>
-                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Check Out</h4>
-                //       <div className="flex items-center">
-                //         <Clock size={16} className="text-neutral-500 mr-2" />
-                //         <span className="text-lg">{selectedDateAttendance.checkOut || 'N/A'}</span>
-                //       </div>
-                //     </div>
-
-                //     <div>
-                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Working Hours</h4>
-                //       <span className="text-lg">
-                //         {selectedDateAttendance.workHours ? `${selectedDateAttendance.workHours} hours` : 'N/A'}
-                //       </span>
-                //     </div>
-
-                //     <div className="md:col-span-2">
-                //       <h4 className="text-sm font-medium text-neutral-700 mb-1">Notes</h4>
-                //       <p className="text-neutral-600">{selectedDateAttendance.notes || 'No notes'}</p>
-                //     </div>
-                //   </div>
-                // </div>
-                <>
-                  {selectedUserAttendance.some(record => record.date === format(selectedDate, 'yyyy-MM-dd')) ? (
-                    <div className="overflow-x-auto">
-                      <table className="table">
-                        <thead>
-                          <tr>
-                            <th>Employee</th>
-                            <th>Status</th>
-                            <th>Check In</th>
-                            <th>Check Out</th>
-                            <th>Working Hours</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedUserAttendance
-                            .filter(record => record.date === format(selectedDate, 'yyyy-MM-dd'))
-                            .map(record => (
-                              <tr
-                                key={record._id || `${record.employeeId}-${record.date}`}
-                                onClick={() => {
-                                  setAttendanceDataSingle(prev => ({
-                                    ...prev, checkIn: record?.inTime,
-                                    checkOut: record?.outTime,
-                                    workHours: record?.duration,
-                                  }));
-                                  setDrawerOpen(true);
-                                }}
-                                className="cursor-pointer hover:bg-neutral-50"
-                              >
-                                <td>{selectedEmployee}</td>
-                                <td>
-                                  <span
-                                    className={`badge ${record.status === 'Present'
-                                      ? 'badge-success'
-                                      : record.status === 'Absent'
-                                        ? 'badge-danger'
-                                        : record.status === 'Half-day'
-                                          ? 'badge-warning'
-                                          : record.status === 'Leave'
-                                            ? 'badge-info'
-                                            : 'bg-neutral-100 text-neutral-800'
-                                      }`}
-                                  >
-                                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                                  </span>
-                                </td>
-                                <td>{record.inTime ? extractHourAndMinute(record.inTime) : '--'}</td>
-                                <td>{record.outTime ? extractHourAndMinute(record.outTime) : '--'}</td>
-                                <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
-                      <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
-                      <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
-                    </div>
-                  )}
-                </>
-
-              ) : (
-                <div className="text-center py-12">
-                  <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
-                  <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
-                  <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
-                </div>
-              )
+              // ) : (
+              //   <div className="text-center py-12">
+              //     <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
+              //     <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
+              //     <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
+              //   </div>
+              // )
+              <></>
             )}
           </div>
         </div>
@@ -847,12 +823,12 @@ const Attendance: React.FC = () => {
                       <div className="flex items-start gap-3">
                         <FaCheckCircle
                           className={`mt-1 text-lg ${attendanceDataSingle.status === 'Present'
-                              ? 'text-green-500'
-                              : attendanceDataSingle.status === 'Half Day'
-                                ? 'text-blue-500'
-                                : attendanceDataSingle.status === 'Leave'
-                                  ? 'text-yellow-500'
-                                  : 'text-gray-400'
+                            ? 'text-green-500'
+                            : attendanceDataSingle.status === 'Half Day'
+                              ? 'text-blue-500'
+                              : attendanceDataSingle.status === 'Leave'
+                                ? 'text-yellow-500'
+                                : 'text-gray-400'
                             }`}
                         />
                         <div>

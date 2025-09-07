@@ -3,6 +3,7 @@ import { BASE_URL } from './api';
 import { store } from '../store/store';
 
 import { logout, updateAccessToken } from '../store/authSlice';
+import { useEffect } from 'react';
 
 
 const api = axios.create({
@@ -42,12 +43,11 @@ api.interceptors.request.use((config) => {
 
 
 
-
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
-    console.log("entered here 401")
+    // console.log("entered here 401")
 
     if (error.response?.status === 401 &&
       error.response?.data?.message === 'TokenExpired' &&
@@ -80,7 +80,7 @@ api.interceptors.response.use(
         );
 
         const newAccessToken = res.data.accessToken;
-        console.log(newAccessToken, "new token received")
+        // console.log(newAccessToken, "new token received")
         store.dispatch(updateAccessToken(newAccessToken))
         setAccessToken(newAccessToken)
         processQueue(null, newAccessToken)
