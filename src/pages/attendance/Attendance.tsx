@@ -48,6 +48,8 @@ const Attendance: React.FC = () => {
             `${BASE_URL}/api/attendance/all_users_attendance_by_date?date=${formatted}`
           );
           const data = response.data.data;
+          // console.log(data, "all user by date")
+          // no location data is coming from backend
           setAttendanceByDate(data);
         }
       } catch (error) {
