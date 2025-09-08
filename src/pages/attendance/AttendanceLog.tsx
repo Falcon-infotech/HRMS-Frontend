@@ -152,7 +152,9 @@ const AttendanceLog: React.FC = () => {
   //     default: return 'bg-neutral-100 text-neutral-800';
   //   }
   // };
-
+useEffect(()=>{
+  console.log("filterdemployees", filterdemployees);
+})
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -264,7 +266,9 @@ const AttendanceLog: React.FC = () => {
           <h2 className="text-lg font-semibold">Attendance Records</h2>
           <span className="text-sm text-neutral-500">{filterdemployees.length} records found</span>
         </div>
+        
         <AllUserAttendance attendanceData={filterdemployees} isLoading={loading} />
+        {/* <AllUserAttendance attendanceData={filterdemployees} isLoading={loading} /> */}
 
 
         {/* <div className="overflow-x-auto">

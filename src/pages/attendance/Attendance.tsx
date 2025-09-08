@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Check, X, Clock, AlertCircle } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Check, X, Clock, AlertCircle, CloudCog } from 'lucide-react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { format, getMonth, getYear, addMonths, subMonths } from 'date-fns';
+import { format, getMonth, getYear, addMonths, subMonths, set } from 'date-fns';
 import { generateCalendarDays, attendanceData, getEmployeeAttendance } from '../../data/attendanceData';
 import employeesData from '../../data/employeeData';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,6 +11,8 @@ import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import { FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaTimesCircle } from 'react-icons/fa';
 import { FaClock, FaRegCalendarMinus } from 'react-icons/fa6';
+import { all } from 'axios';
+import Loading from '../../components/Loading';
 
 const Attendance: React.FC = () => {
   const { user } = useAuth();
@@ -22,6 +24,7 @@ const Attendance: React.FC = () => {
   const [selectedUserAttendance, setSelectedUserAttendance] = useState([]);
   const [attendanceByDate, setAttendanceByDate] = useState<any[]>([]);
   const [attendanceDataSingle, setAttendanceDataSingle] = useState<any[]>([]);
+  const [allUserLoading, setAllUserLoading] = useState(false);
   const handleMonthChange = (offset: number) => {
     if (offset > 0) {
       setCurrentMonth(addMonths(currentMonth, 1));
@@ -38,14 +41,19 @@ const Attendance: React.FC = () => {
     if (!selectedDate) return;
     const formatted = format(selectedDate, 'yyyy-MM-dd')
     const handleFetch = async () => {
+      setAllUserLoading(true);
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/attendance/all_users_attendance_by_date?date=${formatted}`
-        );
-        const data = response.data.data;
-        setAttendanceByDate(data);
+        if (!selectedEmployee) {
+          const response = await axios.get(
+            `${BASE_URL}/api/attendance/all_users_attendance_by_date?date=${formatted}`
+          );
+          const data = response.data.data;
+          setAttendanceByDate(data);
+        }
       } catch (error) {
         console.error("Error fetching attendance by date:", error);
+      } finally {
+        setAllUserLoading(false);
       }
     };
 
@@ -53,7 +61,7 @@ const Attendance: React.FC = () => {
   }, [selectedDate]);
 
 
-  
+
 
   useEffect(() => {
     const todayAttendance = async () => {
@@ -70,22 +78,23 @@ const Attendance: React.FC = () => {
 
   }, [])
 
-  useEffect(() => {
-    const allUserAttendanceHistory = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`,);
-        const data = response.data.data;
-        // console.log(data, "attendcatotaldata")
-        setAllAttendanceData(data);
-      } catch (error) {
-        console.error('Error fetching all user attendance history:', error);
 
-      }
-    }
-    allUserAttendanceHistory();
-  }, [])
 
-  // Fetch all users for the dropdown
+
+  // useEffect(() => {
+  //   const allUserAttendanceHistory = async () => {
+  //     try {
+  //       const response = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`,);
+  //       const data = response.data.data;
+  //       // console.log(data, "attendcatotaldata")
+  //       setAllAttendanceData(data);
+  //     } catch (error) {
+  //       console.error('Error fetching all user attendance history:', error);
+
+  //     }
+  //   }
+  //   allUserAttendanceHistory();
+  // }, [])
 
 
   useEffect(() => {
@@ -93,17 +102,33 @@ const Attendance: React.FC = () => {
       setSelectedUserAttendance([]);
       return;
     }
-    // console.log(selectedEmployee, "selectedEmployee")
-    const user = allattendanceData.find(user => user.empId === selectedEmployee);
-    // console.log(user)
-    if (user && Array.isArray(user.attendanceHistory)) {
-      setSelectedUserAttendance(user.attendanceHistory);
-      console.log("✅ Attendance Found for:", user.empId);
-    } else {
-      setSelectedUserAttendance([]);
-      console.log("❌ No attendance history found for:", selectedEmployee);
+
+    const fetchSingleEmployeeAttendance = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history/${selectedEmployee}`,)
+        const data = response.data.data
+        setSelectedUserAttendance(data || []);
+      } catch (error) {
+        console.error('Error fetching single employee attendance:', error);
+      }
     }
-  }, [selectedEmployee, allattendanceData]);
+
+
+    // console.log(selectedEmployee, "selectedEmployee")
+    // const user = allattendanceData.find(user => user.empId === selectedEmployee);
+
+
+    // console.log(user)
+    // if (user && Array.isArray(user.attendanceHistory)) {
+    //   setSelectedUserAttendance(user.attendanceHistory);
+    //   console.log("✅ Attendance Found for:", user.empId);
+    // } else {
+    //   setSelectedUserAttendance([]);
+    //   console.log("❌ No attendance history found for:", selectedEmployee);
+    // }
+
+    fetchSingleEmployeeAttendance();
+  }, [selectedEmployee]);
 
 
 
@@ -122,6 +147,7 @@ const Attendance: React.FC = () => {
     }
     fetchAllUsers();
   }, [])
+
 
 
 
@@ -151,25 +177,27 @@ const Attendance: React.FC = () => {
     return day;
   };
 
-  useEffect(() => {
-    const fetchAttendanceData = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`,);
-        // console.log(res.data.data)
-        setAllAttendanceData(res.data.data);
-      } catch (error) {
-        console.error("Failed to fetch attendance data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchAttendanceData = async () => {
+  //     try {
+  //       const res = await axios.get(`${BASE_URL}/api/attendance/all_user_attendance_history`,);
+  //       // console.log(res.data.data)
+  //       setAllAttendanceData(res.data.data);
+  //     } catch (error) {
+  //       console.error("Failed to fetch attendance data:", error);
+  //     }
+  //   };
 
-    fetchAttendanceData();
-  }, []);
+  //   fetchAttendanceData();
+  // }, []);
 
 
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDate(new Date());
     const selectedId = e.target.value;
     setSelectedEmployee(selectedId);
+
   }
 
 
@@ -416,6 +444,7 @@ const Attendance: React.FC = () => {
               <div className="md:w-1/2">
                 <label htmlFor="employeeSelect" className="form-label">Select Employee</label>
                 <select
+
                   id="employeeSelect"
                   className="form-select"
                   value={selectedEmployee}
@@ -425,7 +454,7 @@ const Attendance: React.FC = () => {
                 >
                   <option value="">All Employees</option>
                   {allUsers.map(employee => (
-                    <option key={employee.id} value={employee.userId}>
+                    <option key={employee._id} value={employee._id}>
                       {employee?.first_name} {employee?.last_name}
                     </option>
                   ))}
@@ -480,129 +509,149 @@ const Attendance: React.FC = () => {
               </h3>
             </div>
 
-            {selectedEmployee === '' ? (
-              // === Show attendance of all employees ===
-              Array.isArray(attendanceByDate) && attendanceByDate.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Employee</th>
-                        <th>Status</th>
-                        <th>Check In</th>
-                        <th>Check Out</th>
-                        <th>Working Hours</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {attendanceByDate?.map((record) => (
-                        <tr key={record._id} onClick={() => {
-                          setAttendanceDataSingle(record)
-                          setDrawerOpen(true);
-                        }
-                        } className="cursor-pointer hover:bg-neutral-50">
-                          <td>{record?.user?.firstName} {record?.user?.lastName}</td>
-                          <td>
-                            <span className={`badge ${record?.status === 'Present' ? 'badge-success' :
-                              record.status === 'Absent' ? 'badge-danger' :
-                                record.status === 'Half-day' ? 'badge-warning' :
-                                  record.status === 'Leave' ? 'badge-info' :
-                                    'bg-neutral-100 text-neutral-800'
-                              }`}>
-                              {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                            </span>
-                          </td>
-                          <td>{record.inTime ? extractHourAndMinute(record?.inTime) : '--'}</td>
-                          {/* <td>{record.outTime ? extractHourAndMinute(record?.outTime) : '--'}</td> */}
-                          <td>{record.date ? (record?.date) : '--'}</td>
-                          <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+            {selectedEmployee === '' ?
+              (
+                allUserLoading ? (
+                  <div className="text-center py-6">
+                    <Loading text="Loading..." />
+                  </div>
+                ) :
+                  Array.isArray(attendanceByDate) && attendanceByDate.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Employee</th>
+                            <th>Status</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Working Hours</th>
+                          </tr>
+                        </thead>
+                        <tbody className="w-full">
+                          {allUserLoading ? (
+                            <tr>
+                              <td colSpan={5} className="text-center py-6">
+                                <Loading text="Loading..." />
+                              </td>
+                            </tr>
+                          ) : (
+                            attendanceByDate?.map((record, index) => (
+                              <tr
+                                key={index}
+                                onClick={() => {
+                                  setAttendanceDataSingle(record);
+                                  setDrawerOpen(true);
+                                }}
+                                className="cursor-pointer hover:bg-neutral-50"
+                              >
+                                <td>{record?.user?.firstName} {record?.user?.lastName}</td>
+                                <td>
+                                  <span
+                                    className={`badge ${record?.status === 'Present' ? 'badge-success' :
+                                      record?.status === 'Absent' ? 'badge-danger' :
+                                        record?.status === 'Half-day' ? 'badge-warning' :
+                                          record?.status === 'Leave' ? 'badge-info' :
+                                            'bg-neutral-100 text-neutral-800'
+                                      }`}
+                                  >
+                                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                  </span>
+                                </td>
+                                <td>{record.inTime ? extractHourAndMinute(record?.inTime) : '--'}</td>
+                                <td>{record.outTime ? extractHourAndMinute(record?.outTime) : '--'}</td>
+                                {/* <td>{record.date ? record?.date : '--'}</td> */}
+                                <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
+                      <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
+                      <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
+                    </div>
+                  )
               ) : (
-                <div className="text-center py-12">
-                  <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
-                  <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
-                  <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
-                </div>
-              )
-            ) : (
+//---------------------------------------------
+               
+                  <>
+                    {selectedUserAttendance.some(record => record.date === format(selectedDate, 'yyyy-MM-dd')) ? (
+                      <div className="overflow-x-auto">
+                        <table className="table">
+                          <thead>
+                            <tr>
+                              <th>Employee</th>
+                              <th>Status</th>
+                              <th>Check In</th>
+                              <th>Check Out</th>
+                              <th>Working Hours</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedUserAttendance
+                              .filter(record => record.date === format(selectedDate, 'yyyy-MM-dd'))
+                              .map(record => (
+                                <tr
+                                  key={record._id || `${record.employeeId}-${record.date}`}
+                                  onClick={() => {
+                                    setAttendanceDataSingle(prev => ({
+                                      ...prev, checkIn: record?.inTime,
+                                      checkOut: record?.outTime,
+                                      workHours: record?.duration,
+                                    }));
+                                    setDrawerOpen(true);
+                                  }}
+                                  className="cursor-pointer hover:bg-neutral-50"
+                                >
+                                  <td>
+                                    {allUsers.length > 0
+                                      ? (allUsers.find((user) => user._id === selectedEmployee)?.first_name || '') +
+                                      " " +
+                                      (allUsers.find((user) => user._id === selectedEmployee)?.last_name || '')
+                                      : ""}
+                                  </td>
 
-              // selectedUserAttendance ? (
-              //   <>
-              //     {selectedUserAttendance.some(record => record.date === format(selectedDate, 'yyyy-MM-dd')) ? (
-              //       <div className="overflow-x-auto">
-              //         <table className="table">
-              //           <thead>
-              //             <tr>
-              //               <th>Employee</th>
-              //               <th>Status</th>
-              //               <th>Check In</th>
-              //               <th>Check Out</th>
-              //               <th>Working Hours</th>
-              //             </tr>
-              //           </thead>
-              //           <tbody>
-              //             {selectedUserAttendance
-              //               .filter(record => record.date === format(selectedDate, 'yyyy-MM-dd'))
-              //               .map(record => (
-              //                 <tr
-              //                   key={record._id || `${record.employeeId}-${record.date}`}
-              //                   onClick={() => {
-              //                     setAttendanceDataSingle(prev => ({
-              //                       ...prev, checkIn: record?.inTime,
-              //                       checkOut: record?.outTime,
-              //                       workHours: record?.duration,
-              //                     }));
-              //                     setDrawerOpen(true);
-              //                   }}
-              //                   className="cursor-pointer hover:bg-neutral-50"
-              //                 >
-              //                   <td>{selectedEmployee}</td>
-              //                   <td>
-              //                     <span
-              //                       className={`badge ${record.status === 'Present'
-              //                         ? 'badge-success'
-              //                         : record.status === 'Absent'
-              //                           ? 'badge-danger'
-              //                           : record.status === 'Half-day'
-              //                             ? 'badge-warning'
-              //                             : record.status === 'Leave'
-              //                               ? 'badge-info'
-              //                               : 'bg-neutral-100 text-neutral-800'
-              //                         }`}
-              //                     >
-              //                       {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-              //                     </span>
-              //                   </td>
-              //                   <td>{record.inTime ? extractHourAndMinute(record.inTime) : '--'}</td>
-              //                   <td>{record.outTime ? extractHourAndMinute(record.outTime) : '--'}</td>
-              //                   <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
-              //                 </tr>
-              //               ))}
-              //           </tbody>
-              //         </table>
-              //       </div>
-              //     ) : (
-              //       <div className="text-center py-12">
-              //         <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
-              //         <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
-              //         <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
-              //       </div>
-              //     )}
-              //   </>
+                                  <td>
+                                    <span
+                                      className={`badge ${record.status === 'Present'
+                                        ? 'badge-success'
+                                        : record.status === 'Absent'
+                                          ? 'badge-danger'
+                                          : record.status === 'Half-day'
+                                            ? 'badge-warning'
+                                            : record.status === 'Leave'
+                                              ? 'badge-info'
+                                              : 'bg-neutral-100 text-neutral-800'
+                                        }`}
+                                    >
+                                      {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                    </span>
+                                  </td>
+                                  <td>{record.inTime ? extractHourAndMinute(record.inTime) : '--'}</td>
+                                  <td>{record.outTime ? extractHourAndMinute(record.outTime) : '--'}</td>
+                                  <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
 
-              // ) : (
-              //   <div className="text-center py-12">
-              //     <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
-              //     <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
-              //     <p className="text-neutral-500 mt-1">There are no attendance records for this date.</p>
-              //   </div>
-              // )
-              <></>
-            )}
+                      <div className="text-center py-12">
+                        <AlertCircle size={48} className="mx-auto text-neutral-300 mb-2" />
+                        <h4 className="text-lg font-medium text-neutral-700">No attendance records found</h4>
+                        <p className="text-neutral-500 mt-1">There are no attendance records for this date.{format(selectedDate, "yyyy-mm-dd")}</p>
+                      </div>
+                    )}
+                  </>
+
+             
+              )}
           </div>
         </div>
 
