@@ -3,6 +3,7 @@ import axios from "axios";
 import { API } from "../constants/api";
 import { LoginCredentials, LoginResponse, User } from "./authTypes";
 import { setAccessToken } from "../constants/axiosInstance";
+import { CloudCog } from "lucide-react";
 
 
 
@@ -12,6 +13,7 @@ const user = localStorage.getItem('userData');
 
 
 interface AuthState {
+
     user: User | null;
     token: string | null;
     loading: boolean;

@@ -38,7 +38,6 @@ const Users = () => {
                   : 'border-transparent text-gray-600 hover:text-blue-500 hover:border-blue-300'
               }`}
             >
-              {/* <Icon className="w-5 h-5 shrink-0" /> */}
               {name}
             </button>
           ))}
@@ -50,9 +49,7 @@ const Users = () => {
         {activeTab === "Location" && <Location />}
         {activeTab === "Designation" && <Designation />}
         {activeTab === "Department" && <Department />}
-        {/* {activeTab === "Team" && <p>Team content here...</p>}
-        {activeTab === "Role" && <p>Role content here...</p>}
-        {activeTab === "Shift" && <p>Shift content here...</p>} */}
+       
       </main>
     </div>
   )

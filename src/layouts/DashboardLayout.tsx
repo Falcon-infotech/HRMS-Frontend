@@ -8,7 +8,8 @@ import {
   CalendarCheck,
   LocateIcon,
   UserX,
-  BarChart
+  BarChart,
+  HelpCircle
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -337,98 +338,114 @@ const DashboardLayout: React.FC = () => {
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-auto">
         {/* Mobile Header */}
-        <header className="sticky top-0 z-10 bg-white shadow">
-          <div className="flex justify-between items-center px-4 h-16">
+       <header className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200">
+          <div className="flex justify-between items-center px-4 sm:px-6 h-16">
             <div className="flex items-center lg:hidden">
               <button
-                className="p-2 rounded-md text-neutral-600 hover:bg-neutral-100"
+                className="p-2 rounded-md text-gray-600 hover:bg-gray-100"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu size={20} />
               </button>
-              <h1 className="ml-2 text-lg font-semibold text-primary-600">HRMS</h1>
+              <h1 className="ml-2 text-lg font-semibold text-blue-600">HRMS</h1>
             </div>
 
             <div className="hidden md:flex items-center flex-1 px-4 lg:max-w-lg">
-              {/* <div className="w-full relative">
+              <div className="w-full relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-neutral-400" />
+                  <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-md leading-5 bg-white placeholder-neutral-500 focus:outline-none focus:placeholder-neutral-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Search..."
                   type="search"
                 />
-              </div> */}
+              </div>
             </div>
 
-            <div className="flex items-center md:ml-6">
+            <div className="flex items-center space-x-3">
               {/* Mobile search toggle */}
               <button
-                className="md:hidden p-2 rounded-md text-neutral-600 hover:bg-neutral-100 mr-2"
+                className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
                 onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
               >
                 <Search size={20} />
               </button>
 
-              {/* Notifications */}
-              <button
-                className="p-2 rounded-md text-neutral-600 hover:bg-neutral-100 relative"
-                onClick={() => setNotificationOpen(true)}
-              >
-                <Bell size={22} style={{
-
-                }} />
-                {unreadNotifications > 0 && (
-                  <span className="absolute top-0 right-1 block h-[18px] w-[22px]  rounded-full bg-error-500 text-[11px] text-white font-bold">{unreadNotifications}</span>
-                )}
-              </button>
-
               {/* Theme toggle */}
-              {/* <button
-                className="max-md:hidden ml-2 p-2 rounded-md text-neutral-600 hover:bg-neutral-100"
+              <button
+                className="hidden md:block p-2 rounded-md text-gray-600 hover:bg-gray-100"
                 onClick={() => setDarkMode(!darkMode)}
               >
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button> */}
+              </button>
+
+              {/* Help Center */}
+              <button className="p-2 rounded-md text-gray-600 hover:bg-gray-100 hidden md:block">
+                <HelpCircle size={20} />
+              </button>
+
+              {/* Notifications */}
+              <div className="relative">
+                <button
+                  className="p-2 rounded-md text-gray-600 hover:bg-gray-100 relative"
+                  onClick={() => setNotificationOpen(true)}
+                >
+                  <Bell size={20} />
+                  {unreadNotifications > 0 && (
+                    <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-red-500 text-xs text-white font-bold flex items-center justify-center">
+                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                    </span>
+                  )}
+                </button>
+              </div>
 
               {/* User Menu */}
-              {/* <div className=" md:ml-3 md:flex md:items-center">
-                <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                  <Link to={'/profile'}><span className="text-primary-600 font-medium">{user?.name?.[0] || user?.first_name[0]}</span></Link>
-                </div>
-              </div> */}
-
-
-              <div className="relative md:ml-3" ref={menuRef}>
-                <div
-                  className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center cursor-pointer"
+              <div className="relative" ref={menuRef}>
+                <button
                   onClick={() => setOpen(!open)}
+                  className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 >
-                  <span className="text-primary-600 font-medium">
-                    {user?.name?.[0] || user?.first_name?.[0]}
-                  </span>
-                </div>
+                  <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <span className="text-blue-600 font-medium text-sm">
+                      {user?.name?.[0] || user?.first_name?.[0]}
+                    </span>
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <p className="text-sm font-medium text-gray-800">{user?.name || user?.first_name}</p>
+                    <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                  </div>
+                  <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+                </button>
 
                 {open && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-10">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setOpen(false)}
                     >
-                      <p className='flex gap-4'><span><User className='text-sky-500' /></span>
-                        Profile</p>
+                      <User className="mr-3 h-4 w-4 text-blue-500" />
+                      Profile
                     </Link>
+                    <Link
+                      to="/settings"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setOpen(false)}
+                    >
+                      <Settings className="mr-3 h-4 w-4 text-blue-500" />
+                      Settings
+                    </Link>
+                    <div className="border-t border-gray-200 my-1"></div>
                     <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => {
                         setOpen(false);
                         dispatch(logout())
                       }}
                     >
-                      <p className='flex gap-4'> <span><LogOutIcon className='text-sky-500' /></span>
-                        Logout</p>
+                      <LogOutIcon className="mr-3 h-4 w-4 text-blue-500" />
+                      Logout
                     </button>
                   </div>
                 )}
@@ -438,13 +455,13 @@ const DashboardLayout: React.FC = () => {
 
           {/* Mobile Search Bar */}
           {mobileSearchOpen && (
-            <div className="p-2 border-t border-neutral-200 md:hidden">
+            <div className="p-3 border-t border-gray-200 md:hidden">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-neutral-400" />
+                  <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  className="block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-md leading-5 bg-white placeholder-neutral-500 focus:outline-none focus:placeholder-neutral-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Search..."
                   type="search"
                 />
@@ -452,6 +469,7 @@ const DashboardLayout: React.FC = () => {
             </div>
           )}
         </header>
+
 
         {/* Page Content */}
         <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
