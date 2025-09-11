@@ -6,6 +6,7 @@ import { Edit2, PlusCircle, Trash2, Calendar, MapPin, Filter, Download, ChevronD
 import { BASE_URL } from '../../constants/api';
 import Loading from '../../components/Loading';
 import axios from '../../constants/axiosInstance';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 
 const Holiday = () => {
     const [selectedHoliday, setSelectedHoliday] = useState(null);
@@ -23,10 +24,16 @@ const Holiday = () => {
 
     const [branches, setBranches] = useState([]);
     const [selectedBranch, setSelectedBranch] = useState("all");
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [itemToDelete, setItemToDelete] = useState()
+    const [isDeleting,setIsDeleting]=useState(false)
 
-    const fetchHolidays = async () => {
+
+
+
+    const fetchHolidays = async (flag:boolean) => {
         try {
-            setLoading(true);
+            if(flag) setLoading(true);
             let response;
             if (selectedBranch === "all") {
                 response = await axios.get(`${BASE_URL}/api/holidays/holidays_by_user`);
@@ -99,16 +106,22 @@ const Holiday = () => {
     }, [holidays, searchTerm, yearFilter, monthFilter, typeFilter]);
 
     const handleDeleteHoliday = async (id: string) => {
-        if (window.confirm("Are you sure you want to delete this holiday?")) {
-            try {
-                await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`);
-                fetchHolidays();
-            } catch (error) {
-                console.error("Error deleting holiday:", error);
-            }
-        }
-    };
 
+        try {
+            setIsDeleting(true)
+            await axios.delete(`${BASE_URL}/api/holidays/delete_holiday/${id}`);
+            fetchHolidays(false);
+        } catch (error) {
+            console.error("Error deleting holiday:", error);
+        }finally{
+            setIsDeleting(false)
+            setIsOpen(false)
+        }
+
+    };
+    const onConfirm = () => {
+        handleDeleteHoliday(itemToDelete!?._id)
+    }
     const getHolidayStats = () => {
         const totalHolidays = filteredHolidays.length;
         const fixedHolidays = filteredHolidays.filter(h => !h.isOptional).length;
@@ -116,9 +129,10 @@ const Holiday = () => {
 
         return { totalHolidays, fixedHolidays, optionalHolidays };
     };
-
+    const CloseModal = () => {
+        setIsOpen(false)
+    }
     const stats = getHolidayStats();
-
     const months = [
         { value: "all", label: "All Months" },
         { value: "1", label: "January" },
@@ -369,7 +383,10 @@ const Holiday = () => {
                                                 </button>
                                                 <button
                                                     title="Delete"
-                                                    onClick={() => handleDeleteHoliday(holiday._id)}
+                                                    onClick={() => {
+                                                        setItemToDelete(holiday)
+                                                        setIsOpen(true)
+                                                    }}
                                                     className="p-1.5 rounded-md bg-gray-100 hover:bg-red-100 text-gray-600 hover:text-red-600 transition duration-200"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -441,6 +458,23 @@ const Holiday = () => {
                         </div>
                     </div>
                 )}
+
+
+                {
+                    isOpen && (
+                        <DeleteConfirmationModal
+                            isOpen={open}
+                            onClose={CloseModal}
+                            onConfirm={onConfirm}
+                            title="Delete Employee Record"
+                            description="This will permanently delete the Holiday record from the system."
+                            itemName={itemToDelete?.reason}
+                            confirmText="Yes, Delete"
+                            cancelText="No, Keep It"
+                            isLoading={isDeleting}
+                        />
+                    )
+                }
             </div>
         </div>
     );

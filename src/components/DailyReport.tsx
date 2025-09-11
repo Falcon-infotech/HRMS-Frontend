@@ -21,7 +21,6 @@ import {
   Target,
   MessageSquare
 } from "lucide-react";
-import { MdSignalWifiStatusbar1Bar } from "react-icons/md";
 
 type Task = {
   date: string
@@ -53,7 +52,7 @@ export default function DailyReportForm() {
   const [department, setDepartment] = useState([]);
   const [loading, setLoading] = useState(false)
   const [formErrors, setFormErrors] = useState<TaskErrors>({})
-  const [resetCounter, setResetCounter] = useState(0)
+  // const [resetCounter, setResetCounter] = useState(0)
 
   const loaddepartments = async () => {
     try {
@@ -146,7 +145,7 @@ export default function DailyReportForm() {
           taskGiven: "",
           taskGivenBy: ""
         })
-        setResetCounter(prev => prev + 1)
+        // setResetCounter(prev => prev + 1)
       }
     } catch (error) {
       console.error(error)
@@ -318,7 +317,7 @@ export default function DailyReportForm() {
                 </label>
                 <div className={`border rounded-lg ${formErrors.taskGiven ? "border-red-300" : "border-gray-300"}`}>
                   <ReactQuill
-                    key={resetCounter + "-taskGiven"}
+                    // key={resetCounter + "-taskGiven"}
                     theme="snow"
                     value={task.taskGiven}
                     onChange={(value) => handleQuillChange("taskGiven", value)}
@@ -345,7 +344,7 @@ export default function DailyReportForm() {
                 </label>
                 <div className={`border rounded-lg ${formErrors.objective ? "border-red-300" : "border-gray-300"}`}>
                   <ReactQuill
-                    key={resetCounter + "-objective"}
+                    // key={resetCounter + "-objective"}
                     theme="snow"
                     value={task.objective}
                     onChange={(value) => handleQuillChange("objective", value)}
@@ -372,7 +371,7 @@ export default function DailyReportForm() {
                 </label>
                 <div className={`border rounded-lg ${formErrors.remark ? "border-red-300" : "border-gray-300"}`}>
                   <ReactQuill
-                    key={resetCounter + "-remark"}
+                    // key={resetCounter + "-remark"}
                     theme="snow"
                     value={task.remark}
                     onChange={(value) => handleQuillChange("remark", value)}
