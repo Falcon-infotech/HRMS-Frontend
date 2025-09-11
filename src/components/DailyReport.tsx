@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 type Task = {
-  date: string
+  date?: string
   taskGiven: string
   taskGivenBy: string
   concernedDepartment: string
@@ -52,7 +52,8 @@ export default function DailyReportForm() {
   const [department, setDepartment] = useState([]);
   const [loading, setLoading] = useState(false)
   const [formErrors, setFormErrors] = useState<TaskErrors>({})
-  // const [resetCounter, setResetCounter] = useState(0)
+  const [resetCounter, setResetCounter] = useState(0)
+  const [isLoadingTask, setIsLoadingTask] = useState(false)
 
   const loaddepartments = async () => {
     try {
@@ -88,28 +89,56 @@ export default function DailyReportForm() {
   }
 
   useEffect(() => {
-    if (isEdit && isTaskEdit) {
+    let isMounted = true;
+    
+    if (id && taskid) {
+      setIsLoadingTask(true);
       const fetchTask = async () => {
         try {
           const response = await api.get(`${BASE_URL}/api/daily_reports/${id}`);
           const report = response.data.report;
-          const match = report.reports.find((item: any) => item._id === taskid);
-          setTask({
-            date: match.date,
-            taskGiven: match.taskGiven,
-            taskGivenBy: match.taskGivenBy,
-            concernedDepartment: match.concernedDepartment,
-            objective: match.objective,
-            remark: match.remark,
-            status: match.status,
-          });
+
+          // Find the matching subtask by id
+          const match = report.reports.find(
+            (item: any) => String(item._id) === String(taskid)
+          );
+
+          if (!match) {
+            console.error("Task not found for taskid:", taskid);
+            toast.error("Task not found");
+            return;
+          }
+
+          const formattedDate = report.date ? report.date.split("T")[0] : "";
+
+          if (isMounted) {
+            setTask({
+              date: formattedDate,
+              taskGiven: match.taskGiven || "",
+              taskGivenBy: match.taskGivenBy || "",
+              concernedDepartment: match.concernedDepartment || "",
+              objective: match.objective || "",
+              remark: match.remark || "",
+              status: match.status || "",
+            });
+          }
         } catch (error) {
           console.error("Error fetching task:", error);
+          toast.error("Error loading task data");
+        } finally {
+          if (isMounted) {
+            setIsLoadingTask(false);
+          }
         }
       };
       fetchTask();
     }
-  }, [id, taskid])
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [id, taskid]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -130,6 +159,7 @@ export default function DailyReportForm() {
         const response = await api.put(`${BASE_URL}/api/daily_reports/update_report/${id}/${taskid}`, cleanTask)
         if (response.status === 200) {
           toast.success("Task updated successfully")
+          navigate(-1); // Navigate back after successful update
         }
       } else {
         const response = await api.post(`${BASE_URL}/api/daily_reports/create`, cleanTask)
@@ -145,7 +175,7 @@ export default function DailyReportForm() {
           taskGiven: "",
           taskGivenBy: ""
         })
-        // setResetCounter(prev => prev + 1)
+        setResetCounter(prev => prev + 1)
       }
     } catch (error) {
       console.error(error)
@@ -177,26 +207,26 @@ export default function DailyReportForm() {
       <div className=" mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
           >
             <ArrowLeft size={20} className="mr-2" />
             Back
           </button>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
                 {isEdit && isTaskEdit ? "Edit Task" : "Create Daily Report"}
               </h1>
               <p className="text-gray-600 mt-2">
-                {isEdit && isTaskEdit 
-                  ? "Update your task details below" 
+                {isEdit && isTaskEdit
+                  ? "Update your task details below"
                   : "Fill in the details to create a new daily task report"}
               </p>
             </div>
-            
+
             <div className="bg-blue-100 p-3 rounded-lg">
               <FileText size={32} className="text-blue-600" />
             </div>
@@ -212,183 +242,190 @@ export default function DailyReportForm() {
           </div>
 
           <div className="p-6 space-y-6">
-            {/* Basic Information Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Date */}
-              <div className="form-group">
-                <label htmlFor="date" className="form-label !flex items-center ">
-                  <Calendar size={18} className="mr-2 text-gray-500" />
-                  Date *
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  className={`form-input ${formErrors.date ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                  value={task.date || ""}
-                  onChange={handleInputChange}
-                  required
-                />
-                {formErrors.date && <p className="mt-1 text-sm text-red-600">{formErrors.date}</p>}
+            {isLoadingTask ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <span className="ml-4 text-gray-600">Loading task data...</span>
               </div>
+            ) : (
+              <>
+                {/* Basic Information Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Date */}
+                  <div className="form-group">
+                    <label htmlFor="date" className="form-label !flex items-center ">
+                      <Calendar size={18} className="mr-2 text-gray-500" />
+                      Date *
+                    </label>
+                    <input
+                      type="date"
+                      id="date"
+                      name="date"
+                      className={`form-input ${formErrors.date ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
+                      value={task.date || ""}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {formErrors.date && <p className="mt-1 text-sm text-red-600">{formErrors.date}</p>}
+                  </div>
 
-              {/* Concerned Department */}
-              <div className="form-group">
-                <label htmlFor="concernedDepartment" className="form-label !flex items-center">
-                  <Building size={18} className="mr-2 text-gray-500" />
-                  Concerned Department *
-                </label>
-                <select
-                  id="concernedDepartment"
-                  name="concernedDepartment"
-                  className={`form-input ${formErrors.concernedDepartment ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                  value={task.concernedDepartment || ""}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Department</option>
-                  {department.map((dept) => (
-                    <option key={dept._id} value={dept?.name}>
-                      {dept?.name}
-                    </option>
-                  ))}
-                </select>
-                {formErrors.concernedDepartment && (
-                  <p className="mt-1 text-sm text-red-600">{formErrors.concernedDepartment}</p>
-                )}
-              </div>
+                  {/* Concerned Department */}
+                  <div className="form-group">
+                    <label htmlFor="concernedDepartment" className="form-label !flex items-center">
+                      <Building size={18} className="mr-2 text-gray-500" />
+                      Concerned Department *
+                    </label>
+                    <select
+                      id="concernedDepartment"
+                      name="concernedDepartment"
+                      className={`form-input ${formErrors.concernedDepartment ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
+                      value={task.concernedDepartment || ""}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">Select Department</option>
+                      {department.map((dept:any) => (
+                        <option key={dept._id} value={dept?.name}>
+                          {dept?.name}
+                        </option>
+                      ))}
+                    </select>
+                    {formErrors.concernedDepartment && (
+                      <p className="mt-1 text-sm text-red-600">{formErrors.concernedDepartment}</p>
+                    )}
+                  </div>
 
-              {/* Status */}
-              <div className="form-group">
-                <label htmlFor="status" className="form-label !flex items-center">
-                  <HiOutlineStatusOnline size={18} className="mr-2" />
- 
-                  Status *
-                </label>
-                <div className="relative">
-                  <select
-                    id="status"
-                    name="status"
-                    className={`form-input pl-10 ${formErrors.status ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
-                    value={task.status || ""}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select Status</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                  <div className="absolute inset-y-0 left-28 pl-3 flex items-center pointer-events-none">
-                    {task.status ? getStatusIcon(task.status) : <FileText size={18} className="text-gray-400" />}
+                  {/* Status */}
+                  <div className="form-group">
+                    <label htmlFor="status" className="form-label !flex items-center">
+                      <HiOutlineStatusOnline size={18} className="mr-2" />
+                      Status *
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="status"
+                        name="status"
+                        className={`form-input pl-10 ${formErrors.status ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""}`}
+                        value={task.status || ""}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">Select Status</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                        {task.status ? getStatusIcon(task.status) : <FileText size={18} className="text-gray-400" />}
+                      </div>
+                    </div>
+                    {formErrors.status && <p className="mt-1 text-sm text-red-600">{formErrors.status}</p>}
+                  </div>
+
+                  {/* Task Given By */}
+                  <div className="form-group">
+                    <label htmlFor="taskGivenBy" className="form-label !flex items-center">
+                      <User size={18} className="mr-2 text-gray-500" />
+                      Task Given By *
+                    </label>
+                    <input
+                      type="text"
+                      id="taskGivenBy"
+                      name="taskGivenBy"
+                      className={`form-input ${formErrors.taskGivenBy ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""} `}
+                      value={task.taskGivenBy || ""}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Enter name or email"
+                    />
+                    {formErrors.taskGivenBy && <p className="mt-1 text-sm text-red-600">{formErrors.taskGivenBy}</p>}
                   </div>
                 </div>
-                {formErrors.status && <p className="mt-1 text-sm text-red-600">{formErrors.status}</p>}
-              </div>
 
-              {/* Task Given By */}
-              <div className="form-group">
-                <label htmlFor="taskGivenBy" className="form-label !flex items-center">
-                  <User size={18} className="mr-2 text-gray-500" />
-                  Task Given By *
-                </label>
-                <input
-                  type="text"
-                  id="taskGivenBy"
-                  name="taskGivenBy"
-                  className={`form-input ${formErrors.taskGivenBy ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""} `}
-                  value={task.taskGivenBy || ""}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Enter name or email"
-                />
-                {formErrors.taskGivenBy && <p className="mt-1 text-sm text-red-600">{formErrors.taskGivenBy}</p>}
-              </div>
-            </div>
+                {/* Rich Text Editors */}
+                <div className="space-y-6">
+                  {/* Task Given */}
+                  <div className="form-group">
+                    <label htmlFor="taskGiven" className="form-label !flex !items-center gap-2 text-gray-700"
+                    >
+                      <FileText size={18} className="mr-2 text-gray-500" />
+                      Task Given *
+                    </label>
+                    <div className={`border rounded-lg ${formErrors.taskGiven ? "border-red-300" : "border-gray-300"}`}>
+                      <ReactQuill
+                        key={resetCounter + "-taskGiven"}
+                        theme="snow"
+                        value={task.taskGiven}
+                        onChange={(value) => handleQuillChange("taskGiven", value)}
+                        placeholder="Describe the task in detail..."
+                        modules={{
+                          toolbar: [
+                            [{ 'header': [1, 2, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            ['link', 'clean']
+                          ]
+                        }}
+                      />
+                    </div>
+                    {formErrors.taskGiven && <p className="mt-1 text-sm text-red-600">{formErrors.taskGiven}</p>}
+                  </div>
 
-            {/* Rich Text Editors */}
-            <div className="space-y-6">
-              {/* Task Given */}
-              <div className="form-group">
-                <label htmlFor="taskGiven"   className="form-label !flex !items-center gap-2 text-gray-700"
->
-                  <FileText size={18} className="mr-2 text-gray-500" />
-                  Task Given *
-                </label>
-                <div className={`border rounded-lg ${formErrors.taskGiven ? "border-red-300" : "border-gray-300"}`}>
-                  <ReactQuill
-                    // key={resetCounter + "-taskGiven"}
-                    theme="snow"
-                    value={task.taskGiven}
-                    onChange={(value) => handleQuillChange("taskGiven", value)}
-                    placeholder="Describe the task in detail..."
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link', 'clean']
-                      ]
-                    }}
-                  />
+                  {/* Objective */}
+                  <div className="form-group">
+                    <label htmlFor="objective" className="form-label !flex !items-center gap-2 text-gray-700">
+                      <Target size={18} className="mr-2 text-gray-500" />
+                      Objective *
+                    </label>
+                    <div className={`border rounded-lg ${formErrors.objective ? "border-red-300" : "border-gray-300"}`}>
+                      <ReactQuill
+                        key={resetCounter + "-objective"}
+                        theme="snow"
+                        value={task.objective}
+                        onChange={(value) => handleQuillChange("objective", value)}
+                        placeholder="What is the goal or objective of this task?"
+                        modules={{
+                          toolbar: [
+                            [{ 'header': [1, 2, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            ['link', 'clean']
+                          ]
+                        }}
+                      />
+                    </div>
+                    {formErrors.objective && <p className="mt-1 text-sm text-red-600">{formErrors.objective}</p>}
+                  </div>
+
+                  {/* Remark */}
+                  <div className="form-group">
+                    <label htmlFor="remark" className="form-label !flex !items-center gap-2 text-gray-700"
+                    >
+                      <MessageSquare size={18} className="mr-2 text-gray-500" />
+                      Remark *
+                    </label>
+                    <div className={`border rounded-lg ${formErrors.remark ? "border-red-300" : "border-gray-300"}`}>
+                      <ReactQuill
+                        key={resetCounter + "-remark"}
+                        theme="snow"
+                        value={task.remark}
+                        onChange={(value) => handleQuillChange("remark", value)}
+                        placeholder="Add any additional remarks or comments..."
+                        modules={{
+                          toolbar: [
+                            [{ 'header': [1, 2, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            ['link', 'clean']
+                          ]
+                        }}
+                      />
+                    </div>
+                    {formErrors.remark && <p className="mt-1 text-sm text-red-600">{formErrors.remark}</p>}
+                  </div>
                 </div>
-                {formErrors.taskGiven && <p className="mt-1 text-sm text-red-600">{formErrors.taskGiven}</p>}
-              </div>
-
-              {/* Objective */}
-              <div className="form-group">
-                <label htmlFor="objective"   className="form-label !flex !items-center gap-2 text-gray-700"
->
-                  <Target size={18} className="mr-2 text-gray-500" />
-                  Objective *
-                </label>
-                <div className={`border rounded-lg ${formErrors.objective ? "border-red-300" : "border-gray-300"}`}>
-                  <ReactQuill
-                    // key={resetCounter + "-objective"}
-                    theme="snow"
-                    value={task.objective}
-                    onChange={(value) => handleQuillChange("objective", value)}
-                    placeholder="What is the goal or objective of this task?"
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link', 'clean']
-                      ]
-                    }}
-                  />
-                </div>
-                {formErrors.objective && <p className="mt-1 text-sm text-red-600">{formErrors.objective}</p>}
-              </div>
-
-              {/* Remark */}
-              <div className="form-group">
-                <label htmlFor="remark"   className="form-label !flex !items-center gap-2 text-gray-700"
->
-                  <MessageSquare size={18} className="mr-2 text-gray-500" />
-                  Remark *
-                </label>
-                <div className={`border rounded-lg ${formErrors.remark ? "border-red-300" : "border-gray-300"}`}>
-                  <ReactQuill
-                    // key={resetCounter + "-remark"}
-                    theme="snow"
-                    value={task.remark}
-                    onChange={(value) => handleQuillChange("remark", value)}
-                    placeholder="Add any additional remarks or comments..."
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link', 'clean']
-                      ]
-                    }}
-                  />
-                </div>
-                {formErrors.remark && <p className="mt-1 text-sm text-red-600">{formErrors.remark}</p>}
-              </div>
-            </div>
+              </>
+            )}
           </div>
 
           {/* Form Footer */}
@@ -398,7 +435,7 @@ export default function DailyReportForm() {
             </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || isLoadingTask}
               className="flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
