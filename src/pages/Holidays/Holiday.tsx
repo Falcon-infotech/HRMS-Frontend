@@ -29,9 +29,9 @@ const Holiday = () => {
     const [isDeleting,setIsDeleting]=useState(false)
 
 
+const {user}=useSelector((state:RootState)=>state.auth) 
 
-
-    const fetchHolidays = async (flag:boolean) => {
+    const fetchHolidays = async (flag?:boolean) => {
         try {
             if(flag) setLoading(true);
             let response;
@@ -60,7 +60,9 @@ const Holiday = () => {
 
     useEffect(() => {
         fetchHolidays();
-        fetchBranches();
+       if(user?.role==="Admin"){
+         fetchBranches();
+       }
     }, []);
 
     useEffect(() => {

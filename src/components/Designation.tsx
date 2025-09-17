@@ -81,7 +81,7 @@ const Designation = () => {
   const sortedDesignations = React.useMemo(() => {
     let sortableItems = [...designations]
     if (sortConfig.key) {
-      sortableItems.sort((a, b) => {
+      sortableItems.sort((a:any, b:any) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === 'asc' ? -1 : 1
         }
@@ -124,10 +124,10 @@ const Designation = () => {
             <h1 className="text-2xl font-bold text-gray-800">Designations</h1>
             <p className="text-gray-500 mt-1">Manage and view all designations in your organization</p>
           </div>
-          <button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+          {/* <button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
             <MdAdd className="w-5 h-5 mr-1" />
             New Designation
-          </button>
+          </button> */}
         </div>
 
         {/* Stats Cards */}

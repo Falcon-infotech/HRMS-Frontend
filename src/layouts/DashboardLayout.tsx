@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import axios from '../constants/axiosInstance';
 import { BASE_URL } from '../constants/api';
-import { MdOutlineImportExport, MdOutlineReport } from 'react-icons/md';
+import { MdOutlineImportExport } from 'react-icons/md';
 
 const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -174,11 +174,11 @@ const DashboardLayout: React.FC = () => {
     navigation
       .filter(item => {
         if (user?.role === "employee") {
-          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch", "Deleted Employees","Employees Daily Report"];
+          const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch", "Deleted Employees", "Employees Daily Report"];
           return !restrictedSections.includes(item.name);
         }
         if (user?.role === "hr") {
-          const restrictedSections = ["Branch", "Deleted Employees","Employees Daily Report"];
+          const restrictedSections = ["Branch", "Deleted Employees", "Employees Daily Report"];
           return !restrictedSections.includes(item.name);
         }
 
@@ -225,13 +225,22 @@ const DashboardLayout: React.FC = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:shadow-none lg:transform-none lg:relative lg:flex lg:flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 ${darkMode ? "bg-black" : "bg-white"} shadow-lg transform transition-transform duration-300 ease-in-out lg:shadow-none lg:transform-none lg:relative lg:flex lg:flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-neutral-200">
+        <div className="flex items-center justify-between h-16 px- border-b border-neutral-200">
           <div className="flex items-center">
-            <div className="flex-shrink-0 px-4">
-              <h1 className="text-xl font-bold text-primary-600">HRMS</h1>
+            <div className="flex-shrink-0 px- ">
+              <h1 className="text-xl font-bold text-primary-600 flex items-center">
+                <img
+                  src="/Falcon_MSL.png"
+                  alt="Falcon HRMS Logo"
+                  className="w-24 rounded-full"
+                />
+                <h1 className={`ml-2 text-xl font-bold ${darkMode ? "text-white":"text-[#1C50A3]"}`}>
+                  FALCON-HRMS
+                </h1>
+              </h1>
             </div>
           </div>
           <button
@@ -338,7 +347,7 @@ const DashboardLayout: React.FC = () => {
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-auto">
         {/* Mobile Header */}
-       <header className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200">
+        <header className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200">
           <div className="flex justify-between items-center px-4 sm:px-6 h-16">
             <div className="flex items-center lg:hidden">
               <button
@@ -373,17 +382,17 @@ const DashboardLayout: React.FC = () => {
               </button>
 
               {/* Theme toggle */}
-              <button
+              {/* <button
                 className="hidden md:block p-2 rounded-md text-gray-600 hover:bg-gray-100"
                 onClick={() => setDarkMode(!darkMode)}
               >
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
+              </button> */}
 
               {/* Help Center */}
-              <button className="p-2 rounded-md text-gray-600 hover:bg-gray-100 hidden md:block">
+              {/* <button className="p-2 rounded-md text-gray-600 hover:bg-gray-100 hidden md:block">
                 <HelpCircle size={20} />
-              </button>
+              </button> */}
 
               {/* Notifications */}
               <div className="relative">
@@ -472,7 +481,7 @@ const DashboardLayout: React.FC = () => {
 
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8 ">
           <Outlet />
         </main>
       </div>

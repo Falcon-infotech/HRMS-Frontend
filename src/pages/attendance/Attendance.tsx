@@ -70,13 +70,13 @@ const Attendance: React.FC = () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`,)
         const data = response.data.data
-        // console.log(data)
+        console.log(data)
         setTodayAttendanceData(data);
       } catch (error) {
         console.error('Error fetching today\'s attendance:', error);
       }
     }
-    todayAttendance();
+    todayAttendance();     
 
   }, [])
 
@@ -905,8 +905,8 @@ const Attendance: React.FC = () => {
                           <p className="text-sm text-gray-500 font-medium">Check-In</p>
                           <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
                           <p className="text-base text-gray-800 font-medium">
-                            {attendanceDataSingle?.checkIn
-                              ? format(new Date(attendanceDataSingle?.checkIn), 'hh:mm a')
+                            {attendanceDataSingle?.inTime
+                              ? format(new Date(attendanceDataSingle?.inTime), 'hh:mm a')
                               : '-'}
                           </p>
                           <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
@@ -922,8 +922,8 @@ const Attendance: React.FC = () => {
                           <p className="text-sm text-gray-500 font-medium">Check-Out</p>
                           <p className="text-balance text-gray-500 font-semibold mt-1">Time:</p>
                           <p className="text-base text-gray-800 font-medium">
-                            {attendanceDataSingle.checkOut && attendanceDataSingle.checkOut !== "-"
-                              ? format(new Date(attendanceDataSingle.checkOut), 'hh:mm a')
+                            {attendanceDataSingle.outTime && attendanceDataSingle.outTime !== "-"
+                              ? format(new Date(attendanceDataSingle.outTime), 'hh:mm a')
                               : '-'}
                           </p>
                           <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>

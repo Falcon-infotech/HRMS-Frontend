@@ -115,7 +115,7 @@ const UserDashboard = () => {
       const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`, {
 
       });
-      const records = res.data?.data?.attendance || [];
+      const records = res.data?.data || [];
       // console.log(records, "records")
 
       const mapped: any = {};
@@ -128,6 +128,7 @@ const UserDashboard = () => {
         const todayStr = new Date().toISOString().split('T')[0];
         mapped[todayStr] = todayData.status;
       }
+      // console.log(mapped)
 
       setAttendanceData(mapped);
     } catch (err) {
@@ -251,11 +252,6 @@ const UserDashboard = () => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`,
-          //    {
-          //   headers: {
-          //     Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          //   }
-          // }
         );
         // console.log(res.data.data)
         setUser(res.data.data.attendance);

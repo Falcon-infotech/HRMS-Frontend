@@ -158,10 +158,10 @@ const Department = () => {
             <h1 className="text-2xl font-bold text-gray-800">Departments</h1>
             <p className="text-gray-500 mt-1">Manage and view all departments in your organization</p>
           </div>
-          <button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+          {/* <button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
             <MdAdd className="w-5 h-5 mr-1" />
-            New Department
-          </button>
+            New Department 
+          </button> */}
         </div>
 
         {/* Stats Cards */}

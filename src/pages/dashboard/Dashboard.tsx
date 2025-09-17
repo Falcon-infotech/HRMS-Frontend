@@ -19,7 +19,7 @@ import { departments } from '../../data/employeeData';
 
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState(getDashboardData());
-  const [count, setCount] = useState<number | null>(null);
+  const [count, setCount] = useState<number | null>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [todayattendanceData, setTodayAttendanceData] = useState<any[]>([]);
   const [activeMetric, setActiveMetric] = useState('attendance');
@@ -51,13 +51,13 @@ const Dashboard: React.FC = () => {
         const response = await axios.get(`${BASE_URL}/api/employee`, {})
         const data = response.data
         setCount(data.data.count)
-        const departmentCount = data?.data?.users?.reduce((acc, ele) => {
+        const departmentCount = data?.data?.users?.reduce((acc:any, ele:any) => {
           const dept = ele.department;
           acc[dept] = (acc[dept] || 0) + 1;
           return acc;
         }, {});
 
-        const chartData = Object.entries(departmentCount).map(
+        const chartData:any = Object.entries(departmentCount).map(
           ([department, count]) => ({ department, count })
         );
 
@@ -105,16 +105,16 @@ const Dashboard: React.FC = () => {
         const data = response.data;
         setTodayStats(data.data.filter((item: any) => item.status !== 'Absent' && item.status !== 'Holiday' ).length);
 
-        const pieChartData = data.data.reduce((acc, ele) => {
+        const pieChartData = data.data.reduce((acc:any, ele:any) => {
           const count = ele.status;
           acc[count] = (acc[count] || 0) + 1
           return acc;
         }, {})
-        console.log(pieChartData)
+        // console.log(pieChartData)
 
         const present = pieChartData['Present'] || 0
         const halfday = pieChartData['Half Day'] || 0
-        const absentCount = Math.max(0, count - (present + halfday));
+        const absentCount = Math.max(0, count! - (present + halfday));
         pieChartData.Absent = absentCount
         const pie: any = Object.entries(pieChartData).map(([status, count]) => ({
           status,
@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
 
   const today = new Date();
   const upcomingHolidays = holidays?.filter(holiday => {
-    const date = new Date(holiday.date);
+    const date = new Date(holiday?.date);
     return date > today;
   });
 
@@ -252,9 +252,9 @@ const Dashboard: React.FC = () => {
         />
         <OverviewCard
           title="Attendance Today"
-          value={count > 0 ? `${Math.round((todayStats / count) * 100)}%` : '0%'}
+          value={count! > 0 ? `${Math.round((todayStats / count!) * 100)}%` : '0%'}
           icon={Calendar}
-          change={count > 0 ? `${todayStats}/${count} present` : 'No data'}
+          change={count! > 0 ? `${todayStats}/${count} present` : 'No data'}
           changeType="positive"
           link="/attendance"
         />
@@ -503,7 +503,7 @@ const Dashboard: React.FC = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {upcomingHolidays.slice(0, 3).map((event, index) => {
+          {upcomingHolidays.slice(0, 3).map((event:any, index) => {
             const dateObj = new Date(event?.date);
             const month = dateObj.toLocaleString('default', { month: 'short' });
             const day = dateObj.getDate();

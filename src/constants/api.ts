@@ -5,7 +5,7 @@
 
 // for development
 
-export const BASE_URL = 'https://hrms-backend-1-dev.onrender.com';
+export const BASE_URL = 'https://my-app-production-65a0.up.railway.app';
 
 
 // fro production
