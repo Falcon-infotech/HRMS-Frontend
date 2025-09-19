@@ -38,9 +38,42 @@ const MySlip = () => {
           <thead>
             {loading ? (
               <tr>
-                <th colSpan={8} className="text-center text-neutral-500 py-4">
-                  Loading payroll data...
+                <th>
+                  <div className="flex items-center">
+                    Bank-Name <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
                 </th>
+                <th>
+                  <div className="flex items-center">
+                    Month <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Basic-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Gross-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Net-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Payment-Method <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Status <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>Actions</th>
               </tr>
             ) : data.length > 0 ? (
               <tr>
@@ -83,10 +116,44 @@ const MySlip = () => {
               </tr>
             ) : (
               <tr>
-                <th colSpan={8} className="text-center text-neutral-500 py-4">
-                  No payroll data available for the selected filters
+                <th>
+                  <div className="flex items-center">
+                    Bank-Name <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
                 </th>
+                <th>
+                  <div className="flex items-center">
+                    Month <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Basic-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Gross-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Net-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Payment-Method <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center">
+                    Status <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                  </div>
+                </th>
+                <th>Actions</th>
               </tr>
+              // No payroll data available for the selected filters
             )}
           </thead>
 
@@ -157,7 +224,15 @@ const MySlip = () => {
                     </td>
                   </tr>
                 ))
-            ) : null}
+            ) : <tr className="">
+              <td
+                colSpan={8}
+                className="text-center align-middle min-h-48 h-48"
+              >
+                No payroll data available for the selected filters
+              </td>
+            </tr>
+            }
           </tbody>
         </table>
       </div>

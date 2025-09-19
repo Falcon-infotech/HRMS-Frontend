@@ -52,9 +52,9 @@ const AttendanceStatus = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`,);
-                // console.log(res.data.data.attendance)
-                setUser(res.data.data.attendance);
+                const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`,);
+                // console.log(res.data?.data)
+                setUser(res.data.data);
             } catch (error) {
                 console.error('Failed to fetch user', error);
             }
@@ -66,12 +66,12 @@ const AttendanceStatus = () => {
     useEffect(() => {
         const fetchAttendance = async () => {
             try {
-                const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, {
+                const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
                     }
                 });
-                const records = res.data?.data?.attendance || [];
+                const records = res.data?.data || [];
                 // console.log(records, "records")
 
                 const mapped: Record<string, { status: string; duration: string; location: string; inTime: string; outTime: string; checkIn: string; checkOut: string }> = {};

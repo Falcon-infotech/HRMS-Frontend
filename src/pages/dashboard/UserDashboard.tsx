@@ -112,16 +112,24 @@ const UserDashboard = () => {
 
   const fetchAttendance = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`, {
+      const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`, {
 
       });
-      const records = res.data?.data?.attendance || [];
+      const records = res.data?.data || [];
       // console.log(records, "records")
 
       const mapped: any = {};
       records.forEach((record: any) => {
         mapped[record.date] = record.status;
       });
+      const todayRes = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`);
+      const todayData = todayRes.data?.attendance;
+      if (todayData?.status) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        mapped[todayStr] = todayData.status;
+      }
+      // console.log(mapped)
+
       setAttendanceData(mapped);
     } catch (err) {
       console.error('Error fetching attendance', err);
@@ -174,7 +182,7 @@ const UserDashboard = () => {
     }
   };
 
-  
+
 
   useEffect(() => {
 
@@ -243,12 +251,7 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/attendance/single_user_attendance_history`,
-          //    {
-          //   headers: {
-          //     Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
-          //   }
-          // }
+        const res = await axios.get(`${BASE_URL}/api/attendance/login_user_attendance_history`,
         );
         // console.log(res.data.data)
         setUser(res.data.data.attendance);
@@ -312,23 +315,40 @@ const UserDashboard = () => {
 
     const updateElapsedTime = () => {
       if (checkInTime && !hasCheckedOut) {
-        const startTime = new Date(checkInTime);
-        const now = new Date();
-        const elapsedTime = new Date(now.getTime() - startTime.getTime());
-        const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
-        const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
-        const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+        const startTime = new Date(checkInTime).getTime();
+        const now = Date.now();
+
+        if (isNaN(startTime) || startTime > now) {
+          setElapsed("00:00:00");
+          return;
+        }
+
+        const diffMs = now - startTime;
+
+        const hours = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, "0");
+        const minutes = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+        const seconds = String(Math.floor((diffMs % (1000 * 60)) / 1000)).padStart(2, "0");
+
         setElapsed(`${hours}:${minutes}:${seconds}`);
       } else if (checkInTime && checkOutTime) {
-        const startTime = new Date(checkInTime);
-        const endTime = new Date(checkOutTime);
-        const elapsedTime = new Date(endTime.getTime() - startTime.getTime());
-        const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
-        const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
-        const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+        const startTime = new Date(checkInTime).getTime();
+        const endTime = new Date(checkOutTime).getTime();
+
+        if (isNaN(startTime) || isNaN(endTime) || endTime < startTime) {
+          setElapsed("00:00:00");
+          return;
+        }
+
+        const diffMs = endTime - startTime;
+
+        const hours = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, "0");
+        const minutes = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+        const seconds = String(Math.floor((diffMs % (1000 * 60)) / 1000)).padStart(2, "0");
+
         setElapsed(`${hours}:${minutes}:${seconds}`);
       }
     };
+
 
     // 🟢 Immediately calculate once, even before interval starts
     updateElapsedTime();

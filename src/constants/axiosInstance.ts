@@ -3,6 +3,7 @@ import { BASE_URL } from './api';
 import { store } from '../store/store';
 
 import { logout, updateAccessToken } from '../store/authSlice';
+import { useEffect } from 'react';
 
 
 const api = axios.create({
@@ -39,7 +40,6 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
-
 
 
 
@@ -80,7 +80,7 @@ api.interceptors.response.use(
         );
 
         const newAccessToken = res.data.accessToken;
-        console.log(newAccessToken, "new token received")
+        // console.log(newAccessToken, "new token received")
         store.dispatch(updateAccessToken(newAccessToken))
         setAccessToken(newAccessToken)
         processQueue(null, newAccessToken)

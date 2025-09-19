@@ -152,10 +152,12 @@ const AttendanceLog: React.FC = () => {
   //     default: return 'bg-neutral-100 text-neutral-800';
   //   }
   // };
-
+  useEffect(() => {
+    console.log("filterdemployees", filterdemployees);
+  })
   return (
     <div className="animate-fade-in">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+      {/* <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-neutral-800">Attendance Log</h1>
           <p className="text-neutral-500 mt-1">View and manage daily attendance records</p>
@@ -169,8 +171,25 @@ const AttendanceLog: React.FC = () => {
             <Download size={16} className="mr-1" />
             Export
           </button> */}
+      {/* </div> */}
+
+      {/* </div>  */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Attendance Log</h1>
+            <p className="text-white font-semibold mt-2">View and manage daily attendance records</p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+            <Link to="/attendance" className="btn btn-primary flex items-center">
+              <Calendar size={16} className="mr-1" />
+              Calendar View
+            </Link>
+          </div>
         </div>
       </div>
+
+
 
       {/* Search and Filter */}
       <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-4 mb-6">
@@ -241,7 +260,7 @@ const AttendanceLog: React.FC = () => {
             <div className="form-group mb-0">
               <label className="form-label">Status</label>
               <select
-                className="form-select"
+                className="form-select "
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
               >
@@ -264,7 +283,9 @@ const AttendanceLog: React.FC = () => {
           <h2 className="text-lg font-semibold">Attendance Records</h2>
           <span className="text-sm text-neutral-500">{filterdemployees.length} records found</span>
         </div>
+
         <AllUserAttendance attendanceData={filterdemployees} isLoading={loading} />
+        {/* <AllUserAttendance attendanceData={filterdemployees} isLoading={loading} /> */}
 
 
         {/* <div className="overflow-x-auto">

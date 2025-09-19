@@ -113,7 +113,7 @@ const renderPageNumbers = () => {
       pageNumbers.push(
         <button
           key={i}
-          className={`btn flex gap-5 ${i === currentPage ? 'btn-primary' : 'btn-secondary'}`}
+          className={`px-3 py-1 border rounded-md text-sm ${i === currentPage ? ' bg-primary-500 border-primary-300 text-white font-medium' : 'border-neutral-300 text-neutral-700 hover:bg-neutral-50'}`}
           onClick={() => setCurrentPage(i)}
         >
           {i}
@@ -170,7 +170,7 @@ const renderPageNumbers = () => {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader
+      {/* <PageHeader
         title="Leave Management"
         description="Manage and track employee leave requests"
         actions={
@@ -185,7 +185,27 @@ const renderPageNumbers = () => {
             </button>
           </>
         }
-      />
+      /> */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Leave Management</h1>
+            <p className="text-blue-100 mt-2">Manage and track employee leave requests </p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+            <>
+            <Link to="/leave/apply" className="btn flex items-center">
+              <Plus size={16} className="mr-1" />
+              Apply Leave
+            </Link>
+            {/* <button className="btn btn-secondary flex items-center">
+              <Download size={16} className="mr-1" />
+              Export
+            </button> */}
+          </>
+          </div>
+        </div>
+      </div>
 
       {/* Leave Overview Cards */}
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

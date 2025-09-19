@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { X, Bell, Check } from 'lucide-react';
-import { useNotification } from '../../contexts/NotificationContext';
 import { format } from 'date-fns';
 import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
@@ -16,29 +15,22 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
 
   const [notificationData, setNotificationData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
-  const {
-    notifications,
-    markAsRead,
-    markAllAsRead,
-    removeNotification,
-    clearAllNotifications,
-  }
-    = useNotification();
-
+ 
+  const fetchNotification = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${BASE_URL}/api/notifications`);
+      const data = response.data;
+      setNotificationData(data.data)
+      // console.log(data.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchNotification = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${BASE_URL}/api/notifications`);
-        const data = response.data;
-        setNotificationData(data.data)
-        // console.log(data.data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+
     fetchNotification();
   }, []);
 
@@ -83,6 +75,27 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
   };
 
 
+  const markAllAsRead = async () => {
+    try {
+      const response = await axios.put(`${BASE_URL}/api/notifications/mark_all_as_read`)
+      fetchNotification();
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const clearAllNotifications = async () => {
+    try {
+      const response = await axios.put(`${BASE_URL}/api/notifications/dismiss_all_notification`)
+      fetchNotification();
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+
+
+
+
   if (!open) return null;
 
   const getNotificationColor = (type: string) => {
@@ -111,7 +124,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
     }
   };
 
-  const handleredirect = async (e, notification: any) => {
+  const handleredirect = async (e: React.FormEvent, notification: any) => {
     e.stopPropagation();
     handleMarkAsRead(notification._id);
     onClose();
@@ -136,12 +149,15 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
             <h2 className="text-lg font-semibold">Notifications</h2>
           </div>
           <div className="flex items-center space-x-2">
-            {/* <button
-              onClick={markAllAsRead}
-              className="text-sm text-primary-600 hover:text-primary-800"
-            >
-              Mark all as read
-            </button> */}
+            {notificationData.length > 0 && (
+              <button
+                onClick={markAllAsRead}
+                className="text-sm text-primary-600 hover:text-primary-800"
+              >
+                Mark all as read
+              </button>
+            )}
+
             <button
               onClick={onClose}
               className="p-1 rounded-md text-neutral-500 hover:bg-neutral-100"
@@ -211,7 +227,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
           )}
         </div>
 
-        {/* {notificationData.length > 0 && (
+        {notificationData.length > 0 && (
           <div className="p-4 border-t border-neutral-200">
             <button
               onClick={clearAllNotifications}
@@ -220,7 +236,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
               Clear all notifications
             </button>
           </div>
-        )} */}
+        )}
       </div>
     </>
   );

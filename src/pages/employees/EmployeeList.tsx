@@ -38,6 +38,7 @@ const EmployeeList: React.FC = () => {
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
   const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+  // console.log(currentEmployees)
 
   const totalPages = Math.ceil(employees.length / employeesPerPage);
   const [editpass, setEditPass] = useState(false);
@@ -226,20 +227,22 @@ const EmployeeList: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-800">Employees</h1>
-          <p className="text-neutral-500 mt-1">Manage your employee directory</p>
-        </div>
-        <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-2">
-          <Link
-            to="/employees/new"
-            className="btn btn-primary flex items-center justify-center"
-          >
-            <Plus size={16} className="mr-1" />
-            Add Employee
-          </Link>
-          {/* <button className="btn btn-secondary flex items-center justify-center">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">All-Employees</h1>
+            <p className="text-white-500 mt-1 font-semibold">Manage your employee directory</p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+            <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-2">
+              <Link
+                to="/employees/new"
+                className="flex items-center gap-2"
+              >
+                <Plus size={16} className="mr-1" />
+                Add Employee
+              </Link>
+              {/* <button className="btn btn-secondary flex items-center justify-center">
             <Upload size={16} className="mr-1" />
             Import
           </button>
@@ -247,7 +250,15 @@ const EmployeeList: React.FC = () => {
             <Download size={16} className="mr-1" />
             Export
           </button> */}
+            </div>
+          </div>
         </div>
+      </div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-800"></h1>
+        </div>
+
       </div>
 
       {/* Search and Filter */}
@@ -339,41 +350,41 @@ const EmployeeList: React.FC = () => {
         </div>
         <div className="table-container">
           <table className="table">
-            <thead>
-              <tr>
-                <th className="cursor-pointer" onClick={() => handleSort('id')}>
-                  <div className="flex items-center">
+            <thead className=''>
+              <tr className=''>
+                <th className="cursor-pointer " onClick={() => handleSort('id')}>
+                  <div className="flex items-center py-1 text-sm">
                     ID
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
                 <th className="cursor-pointer" onClick={() => handleSort('first_Name')}>
-                  <div className="flex items-center">
+                  <div className="flex items-center text-sm">
                     Name
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
                 <th>Contact</th>
                 <th className="cursor-pointer" onClick={() => handleSort('department')}>
-                  <div className="flex items-center">
+                  <div className="flex items-center text-sm">
                     Department
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
                 <th className="cursor-pointer" onClick={() => handleSort('designation')}>
-                  <div className="flex items-center">
+                  <div className="flex items-center text-sm">
                     Designation
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
                 <th className="cursor-pointer" onClick={() => handleSort('branch')}>
-                  <div className="flex items-center">
+                  <div className="flex items-center text-sm">
                     Branch
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
                 <th className="cursor-pointer" onClick={() => handleSort('joiningDate')}>
-                  <div className="flex items-center">
+                  <div className="flex items-center text-sm">
                     Joining Date
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
@@ -430,7 +441,7 @@ const EmployeeList: React.FC = () => {
                       <span className="text-sm">{employee.designation}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{employee?.branch || ""}</span>
+                      <span className="text-sm">{employee?.branch?.branchName || ""}</span>
                     </td>
                     <td>
                       <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
@@ -442,10 +453,10 @@ const EmployeeList: React.FC = () => {
                     </td> */}
                     <td>
                       <div className="flex items-center space-x-2">
-                        <Link to={`/payroll/addSlip/${employee._id}`} className="text-neutral-500 hover:text-primary-600 relative" title="Payroll-details">
+                        <Link to={`/payroll/addSlip/${employee._id}`} className="text-neut\al-500 text-green-600 hover:scale-[1.7] relative" title="Payroll-details">
                           <FaFileInvoiceDollar size={18} className='' />
                         </Link>
-                        {user?.role === "admin" && <button className="text-neutral-500 hover:text-error-500" title="Reset-Password" >
+                        {user?.role === "superAdmin" && <button className="text-neutral-500 hover:text-error-500 hover:scale-[1.7]" title="Reset-Password" >
                           <MdLockReset size={18} onClick={() => {
                             setSelectedEmployeeId(employee._id);
                             setEditPass(true)
@@ -454,45 +465,49 @@ const EmployeeList: React.FC = () => {
                           />
                         </button>
                         }
-                        <Link to={`/employees/${employee._id}`} className="text-neutral-500 hover:text-primary-600" title="View">
+                        <Link to={`/employees/${employee._id}`} className="text-neutal-500 text-primary-600 hover:scale-[1.7]" title="View">
                           <Eye size={18} />
                         </Link>
-                        <Link to={`/employees/edit/${employee._id}`} className="text-neutral-500 hover:text-warning-500" title="Edit">
+                        <Link to={`/employees/edit/${employee._id}`} className="text-neutal-500 hover:scale-[1.7] text-warning-500" title="Edit">
                           <Edit size={18} />
                         </Link>
-                        <button className="text-neutral-500 hover:text-error-500" title="Delete" onClick={() => {
+                        <button className="text-red-500 hover:text-error-500 hover:scale-[1.7]" title="Delete" onClick={() => {
                           setSelectedEmployeeId(employee._id);
                           setShowDeleteModal(true);
                         }}>
                           <Trash2 size={18} />
                         </button>
                         <div className="relative inline-block text-left">
-                          <div className="relative inline-block text-left">
-                            <button
-                              onClick={() => toggleDropdown(employee._id)}
-                              className="text-neutral-500 hover:text-primary-600"
-                              title="More"
-                            >
-                              <MoreHorizontal size={18} />
-                            </button>
+                          {
+                            user?.role === "superAdmin" && (
+                              <div className="relative inline-block text-left">
+                                <button
+                                  onClick={() => toggleDropdown(employee._id)}
+                                  className="text-ne text-primary-600 hover:scale-[1.7]"
+                                  title="More"
+                                >
+                                  <MoreHorizontal size={18} />
+                                </button>
 
-                            {
-                              user?.role === "admin" && dropdownOpenId === employee._id && (
-                                <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10 p-2">
-                                  <label className="block text-sm text-gray-700 mb-1">Role:</label>
-                                  <select
-                                    value={employee.role}
-                                    onChange={(e) => handleRoleChange(employee._id, e.target.value)}
-                                    className="w-full p-1 text-sm border border-gray-300 rounded"
-                                  >
-                                    <option value="employee">Employee</option>
-                                    <option value="hr">Hr</option>
-                                  </select>
-                                </div>
-                              )
-                            }
+                                {
+                                  user?.role === "superAdmin" && dropdownOpenId === employee._id && (
+                                    <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10 p-2">
+                                      <label className="block text-sm text-gray-700 mb-1">Role:</label>
+                                      <select
+                                        value={employee.role}
+                                        onChange={(e) => handleRoleChange(employee._id, e.target.value)}
+                                        className="w-full p-1 text-sm border border-gray-300 rounded"
+                                      >
+                                        <option value="employee">Employee</option>
+                                        <option value="hr">Hr</option>
+                                      </select>
+                                    </div>
+                                  )
+                                }
 
-                          </div>
+                              </div>
+                            )
+                          }
                         </div>
                       </div>
                     </td>
@@ -619,7 +634,7 @@ const EmployeeList: React.FC = () => {
           </div>
           <div className="flex space-x-2">
             <button
-              className="px-3 py-1 border border-neutral-300 rounded-md text-neutral-700 text-sm hover:bg-neutral-50"
+              className="px-3 py-1 border border-neutral-300 rounded-md text-primary-700 text-sm hover:bg-neutral-50"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
@@ -631,7 +646,7 @@ const EmployeeList: React.FC = () => {
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
                 className={`px-3 py-1 border rounded-md text-sm ${currentPage === index + 1
-                  ? "bg-blue-500 border-primary-300 text-white font-medium"
+                  ? "bg-primary-500 border-primary-300 text-white font-medium"
                   : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
                   }`}
               >
@@ -640,7 +655,7 @@ const EmployeeList: React.FC = () => {
             ))}
 
             <button
-              className="px-3 py-1 border border-neutral-300 rounded-md text-neutral-700 text-sm hover:bg-neutral-50"
+              className="px-3 py-1 border border-neutral-300 rounded-md text-primary-700 text-sm hover:bg-neutral-50"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
