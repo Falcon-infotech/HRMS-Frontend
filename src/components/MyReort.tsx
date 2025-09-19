@@ -189,7 +189,7 @@ const MyReport = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">My Daily Reports</h1>
@@ -202,6 +202,24 @@ const MyReport = () => {
             <Plus size={18} className="mr-2" />
             Create Report
           </Link>
+        </div>
+      </div> */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">My Daily Reports</h1>
+            <p className="text-blue-100 mt-2">Track and manage your daily task reports</p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+              <Link 
+            to="/createTask"
+            // className="mt-4 sm:mt-0 flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2"
+          >
+            <Plus size={18} className="mr-2" />
+            Create Report
+          </Link>
+          </div>
         </div>
       </div>
 

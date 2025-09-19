@@ -315,23 +315,40 @@ const UserDashboard = () => {
 
     const updateElapsedTime = () => {
       if (checkInTime && !hasCheckedOut) {
-        const startTime = new Date(checkInTime);
-        const now = new Date();
-        const elapsedTime = new Date(now.getTime() - startTime.getTime());
-        const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
-        const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
-        const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+        const startTime = new Date(checkInTime).getTime();
+        const now = Date.now();
+
+        if (isNaN(startTime) || startTime > now) {
+          setElapsed("00:00:00");
+          return;
+        }
+
+        const diffMs = now - startTime;
+
+        const hours = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, "0");
+        const minutes = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+        const seconds = String(Math.floor((diffMs % (1000 * 60)) / 1000)).padStart(2, "0");
+
         setElapsed(`${hours}:${minutes}:${seconds}`);
       } else if (checkInTime && checkOutTime) {
-        const startTime = new Date(checkInTime);
-        const endTime = new Date(checkOutTime);
-        const elapsedTime = new Date(endTime.getTime() - startTime.getTime());
-        const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
-        const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
-        const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+        const startTime = new Date(checkInTime).getTime();
+        const endTime = new Date(checkOutTime).getTime();
+
+        if (isNaN(startTime) || isNaN(endTime) || endTime < startTime) {
+          setElapsed("00:00:00");
+          return;
+        }
+
+        const diffMs = endTime - startTime;
+
+        const hours = String(Math.floor(diffMs / (1000 * 60 * 60))).padStart(2, "0");
+        const minutes = String(Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+        const seconds = String(Math.floor((diffMs % (1000 * 60)) / 1000)).padStart(2, "0");
+
         setElapsed(`${hours}:${minutes}:${seconds}`);
       }
     };
+
 
     // 🟢 Immediately calculate once, even before interval starts
     updateElapsedTime();

@@ -14,7 +14,7 @@ import {
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
 import NotificationDrawer from '../components/common/NotificationDrawer';
-import { logout } from '../store/authSlice';
+import { incr, logout } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import axios from '../constants/axiosInstance';
@@ -456,6 +456,16 @@ const DashboardLayout: React.FC = () => {
                       <LogOutIcon className="mr-3 h-4 w-4 text-blue-500" />
                       Logout
                     </button>
+                    {/* <button
+                      className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => {
+                        dispatch(incr())
+                        console.log("click")
+                      }}
+                    >
+                      <LogOutIcon className="mr-3 h-4 w-4 text-blue-500" />
+                      Logout
+                    </button> */}
                   </div>
                 )}
               </div>

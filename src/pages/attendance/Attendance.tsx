@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Check, X, Clock, AlertCircle, CloudCog } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Check, X, Clock, AlertCircle, CloudCog, View } from 'lucide-react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { format, getMonth, getYear, addMonths, subMonths, set } from 'date-fns';
@@ -399,10 +399,25 @@ const Attendance: React.FC = () => {
 
 
 
-
   return (
     <div className="animate-fade-in">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Attendance</h1>
+            <p className="text-blue-100 mt-2">Manage and track employee attendance</p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+            <div className="mt-4 md:mt-0 flex gap-2">
+          <Link to="/attendance/log" className="btn btn-primary flex gap-5">
+            <View/> View Attendance Log
+          </Link>
+        </div>
+          </div>
+        </div>
+      </div>
+
+      {/* <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-neutral-800">Attendance</h1>
           <p className="text-neutral-500 mt-1">Manage and track employee attendance</p>
@@ -412,7 +427,7 @@ const Attendance: React.FC = () => {
             View Attendance Log
           </Link>
         </div>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Calendar and Filters */}
@@ -601,11 +616,7 @@ const Attendance: React.FC = () => {
                                 <tr
                                   key={record._id || `${record.employeeId}-${record.date}`}
                                   onClick={() => {
-                                    setAttendanceDataSingle(prev => ({
-                                      ...prev, checkIn: record?.inTime,
-                                      checkOut: record?.outTime,
-                                      workHours: record?.duration,
-                                    }));
+                                    setAttendanceDataSingle(record);
                                     setDrawerOpen(true);
                                   }}
                                   className="cursor-pointer hover:bg-neutral-50"

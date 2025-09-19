@@ -126,6 +126,8 @@ const PayrollDashboard: React.FC = () => {
   const handlefilter = async () => {
     setFilterOpen(filterOpen);
     setLoading(true);
+      setEmployees([]);
+  setEmployeesfilter([]);
     try {
       const response = await axios.get(`${BASE_URL}/api/payroll/get_payroll_data`, {
 
@@ -135,9 +137,15 @@ const PayrollDashboard: React.FC = () => {
 
         }
       })
-      // console.log(response.data.data)
-      setEmployees(response.data.data || []);
-      setEmployeesfilter(response.data.data || []);
+     if(response.data?.success){
+       setEmployees(response.data.data);
+      setEmployeesfilter(response.data.data);
+     }else{
+       setEmployees([]);
+      setEmployeesfilter([]);
+     }
+
+    
 
     } catch (error) {
       if (axios?.isAxiosError(error)) {
@@ -155,6 +163,7 @@ const PayrollDashboard: React.FC = () => {
     }
   }
 
+ 
   useEffect(() => {
     handlefilter()
   }, [])
@@ -243,7 +252,7 @@ const PayrollDashboard: React.FC = () => {
         description="Manage and track employee payroll"
         actions={
           employees.length > 0 && <button
-            className="btn btn-primary flex items-center gap-2"
+            className="btn btn-secondary flex items-center gap-2"
             onClick={ExoprtReport}
             disabled={loadingDownload}
           >
@@ -251,7 +260,7 @@ const PayrollDashboard: React.FC = () => {
             Export Report
             {loadingDownload && (
               <svg
-                className="animate-spin h-4 w-4 text-white"
+                className="animate-spin h-4 w-4 text-black"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -532,9 +541,42 @@ const PayrollDashboard: React.FC = () => {
                 </tr>
               ) : (
                 <tr>
-                  <th colSpan={8} className="text-center text-neutral-500 py-4">
-                    No payroll data available for the selected filters
+                  <th>
+                    <div className="flex items-center">
+                      Employee-Name <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
                   </th>
+                  <th>
+                    <div className="flex items-center">
+                      Month <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Basic-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Gross-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Net-Salary <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Payment-Method <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>
+                    <div className="flex items-center">
+                      Status <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
+                    </div>
+                  </th>
+                  <th>Actions</th>
                 </tr>
               )}
             </thead>
@@ -604,14 +646,21 @@ const PayrollDashboard: React.FC = () => {
                     </td>
                   </tr>
                 ))
-              ) : null}
+              ) : 
+
+                <tr>
+                  <td  colSpan={8} className='text-center '>No payroll data available for the selected filters</td>
+                </tr>
+
+              }
             </tbody>
           </table>
         </div>
 
 
         {/* Pagination */}
-        <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
+       {
+        currentData.length>0 &&  <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
           <div className="flex-1 flex justify-between sm:hidden">
             <button className="btn btn-secondary"
               onClick={() => {
@@ -647,8 +696,9 @@ const PayrollDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+       }
       </div>
-    </div>
+    </div >
   );
 };
 

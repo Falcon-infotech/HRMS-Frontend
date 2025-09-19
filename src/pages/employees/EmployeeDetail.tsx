@@ -994,7 +994,7 @@ console.log(employee)
       <div className="min-h-screen bg-gray-50 py-8">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-2xl shadow-xl overflow-hidden mb-8">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden mb-8">
           <div className="p-8 text-white">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">

@@ -315,7 +315,7 @@ export default function DailyReportForm() {
                         <option value="Pending">Pending</option>
                         <option value="Completed">Completed</option>
                       </select>
-                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                      <div className="absolute inset-y-0 left-28 flex items-center pointer-events-none ">
                         {task.status ? getStatusIcon(task.status) : <FileText size={18} className="text-gray-400" />}
                       </div>
                     </div>

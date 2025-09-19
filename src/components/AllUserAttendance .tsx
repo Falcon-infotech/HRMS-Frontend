@@ -78,7 +78,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
           key={i}
           className={`px-3 py-1 text-sm rounded border ${
             i === currentPage
-              ? "bg-blue-500 text-white border-blue-500"
+              ? "bg-primary-500 text-white border-primary-500"
               : "border-gray-300 text-gray-700 hover:bg-gray-200"
           }`}
           onClick={() => setCurrentPage(i)}
@@ -105,7 +105,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
           key={i}
           className={`px-3 py-1 text-sm rounded border ${
             i === currentPage2
-              ? "bg-blue-500 text-white border-blue-500"
+              ? "bg-primary-600 text-white border-blue-500"
               : "border-gray-300 text-gray-700 hover:bg-gray-200"
           }`}
           onClick={() => setCurrentPage2(i)}
@@ -145,7 +145,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
             {currentUsers.map((user) => (
               <tr
                 key={user.userId}
-                className={`cursor-pointer hover:bg-gray-100 ${
+                className={`cursor-pointer hover:bg-gray-100 border bprder-t ${
                   selectedUserId === user.userId ? "bg-gray-100" : ""
                 }`}
                 onClick={() => handleUserSelect(user.userId)}
@@ -163,11 +163,11 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
 
       {/* Main pagination */}
       <div className="mt-4 flex justify-end items-center space-x-2">
-        <button onClick={handlePrevious} disabled={currentPage === 1} className="border px-3 py-1 rounded">
+        <button onClick={handlePrevious} disabled={currentPage === 1} className="border px-3 py-1 rounded-md text-primary-600">
           Previous
         </button>
         {renderPageNumbers2()}
-        <button onClick={handleNext} disabled={currentPage === totalPages} className="border px-3 py-1 rounded">
+        <button onClick={handleNext} disabled={currentPage === totalPages} className="border px-3 py-1 rounded text-primary-600">
           Next
         </button>
       </div>
@@ -237,13 +237,13 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
                 </table>
 
                 {/* Pagination inside drawer */}
-                <div className="flex justify-end mt-4 gap-2">
+                <div className="flex justify-end mt-4 gap-2 text-primary-600">
                   <button
                     onClick={() =>
                       setCurrentPage2((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage2 === 1}
-                    className="border px-3 py-1 rounded"
+                    className="border px-3 py-1 rounded-md text-primary-600"
                   >
                     Prev
                   </button>
@@ -255,7 +255,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
                       )
                     }
                     disabled={currentPage2 === totalPages2}
-                    className="border px-3 py-1 rounded"
+                    className="border px-3 py-1 rounded-md"
                   >
                     Next
                   </button>

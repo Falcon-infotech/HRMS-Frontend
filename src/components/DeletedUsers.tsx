@@ -8,159 +8,159 @@ import { ArrowUpDown } from 'lucide-react';
 import Loading from './Loading';
 
 const DeletedUsers = () => {
-   const [employees, setEmployees] = useState<Employee[]>([]);
-    // const [data, setData] = useState<Employee[]>();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedDepartment, setSelectedDepartment] = useState('');
-    const [selectedDesignation, setSelectedDesignation] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('');
-    const [sortBy, setSortBy] = useState<{ field: keyof Employee, direction: 'asc' | 'desc' }>({
-      field: 'first_Name',
-      direction: 'asc'
-    });
-    const [filterOpen, setFilterOpen] = useState(false);
-    const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
-    const { user } = useSelector((state: RootState) => state.auth)
-    const [allEmployees, setAllEmployees] = useState([]);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    // const [resetpasswordModal, setResetpasswordModal] = useState(false);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const employeesPerPage = 10;
-    const indexOfLastEmployee = currentPage * employeesPerPage;
-    const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
-    const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
-  
-    const totalPages = Math.ceil(employees.length / employeesPerPage);
-    const [editpass, setEditPass] = useState(false);
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [updateloading, setUpdateLoading] = useState(false)
-  
-    // console.log(user.role)
-    const [loading, setLoading] = useState(true);
-    const call = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem('tokenId');
-  
-        const response = await axios.get(`${BASE_URL}/api/employee/deleted`,
-        );
-  
-        const datas = response.data;
-        // console.log(datas.data.users)
-        setEmployees(datas.data.users)
-        setAllEmployees(datas.data.users);
-  
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    useEffect(() => {
-      call();
-    }, []);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  // const [data, setData] = useState<Employee[]>();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedDesignation, setSelectedDesignation] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [sortBy, setSortBy] = useState<{ field: keyof Employee, direction: 'asc' | 'desc' }>({
+    field: 'first_Name',
+    direction: 'asc'
+  });
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
+  const { user } = useSelector((state: RootState) => state.auth)
+  const [allEmployees, setAllEmployees] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // const [resetpasswordModal, setResetpasswordModal] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const employeesPerPage = 10;
+  const indexOfLastEmployee = currentPage * employeesPerPage;
+  const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
+  const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
 
-  
-    useEffect(() => {
-      let filteredEmployees = [...allEmployees]
-  
-      // Search filter
-      if (searchTerm) {
-        filteredEmployees = filteredEmployees.filter(employee =>
-          employee.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          employee.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          employee._id.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-  
-      // Department filter
-      if (selectedDepartment) {
-        filteredEmployees = filteredEmployees.filter(employee =>
-          employee.department === selectedDepartment
-        );
-      }
-  
-      // Designation filter
-      if (selectedDesignation) {
-        filteredEmployees = filteredEmployees.filter(employee =>
-          employee.designation === selectedDesignation
-        );
-      }
-  
-      // Status filter
-      if (selectedStatus) {
-        filteredEmployees = filteredEmployees.filter(employee =>
-          employee.status === selectedStatus
-        );
-      }
-  
-      // Sort
-      filteredEmployees.sort((a, b) => {
-        const aValue = a[sortBy.field];
-        const bValue = b[sortBy.field];
-  
-        if (aValue! < bValue!) return sortBy.direction === 'asc' ? -1 : 1;
-        if (aValue! > bValue!) return sortBy.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
-  
-      setEmployees(filteredEmployees);
-    }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy, allEmployees]);
-  
-    const handleSort = (field: keyof Employee) => {
-      if (sortBy.field === field) {
-        setSortBy({
-          field,
-          direction: sortBy.direction === 'asc' ? 'desc' : 'asc'
-        });
-      } else {
-        setSortBy({
-          field,
-          direction: 'asc'
-        });
-      }
-    };
-  
-    const clearFilters = () => {
-      setSearchTerm('');
-      setSelectedDepartment('');
-      setSelectedDesignation('');
-      setSelectedStatus('');
-    };
-  
-    const getStatusColor = (status: string) => {
-      switch (status) {
-        case 'active': return 'bg-green-100 text-green-800';
-        case 'on-leave': return 'bg-yellow-100 text-yellow-800';
-        case 'inactive': return 'bg-red-100 text-red-800';
-        default: return 'bg-gray-100 text-gray-800';
-      }
-    };
-  
-  
-  
-    const handleDelete = async (id: string) => {
-      // console.log("clicked")
-      try {
-        const token = localStorage.getItem('tokenId');
-  
-        const data = await axios.patch(`${BASE_URL}/api/employee/${id}`,
-        )
-  
-        setEmployees(prevEmployees => prevEmployees.filter(emp => emp._id !== id));
-        console.log(data.data)
-      } catch (error) {
-        console.log(error)
-      }
+  const totalPages = Math.ceil(employees.length / employeesPerPage);
+  const [editpass, setEditPass] = useState(false);
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [updateloading, setUpdateLoading] = useState(false)
+
+  // console.log(user.role)
+  const [loading, setLoading] = useState(true);
+  const call = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('tokenId');
+
+      const response = await axios.get(`${BASE_URL}/api/employee/deleted`,
+      );
+
+      const datas = response.data;
+      // console.log(datas.data.users)
+      setEmployees(datas.data.users)
+      setAllEmployees(datas.data.users);
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    call();
+  }, []);
+
+
+  useEffect(() => {
+    let filteredEmployees = [...allEmployees]
+
+    // Search filter
+    if (searchTerm) {
+      filteredEmployees = filteredEmployees.filter(employee =>
+        employee.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee._id.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Department filter
+    if (selectedDepartment) {
+      filteredEmployees = filteredEmployees.filter(employee =>
+        employee.department === selectedDepartment
+      );
+    }
+
+    // Designation filter
+    if (selectedDesignation) {
+      filteredEmployees = filteredEmployees.filter(employee =>
+        employee.designation === selectedDesignation
+      );
+    }
+
+    // Status filter
+    if (selectedStatus) {
+      filteredEmployees = filteredEmployees.filter(employee =>
+        employee.status === selectedStatus
+      );
+    }
+
+    // Sort
+    filteredEmployees.sort((a, b) => {
+      const aValue = a[sortBy.field];
+      const bValue = b[sortBy.field];
+
+      if (aValue! < bValue!) return sortBy.direction === 'asc' ? -1 : 1;
+      if (aValue! > bValue!) return sortBy.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    setEmployees(filteredEmployees);
+  }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy, allEmployees]);
+
+  const handleSort = (field: keyof Employee) => {
+    if (sortBy.field === field) {
+      setSortBy({
+        field,
+        direction: sortBy.direction === 'asc' ? 'desc' : 'asc'
+      });
+    } else {
+      setSortBy({
+        field,
+        direction: 'asc'
+      });
+    }
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedDepartment('');
+    setSelectedDesignation('');
+    setSelectedStatus('');
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'on-leave': return 'bg-yellow-100 text-yellow-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+
+
+  const handleDelete = async (id: string) => {
+    // console.log("clicked")
+    try {
+      const token = localStorage.getItem('tokenId');
+
+      const data = await axios.patch(`${BASE_URL}/api/employee/${id}`,
+      )
+
+      setEmployees(prevEmployees => prevEmployees.filter(emp => emp._id !== id));
+      console.log(data.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div>
-       <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
         <div className="p-4 border-b border-neutral-200 flex justify-between">
           <h2 className="text-lg font-semibold">Employee Directory</h2>
           <span className="text-sm text-neutral-500">{employees.length} employees</span>
@@ -257,7 +257,7 @@ const DeletedUsers = () => {
                       <span className="text-sm">{employee.designation}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{employee?.branch||""}</span>
+                      <span className="text-sm">{employee?.branch || ""}</span>
                     </td>
                     <td>
                       <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
@@ -267,7 +267,7 @@ const DeletedUsers = () => {
                         {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
                       </span>
                     </td> */}
-                    
+
                   </tr>
                 ))}
                 {showDeleteModal && (
@@ -397,13 +397,12 @@ const DeletedUsers = () => {
             >
               Previous
             </button>
-
             {[...Array(totalPages)].map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
                 className={`px-3 py-1 border rounded-md text-sm ${currentPage === index + 1
-                  ? "bg-blue-500 border-primary-300 text-white font-medium"
+                  ? "bg-primary-500 border-primary-300 text-white font-medium"
                   : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
                   }`}
               >

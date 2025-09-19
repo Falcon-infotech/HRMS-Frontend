@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import {
   Edit, Mail, Phone, MapPin, Briefcase, Calendar, Clock, UserCheck, FileText,
   DollarSign, Clipboard, ChevronDown, Download, Camera, Save, X,
-  Edit2, Image, Edit3Icon, Award, Star, TrendingUp, FileDigit, 
+  Edit2, Image, Edit3Icon, Award, Star, TrendingUp, FileDigit,
   Shield, Building, CreditCard, Heart, BookOpen, GraduationCap,
   Languages, Globe, Github, Linkedin, Twitter, Facebook, Instagram
 } from 'lucide-react';
@@ -50,14 +50,21 @@ const EmployeeDetail: React.FC = () => {
 
   const getProfilePic = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/upload/uploadByUserId/${user?._id}`);
+      // const response = await axios.get(`${BASE_URL}/api/upload/uploadByUserId/${user?._id}`);
+      // const data = response.data;
+      // console.log(data)
+      // if (data.success && Array.isArray(data.uploads)) {
+      //   const profilePics = data.uploads.filter(upload => upload.title === "profile");
+      //   const sorted = profilePics.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+      //   const latestProfilePic = sorted[0];
+      //   setImageUrlPic(latestProfilePic);
+      // }
+
+
+      const response = await axios.get(`${BASE_URL}/api/employee/${user?._id}`)
       const data = response.data;
-      if (data.success && Array.isArray(data.uploads)) {
-        const profilePics = data.uploads.filter(upload => upload.title === "profile");
-        const sorted = profilePics.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-        const latestProfilePic = sorted[0];
-        setImageUrlPic(latestProfilePic);
-      }
+      // console.log(data.data.profileImageUrl)
+      setImageUrlPic(data?.data?.profileImageUrl)
     } catch (error) {
       console.error(error);
     }
@@ -225,23 +232,23 @@ const EmployeeDetail: React.FC = () => {
 
   const handleImageUpload = async () => {
     const formData = new FormData();
-    formData.append("files", imageUrl);
-    formData.append("title", "profile");
+    formData.append("file", imageUrl!);
+    // formData.append("title", "profile");
 
     try {
-      if (imageUrlPic) {
-        await axios.put(`${BASE_URL}/api/update_upload/${imageUrlPic?._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      } else {
-        await axios.post(`${BASE_URL}/api/upload`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-      }
+      // if (imageUrlPic) {
+      //   await axios.put(`${BASE_URL}/api/update_upload/${imageUrlPic?._id}`, formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data',
+      //     },
+      //   });
+      // } else {
+      await axios.post(`${BASE_URL}/api/upload/profile_pic`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      // }
       toast.success("Profile picture updated successfully!");
       getProfilePic();
     } catch (error) {
@@ -267,8 +274,8 @@ const EmployeeDetail: React.FC = () => {
           <span className="text-lg font-bold text-gray-800">{value}{max === 5 ? '/5' : '%'}</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" 
+          <div
+            className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
             style={{ width: `${percentage}%` }}
           ></div>
         </div>
@@ -280,16 +287,16 @@ const EmployeeDetail: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-2xl shadow-xl overflow-hidden mb-8">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden mb-8">
           <div className="p-8 text-white">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 overflow-hidden">
                     {employee.uploads ? (
-                      <img 
-                        src={previewUrl || imageUrlPic?.files[0]?.url || 'https://contacts.zoho.in/file?ID=60028830319&fs=thumb'} 
-                        alt={`${employee?.first_name} ${employee?.last_name}`} 
+                      <img
+                        src={previewUrl || imageUrlPic || 'https://contacts.zoho.in/file?ID=60028830319&fs=thumb'}
+                        alt={`${employee?.first_name} ${employee?.last_name}`}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -329,8 +336,8 @@ const EmployeeDetail: React.FC = () => {
                   </button>
                 )}
                 {user?.role !== "employee" && (
-                  <Link 
-                    to={`/employees/edit/${employee?._id}`} 
+                  <Link
+                    to={`/employees/edit/${employee?._id}`}
                     className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors flex items-center border border-white/30"
                   >
                     <Edit className="w-4 h-4 mr-2" />
@@ -354,11 +361,10 @@ const EmployeeDetail: React.FC = () => {
                     <UserCheck className="w-5 h-5 text-blue-600 mr-3" />
                     <span className="text-sm font-medium text-gray-700">Attendance</span>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    status?.status === 'present' 
-                      ? 'bg-green-100 text-green-800' 
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${status?.status === 'present'
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}>
+                    }`}>
                     {status ? status.status : "Absent"}
                   </span>
                 </div>
@@ -438,11 +444,10 @@ const EmployeeDetail: React.FC = () => {
                 {['overview', 'performance', 'documents', 'activity'].map((tab) => (
                   <button
                     key={tab}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
-                      activeTab === tab
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${activeTab === tab
                         ? 'bg-blue-100 text-blue-700'
                         : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                      }`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -524,15 +529,14 @@ const EmployeeDetail: React.FC = () => {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Status</label>
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          employee.status === 'active' 
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${employee.status === 'active'
                             ? 'bg-green-100 text-green-800'
                             : employee.status === 'on-leave'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
                           {employee.status === 'active' ? 'Active' :
-                           employee.status === 'on-leave' ? 'On Leave' : 'Inactive'}
+                            employee.status === 'on-leave' ? 'On Leave' : 'Inactive'}
                         </span>
                       </div>
                     </div>
@@ -549,7 +553,7 @@ const EmployeeDetail: React.FC = () => {
                     {renderPerformanceMetric('Work Efficiency', 92, 100, TrendingUp)}
                     {renderPerformanceMetric('Team Collaboration', 4.8, 5, UserCheck)}
                   </div>
-                  
+
                   <div className="pt-6 border-t border-gray-200">
                     <h4 className="text-md font-semibold text-gray-800 mb-4">Recent Achievements</h4>
                     <div className="space-y-3">

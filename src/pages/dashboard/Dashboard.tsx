@@ -26,13 +26,19 @@ const Dashboard: React.FC = () => {
   const [timeRange, setTimeRange] = useState('week');
 
   const COLORS = ['#2563eb', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
-  const { user } = useSelector((state: RootState) => state.auth)
+  const { user, count: counts } = useSelector((state: RootState) => state.auth)
   const [holidays, setHolidays] = useState([])
   const [todayStats, setTodayStats] = useState(0);
   const [departmentChartData, setDepartmentChartData] = useState([]);
   const [todayTotalattencepie, setTodayTotalattencepie] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
+//   let toda = new Date()
+//   let start = new Date(toda)
+//   let end = new Date(toda)
+ 
+//   start.setDate(toda.getDate()+1 - start.getDay())
+// console.log(start)
   // Sample data for charts
   const performanceData = [
     { day: 'Mon', productivity: 85, attendance: 92 },
@@ -51,13 +57,13 @@ const Dashboard: React.FC = () => {
         const response = await axios.get(`${BASE_URL}/api/employee`, {})
         const data = response.data
         setCount(data.data.count)
-        const departmentCount = data?.data?.users?.reduce((acc:any, ele:any) => {
+        const departmentCount = data?.data?.users?.reduce((acc: any, ele: any) => {
           const dept = ele.department;
           acc[dept] = (acc[dept] || 0) + 1;
           return acc;
         }, {});
 
-        const chartData:any = Object.entries(departmentCount).map(
+        const chartData: any = Object.entries(departmentCount).map(
           ([department, count]) => ({ department, count })
         );
 
@@ -103,9 +109,9 @@ const Dashboard: React.FC = () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`, {});
         const data = response.data;
-        setTodayStats(data.data.filter((item: any) => item.status !== 'Absent' && item.status !== 'Holiday' ).length);
+        setTodayStats(data.data.filter((item: any) => item.status !== 'Absent' && item.status !== 'Holiday' && item.status!=="Leave").length);
 
-        const pieChartData = data.data.reduce((acc:any, ele:any) => {
+        const pieChartData = data.data.reduce((acc: any, ele: any) => {
           const count = ele.status;
           acc[count] = (acc[count] || 0) + 1
           return acc;
@@ -134,9 +140,31 @@ const Dashboard: React.FC = () => {
     const date = new Date(holiday?.date);
     return date > today;
   });
+  // console.log(upcomingHolidays[0]?.date)
+
+ const diff = () => {
+  if (!upcomingHolidays[0]?.date) return null;
+
+  const today = new Date();
+  const holiday = new Date(upcomingHolidays[0].date);
+
+  // Clear the time portion to avoid partial day issues
+  today.setHours(0, 0, 0, 0);
+  holiday.setHours(0, 0, 0, 0);
+
+  const diffMs = holiday.getTime() - today.getTime(); // difference in milliseconds
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+const diffWeeks = Math.floor(diffDays / 7); // full weeks only
+
+  return diffWeeks;
+};
+
+// console.log(diff());
+
+
 
   // Filter attendance data based on search query
-  const filteredAttendanceData = todayattendanceData.filter(item => 
+  const filteredAttendanceData = todayattendanceData.filter(item =>
     item.user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -166,7 +194,7 @@ const Dashboard: React.FC = () => {
           ) : (
             <p className="text-2xl font-bold text-gray-800">{value}</p>
           )}
-          
+
           {change && (
             <div className={`flex items-center mt-2 text-sm ${changeType === 'positive' ? 'text-green-600' :
               changeType === 'negative' ? 'text-red-600' : 'text-gray-500'
@@ -192,8 +220,8 @@ const Dashboard: React.FC = () => {
   const StatusBadge = ({ status }: { status: string }) => {
     let badgeClass = '';
     let icon = null;
-    
-    switch(status) {
+
+    switch (status) {
       case 'Present':
         badgeClass = 'bg-green-100 text-green-800';
         icon = <CheckCircle size={14} className="mr-1" />;
@@ -213,7 +241,7 @@ const Dashboard: React.FC = () => {
       default:
         badgeClass = 'bg-gray-100 text-gray-800';
     }
-    
+
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}>
         {icon} {status}
@@ -228,7 +256,7 @@ const Dashboard: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Dashboard Overview</h1>
-            <p className="text-blue-100 mt-2">Welcome back, {user?.name || user?.first_name} 👋</p>
+            <p className="text-blue-100 mt-2">Welcome back, {user?.name || user?.first_name} 👋  </p>
           </div>
           <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
             <span className="text-sm text-blue-100">Today is </span>
@@ -238,7 +266,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <OverviewCard
@@ -270,8 +297,8 @@ const Dashboard: React.FC = () => {
           title="Upcoming Holidays"
           value={upcomingHolidays.length}
           icon={Award}
-          change="Next: in 2 weeks"
-          changeType="neutral"
+          change={`Next holiday in ${diff()} weeks`}
+          changeType="positive"
           link="/holidays"
         />
       </div>
@@ -282,7 +309,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-800">Department Distribution</h3>
-            <button className="text-gray-400 hover:text-gray-600">
+            <button className="text-gray-400 hover:text-gray-600 ">
               <MoreVertical size={18} />
             </button>
           </div>
@@ -290,21 +317,21 @@ const Dashboard: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={departmentChartData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="department" 
+                <XAxis
+                  dataKey="department"
                   tick={{ fontSize: 12 }}
                   angle={-45}
                   textAnchor="end"
                   height={60}
                 />
                 <YAxis allowDecimals={false} />
-                <Tooltip 
+                <Tooltip
                   cursor={{ fill: '#f5f5f5' }}
                   contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
                 />
-                <Bar 
-                  dataKey="count" 
-                  fill="#4f46e5" 
+                <Bar
+                  dataKey="count"
+                  fill="#4f46e5"
                   radius={[4, 4, 0, 0]}
                   barSize={30}
                 />
@@ -318,7 +345,7 @@ const Dashboard: React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-800">Attendance Overview</h3>
             <div className="flex space-x-2">
-              <button 
+              <button
                 className={`px-3 py-1 text-xs rounded-full ${timeRange === 'week' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}
                 onClick={() => setTimeRange('week')}
               >
@@ -352,13 +379,13 @@ const Dashboard: React.FC = () => {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value) => [`${value} employees`, 'Count']}
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
                   />
-                  <Legend 
-                    layout="vertical" 
-                    verticalAlign="middle" 
+                  <Legend
+                    layout="vertical"
+                    verticalAlign="middle"
                     align="right"
                     wrapperStyle={{ paddingLeft: '20px' }}
                   />
@@ -380,13 +407,13 @@ const Dashboard: React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-800">Performance Trend</h3>
             <div className="flex space-x-2">
-              <button 
+              <button
                 className={`px-3 py-1 text-xs rounded-full ${activeMetric === 'attendance' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}
                 onClick={() => setActiveMetric('attendance')}
               >
                 Attendance
               </button>
-              <button 
+              <button
                 className={`px-3 py-1 text-xs rounded-full ${activeMetric === 'productivity' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}
                 onClick={() => setActiveMetric('productivity')}
               >
@@ -399,27 +426,27 @@ const Dashboard: React.FC = () => {
               <AreaChart data={performanceData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorAttendance" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.1} />
                   </linearGradient>
                   <linearGradient id="colorProductivity" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0d9488" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#0d9488" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis dataKey="day" />
                 <YAxis />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
                 />
                 <Legend />
-                <Area 
-                  type="monotone" 
-                  dataKey={activeMetric === 'attendance' ? 'attendance' : 'productivity'} 
-                  stroke={activeMetric === 'attendance' ? '#4f46e5' : '#0d9488'} 
-                  fill={activeMetric === 'attendance' ? 'url(#colorAttendance)' : 'url(#colorProductivity)'} 
-                  activeDot={{ r: 1 }} 
+                <Area
+                  type="monotone"
+                  dataKey={activeMetric === 'attendance' ? 'attendance' : 'productivity'}
+                  stroke={activeMetric === 'attendance' ? '#4f46e5' : '#0d9488'}
+                  fill={activeMetric === 'attendance' ? 'url(#colorAttendance)' : 'url(#colorProductivity)'}
+                  activeDot={{ r: 1 }}
                   strokeWidth={2}
                 />
               </AreaChart>
@@ -503,7 +530,7 @@ const Dashboard: React.FC = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {upcomingHolidays.slice(0, 3).map((event:any, index) => {
+          {upcomingHolidays.slice(0, 3).map((event: any, index) => {
             const dateObj = new Date(event?.date);
             const month = dateObj.toLocaleString('default', { month: 'short' });
             const day = dateObj.getDate();

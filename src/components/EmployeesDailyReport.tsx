@@ -45,32 +45,32 @@ const EmployeesDailyReport = () => {
   // Filter and search functionality
   useEffect(() => {
     let result = reports;
-    
+
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(report => 
+      result = result.filter(report =>
         report.userId?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.reports.some(task => 
+        report.reports.some(task =>
           task.taskGivenBy?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           task.concernedDepartment?.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
-    
+
     // Apply status filter
     if (statusFilter !== "all") {
-      result = result.filter(report => 
+      result = result.filter(report =>
         report.reports.some(task => task.status === statusFilter)
       );
     }
-    
+
     // Apply department filter
     if (departmentFilter !== "all") {
-      result = result.filter(report => 
+      result = result.filter(report =>
         report.reports.some(task => task.concernedDepartment === departmentFilter)
       );
     }
-    
+
     // Apply date filter
     if (dateFilter) {
       result = result.filter(report => {
@@ -78,7 +78,7 @@ const EmployeesDailyReport = () => {
         return reportDate === dateFilter;
       });
     }
-    
+
     setFilteredReports(result);
   }, [searchTerm, statusFilter, departmentFilter, dateFilter, reports]);
 
@@ -89,7 +89,7 @@ const EmployeesDailyReport = () => {
       direction = 'descending';
     }
     setSortConfig({ key, direction });
-    
+
     const sortedReports = [...filteredReports].sort((a, b) => {
       if (key === 'date') {
         const dateA = new Date(a.date);
@@ -98,19 +98,19 @@ const EmployeesDailyReport = () => {
       } else if (key === 'email') {
         const emailA = a.userId?.email || '';
         const emailB = b.userId?.email || '';
-        return direction === 'ascending' 
-          ? emailA.localeCompare(emailB) 
+        return direction === 'ascending'
+          ? emailA.localeCompare(emailB)
           : emailB.localeCompare(emailA);
       } else if (key === 'department') {
         const deptA = a.reports[0]?.concernedDepartment || '';
         const deptB = b.reports[0]?.concernedDepartment || '';
-        return direction === 'ascending' 
-          ? deptA.localeCompare(deptB) 
+        return direction === 'ascending'
+          ? deptA.localeCompare(deptB)
           : deptB.localeCompare(deptA);
       }
       return 0;
     });
-    
+
     setFilteredReports(sortedReports);
   };
 
@@ -151,8 +151,8 @@ const EmployeesDailyReport = () => {
     const headers = ["Date", "Employee Email", "Role", "Task", "Given By", "Department", "Objective", "Remark", "Status"];
     const csvContent = [
       headers.join(","),
-      ...filteredReports.flatMap(report => 
-        report.reports.map(task => 
+      ...filteredReports.flatMap(report =>
+        report.reports.map(task =>
           [
             new Date(report.date).toLocaleDateString(),
             report.userId?.email || "N/A",
@@ -160,7 +160,7 @@ const EmployeesDailyReport = () => {
             task.taskGiven?.replace(/<[^>]*>/g, ""),
             task.taskGivenBy,
             task.concernedDepartment,
-            task.objective?.replace(/<[^>]*>/g, ""), 
+            task.objective?.replace(/<[^>]*>/g, ""),
             task.remark?.replace(/<[^>]*>/g, ""),
             task.status
           ].map(field => `"${field}"`).join(",")
@@ -181,9 +181,23 @@ const EmployeesDailyReport = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Employees Daily Reports</h2>
         <p className="text-gray-600">Track and manage daily task reports from your team</p>
+      </div> */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Employees Daily Reports</h1>
+            <p className="text-blue-100 mt-2">Track and manage daily task reports from your team</p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+            <span className="text-sm text-blue-100">Today is </span>
+            <span className="text-sm font-medium">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Filters and Search */}
@@ -199,12 +213,12 @@ const EmployeesDailyReport = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <div>
             <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
               <Filter size={18} className="text-gray-400 mr-2" />
               <select
-                className="w-full focus:outline-none"
+                className="w-full  text-primary-600 "
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -215,7 +229,7 @@ const EmployeesDailyReport = () => {
               </select>
             </div>
           </div>
-          
+
           <div>
             <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
               <User size={18} className="text-gray-400 mr-2" />
@@ -231,7 +245,7 @@ const EmployeesDailyReport = () => {
               </select>
             </div>
           </div>
-          
+
           <div>
             <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
               <Calendar size={18} className="text-gray-400 mr-2" />
@@ -244,12 +258,12 @@ const EmployeesDailyReport = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="flex justify-between items-center mt-4">
           <div className="text-sm text-gray-500">
             Showing {filteredReports.length} of {reports.length} reports
           </div>
-          <button 
+          <button
             onClick={exportToCSV}
             className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
@@ -298,8 +312,8 @@ const EmployeesDailyReport = () => {
             {filteredReports.length > 0 ? (
               filteredReports.map((report) => (
                 <React.Fragment key={report._id}>
-                  <tr 
-                    className="hover:bg-gray-50 cursor-pointer" 
+                  <tr
+                    className="hover:bg-gray-50 cursor-pointer"
                     onClick={() => toggleRowExpansion(report._id)}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -336,12 +350,12 @@ const EmployeesDailyReport = () => {
                           <div
                             key={task._id}
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${task.status === "In Progress"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : task.status === "Completed"
-                                  ? "bg-green-100 text-green-800"
-                                  : task.status === "Pending"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-gray-100 text-gray-800"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : task.status === "Completed"
+                                ? "bg-green-100 text-green-800"
+                                : task.status === "Pending"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-800"
                               }`}
                           >
                             {getStatusIcon(task.status)}
@@ -357,7 +371,7 @@ const EmployeesDailyReport = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <Link 
+                        <Link
                           to={"/allEmloyeesTask/" + report._id}
                           className="text-blue-600 hover:text-blue-900 flex items-center"
                         >
@@ -367,7 +381,7 @@ const EmployeesDailyReport = () => {
                       </div>
                     </td>
                   </tr>
-                  
+
                   {/* Expanded row with task details */}
                   {expandedRows[report._id] && (
                     <tr className="bg-blue-50">
@@ -378,18 +392,18 @@ const EmployeesDailyReport = () => {
                               <div className="flex justify-between items-start mb-3">
                                 <h4 className="font-medium text-gray-900">Task Details</h4>
                                 <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${task.status === "In Progress"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : task.status === "Completed"
-                                      ? "bg-green-100 text-green-800"
-                                      : task.status === "Pending"
-                                        ? "bg-red-100 text-red-800"
-                                        : "bg-gray-100 text-gray-800"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : task.status === "Completed"
+                                    ? "bg-green-100 text-green-800"
+                                    : task.status === "Pending"
+                                      ? "bg-red-100 text-red-800"
+                                      : "bg-gray-100 text-gray-800"
                                   }`}>
                                   {getStatusIcon(task.status)}
                                   <span className="ml-1">{task.status}</span>
                                 </div>
                               </div>
-                              
+
                               <div className="space-y-2 text-sm">
                                 <div>
                                   <span className="font-medium text-gray-700">Task: </span>
@@ -426,8 +440,8 @@ const EmployeesDailyReport = () => {
                   <FileText size={48} className="mx-auto text-gray-300 mb-3" />
                   <p className="text-gray-500 text-lg">No reports found</p>
                   <p className="text-gray-400 text-sm mt-1">
-                    {reports.length === 0 
-                      ? "No daily reports have been submitted yet." 
+                    {reports.length === 0
+                      ? "No daily reports have been submitted yet."
                       : "Try adjusting your filters to see more results."}
                   </p>
                 </td>

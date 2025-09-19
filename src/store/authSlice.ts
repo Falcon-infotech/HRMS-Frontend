@@ -19,6 +19,7 @@ interface AuthState {
     loading: boolean;
     error: string | null;
     isAuthenticated: boolean;
+    count:number
 }
 
 const initialState: AuthState = {
@@ -26,7 +27,7 @@ const initialState: AuthState = {
     token: localStorage.getItem('accessToken') || null,
     loading: false,
     error: null,
-    isAuthenticated: false
+    isAuthenticated: false,count:0
     // isAuthenticated: !!localStorage.getItem("accessToken") && !!user
 };
 
@@ -36,7 +37,6 @@ export const loginUser = createAsyncThunk<LoginResponse, LoginCredentials, { rej
         const response = await axios.post(API.LOGIN, credentials, {
             withCredentials: true
         })
-
         return response.data
     } catch (error: any) {
         return thunkAPI.rejectWithValue(error.response?.data?.message || 'Login failed')
@@ -64,6 +64,9 @@ export const authSlice = createSlice({
         updateAccessToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
             state.isAuthenticated = true
+        },
+        incr(state){
+            state.count=state.count+1
         }
     },
     extraReducers: (builder) => {
@@ -92,5 +95,5 @@ export const authSlice = createSlice({
 
 
 
-export const { logout, updateAccessToken } = authSlice.actions;
+export const { logout, updateAccessToken,incr } = authSlice.actions;
 export default authSlice.reducer

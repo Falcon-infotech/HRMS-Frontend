@@ -26,14 +26,14 @@ const Holiday = () => {
     const [selectedBranch, setSelectedBranch] = useState("all");
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [itemToDelete, setItemToDelete] = useState()
-    const [isDeleting,setIsDeleting]=useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
 
 
-const {user}=useSelector((state:RootState)=>state.auth) 
+    const { user } = useSelector((state: RootState) => state.auth)
 
-    const fetchHolidays = async (flag?:boolean) => {
+    const fetchHolidays = async (flag?: boolean) => {
         try {
-            if(flag) setLoading(true);
+            if (flag) setLoading(true);
             let response;
             if (selectedBranch === "all") {
                 response = await axios.get(`${BASE_URL}/api/holidays/holidays_by_user`);
@@ -60,9 +60,9 @@ const {user}=useSelector((state:RootState)=>state.auth)
 
     useEffect(() => {
         fetchHolidays();
-       if(user?.role==="Admin"){
-         fetchBranches();
-       }
+        if (user?.role === "Admin") {
+            fetchBranches();
+        }
     }, []);
 
     useEffect(() => {
@@ -115,7 +115,7 @@ const {user}=useSelector((state:RootState)=>state.auth)
             fetchHolidays(false);
         } catch (error) {
             console.error("Error deleting holiday:", error);
-        }finally{
+        } finally {
             setIsDeleting(false)
             setIsOpen(false)
         }
@@ -158,7 +158,7 @@ const {user}=useSelector((state:RootState)=>state.auth)
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className=" mx-auto">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+                {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-800">Holiday Calendar</h1>
                         <p className="text-gray-500 mt-1">Manage and view all holidays in your organization</p>
@@ -177,6 +177,30 @@ const {user}=useSelector((state:RootState)=>state.auth)
                             Add Holiday
                         </button>
                     )}
+                </div> */}
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold">Holiday Calendar</h1>
+                            <p className="text-blue-100 mt-2">Manage and view all holidays in your organization</p>
+                        </div>
+                        <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                            {(Users?.role === 'admin' || Users?.role === 'hr') && (
+                                <button
+                                    onClick={() => {
+                                        setSelectedHoliday(null);
+                                        setIsEditMode(false);
+                                        setIsFormOpen(true);
+                                    }}
+                                    // className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center shadow-sm"
+                                    className='flex gap-2 items-center'
+                                >
+                                    <PlusCircle className="w-5 h-5 mr-1" />
+                                    Add Holiday
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Stats Cards */}

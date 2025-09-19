@@ -328,10 +328,25 @@ const Settings: React.FC = () => {
 
   return (
     <div className="animate-fade-in pb-8">
-      <PageHeader
-        title="System Settings"
-        description="Configure your HRMS platform preferences and settings"
-      />
+        {/* <PageHeader
+          title="System Settings"
+          description="Configure your HRMS platform preferences and settings"
+        /> */}
+
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">System Settings</h1>
+            <p className="text-blue-100 mt-2">Configure your HRMS platform preferences and settings</p>
+          </div>
+          <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+            <span className="text-sm text-blue-100">Today is </span>
+            <span className="text-sm font-medium">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Settings Navigation */}

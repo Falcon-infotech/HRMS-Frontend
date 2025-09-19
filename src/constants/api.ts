@@ -5,7 +5,7 @@
 
 // for development
 
-export const BASE_URL = 'https://my-app-production-65a0.up.railway.app';
+export const BASE_URL = 'http://koc4k40848g84k4cg8ook4oc.43.204.178.166.sslip.io';
 
 
 // fro production
