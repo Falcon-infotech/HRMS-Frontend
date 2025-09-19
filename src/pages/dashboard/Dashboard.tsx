@@ -109,14 +109,15 @@ const Dashboard: React.FC = () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`, {});
         const data = response.data;
-        setTodayStats(data.data.filter((item: any) => item.status !== 'Absent' && item.status !== 'Holiday' && item.status!=="Leave").length);
+        console.log(data)
+        setTodayStats(data.data.filter((item: any) => item.status =="Present").length);
 
         const pieChartData = data.data.reduce((acc: any, ele: any) => {
           const count = ele.status;
           acc[count] = (acc[count] || 0) + 1
           return acc;
         }, {})
-        // console.log(pieChartData)
+        console.log(pieChartData)    
 
         const present = pieChartData['Present'] || 0
         const halfday = pieChartData['Half Day'] || 0
