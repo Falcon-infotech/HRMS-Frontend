@@ -33,12 +33,12 @@ const Dashboard: React.FC = () => {
   const [todayTotalattencepie, setTodayTotalattencepie] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-//   let toda = new Date()
-//   let start = new Date(toda)
-//   let end = new Date(toda)
- 
-//   start.setDate(toda.getDate()+1 - start.getDay())
-// console.log(start)
+  //   let toda = new Date()
+  //   let start = new Date(toda)
+  //   let end = new Date(toda)
+
+  //   start.setDate(toda.getDate()+1 - start.getDay())
+  // console.log(start)
   // Sample data for charts
   const performanceData = [
     { day: 'Mon', productivity: 85, attendance: 92 },
@@ -109,8 +109,8 @@ const Dashboard: React.FC = () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/attendance/all_users_today_attendance`, {});
         const data = response.data;
-        console.log(data)
-        setTodayStats(data.data.filter((item: any) => item.status =="Present").length);
+        // console.log(data)
+        setTodayStats(data.data.filter((item: any) => item.status == "Present").length);
 
         const pieChartData = data.data.reduce((acc: any, ele: any) => {
           const count = ele.status;
@@ -118,7 +118,7 @@ const Dashboard: React.FC = () => {
           return acc;
         }, {})
 
-        console.log(pieChartData)
+        // console.log(pieChartData)
 
 
         const present = pieChartData['Present'] || 0
@@ -145,24 +145,24 @@ const Dashboard: React.FC = () => {
   });
   // console.log(upcomingHolidays[0]?.date)
 
- const diff = () => {
-  if (!upcomingHolidays[0]?.date) return null;
+  const diff = () => {
+    if (!upcomingHolidays[0]?.date) return null;
 
-  const today = new Date();
-  const holiday = new Date(upcomingHolidays[0].date);
+    const today = new Date();
+    const holiday = new Date(upcomingHolidays[0].date);
 
-  // Clear the time portion to avoid partial day issues
-  today.setHours(0, 0, 0, 0);
-  holiday.setHours(0, 0, 0, 0);
+    // Clear the time portion to avoid partial day issues
+    today.setHours(0, 0, 0, 0);
+    holiday.setHours(0, 0, 0, 0);
 
-  const diffMs = holiday.getTime() - today.getTime(); // difference in milliseconds
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-const diffWeeks = Math.floor(diffDays / 7); // full weeks only
+    const diffMs = holiday.getTime() - today.getTime(); // difference in milliseconds
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const diffWeeks = Math.floor(diffDays / 7); // full weeks only
 
-  return diffWeeks;
-};
+    return diffWeeks;
+  };
 
-// console.log(diff());
+  // console.log(diff());
 
 
 
@@ -561,6 +561,15 @@ const diffWeeks = Math.floor(diffDays / 7); // full weeks only
             </div>
           )}
         </div>
+      </div>
+
+
+
+      <div className='flex gap-7'>
+
+        <button>prev</button>
+{"num"}
+        <button>next</button>
       </div>
     </div>
   );
