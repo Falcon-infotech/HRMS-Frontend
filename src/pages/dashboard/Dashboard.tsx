@@ -565,12 +565,6 @@ const Dashboard: React.FC = () => {
 
 
 
-      <div className='flex gap-7'>
-
-        <button>prev</button>
-{"num"}
-        <button>next</button>
-      </div>
     </div>
   );
 }
