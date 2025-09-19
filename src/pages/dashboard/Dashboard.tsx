@@ -117,7 +117,9 @@ const Dashboard: React.FC = () => {
           acc[count] = (acc[count] || 0) + 1
           return acc;
         }, {})
-        console.log(pieChartData)    
+
+        console.log(pieChartData)
+
 
         const present = pieChartData['Present'] || 0
         const halfday = pieChartData['Half Day'] || 0
