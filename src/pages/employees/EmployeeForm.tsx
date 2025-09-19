@@ -59,7 +59,7 @@ const EmployeeForm: React.FC = () => {
   });
   const { user } = useSelector((state: RootState) => state.auth)
 
-  // console.log(user)
+  // // console.log(user)
 
   const [documents, setDocuments] = useState<{ name: string; type: string }[]>([]);
   const [activeTab, setActiveTab] = useState('basic');
@@ -68,7 +68,7 @@ const EmployeeForm: React.FC = () => {
   const [branches, setBranches] = useState([])
 
   useEffect(() => {
-    // console.log(isEditMode);
+    // // console.log(isEditMode);
     if (isEditMode) {
       const fetchEmployeeData = async () => {
         try {
@@ -81,14 +81,14 @@ const EmployeeForm: React.FC = () => {
           });
 
           const existingEmployee = response.data;
-          // console.log(existingEmployee.data)
+          // // console.log(existingEmployee.data)
 
           // const existingEmployee = employeesData.find(emp => emp.id === id);
-          // console.log(existingEmployee)
+          // // console.log(existingEmployee)
 
           if (existingEmployee.data) {
             const emp = existingEmployee.data;
-            console.log(emp)
+            // console.log(emp)
 
             setEmployee({
               first_name: emp.first_name || '',
@@ -249,7 +249,7 @@ const EmployeeForm: React.FC = () => {
 
       try {
         const token = localStorage.getItem("tokenId")
-        console.log("running")
+        // // console.log("running")
         if (isEditMode && id) {
           const response = await axios.put(`${BASE_URL}/api/employee/${id}`, payload,);
           toast.success("Employee updated successfully")
@@ -309,7 +309,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee/department`,);
       setDepartment(response.data.data);
-      // console.log(response.data.data)
+      // // console.log(response.data.data)
     } catch (error) {
       console.error("Error fetching departments:", error);
     }
@@ -320,7 +320,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee/designation`,);
       setDesignations(response.data.data);
-      // console.log(response.data.data)
+      // // console.log(response.data.data)
 
     } catch (error) {
       console.error("Error fetching designations:", error);
@@ -359,7 +359,7 @@ const EmployeeForm: React.FC = () => {
       });
 
       const data = response.data;
-      console.log(data);
+      // console.log(data);
       toast.success("Image uploaded successfully!");
 
     } catch (error) {
@@ -372,7 +372,7 @@ const EmployeeForm: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/branch`)
       setBranches(response?.data?.branches || [])
-      // console.log(response.data?.branches)
+      // // console.log(response.data?.branches)
     } catch (error) {
       console.error('Error fetching branches:', error)
     } finally {

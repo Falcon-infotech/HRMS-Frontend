@@ -5,6 +5,7 @@ import { Mail, Lock, ArrowRight, AlertCircle, EyeOff, Eye } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { loginUser } from '../../store/authSlice';
+import toast from 'react-hot-toast';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -42,6 +43,9 @@ const Login: React.FC = () => {
       }
     } catch (err) {
       setError('Invalid email or password. Please try again.');
+      if(error){
+        toast.error(error)
+      }
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +120,7 @@ const Login: React.FC = () => {
         <div className="form-group">
           <button
             type="submit"
-            className={`btn btn-primary w-full flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''
+            className={`border py-1.5 rounded-md bg-primary-500 text-white w-full flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''
               }`}
             disabled={loading}
           >

@@ -228,18 +228,18 @@ const DashboardLayout: React.FC = () => {
         className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 ${darkMode ? "bg-black" : "bg-white"} shadow-lg transform transition-transform duration-300 ease-in-out lg:shadow-none lg:transform-none lg:relative lg:flex lg:flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
       >
-        <div className="flex items-center justify-between h-16 px- border-b border-neutral-200">
+        <div className="flex items-center justify-between h-20 px- border-b border-neutral-200">
           <div className="flex items-center">
             <div className="flex-shrink-0 px- ">
               <h1 className="text-xl font-bold text-primary-600 flex items-center">
                 <img
                   src="/Falcon_MSL.png"
                   alt="Falcon HRMS Logo"
-                  className="w-24 rounded-full"
+                  className="w-48 rounded-full ml-5"
                 />
-                <h1 className={`ml-2 text-xl font-bold ${darkMode ? "text-white":"text-[#1C50A3]"}`}>
+                {/* <h1 className={`ml-2 text-xl font-bold ${darkMode ? "text-white":"text-[#1C50A3]"}`}>
                   FALCON-HRMS
-                </h1>
+                </h1> */}
               </h1>
             </div>
           </div>
@@ -360,7 +360,7 @@ const DashboardLayout: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center flex-1 px-4 lg:max-w-lg">
-              <div className="w-full relative">
+              {/* <div className="w-full relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
@@ -369,7 +369,7 @@ const DashboardLayout: React.FC = () => {
                   placeholder="Search..."
                   type="search"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center space-x-3">
