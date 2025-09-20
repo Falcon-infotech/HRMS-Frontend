@@ -46,6 +46,8 @@ const EmployeeList: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [updateloading, setUpdateLoading] = useState(false)
+  const [desinations, setDesignations] = useState([]);
+  const [department, setDepartment] = useState([]);
 
   // console.log(user.role)
   const [loading, setLoading] = useState(true);
@@ -68,7 +70,27 @@ const EmployeeList: React.FC = () => {
       setLoading(false);
     }
   };
+  const loaddesignations = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/employee/designation`,);
+      setDesignations(response.data.data);
+      // console.log(response.data.data)
 
+    } catch (error) {
+      console.error("Error fetching designations:", error);
+    }
+  }
+
+
+    const loaddepartments = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/employee/department`,);
+      setDepartment(response.data.data);
+      // console.log(response.data.data)
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  }
   //update password
 
 
@@ -120,6 +142,8 @@ const EmployeeList: React.FC = () => {
 
   useEffect(() => {
     call();
+    loaddesignations();
+    loaddepartments();
   }, []);
 
   const toggleDropdown = (id: string) => {
@@ -305,8 +329,8 @@ const EmployeeList: React.FC = () => {
                 onChange={(e) => setSelectedDepartment(e.target.value)}
               >
                 <option value="">All Departments</option>
-                {departments.map(dept => (
-                  <option key={dept} value={dept}>{dept}</option>
+                {department.map(dept => (
+                  <option key={dept?._id} value={dept?.name}>{dept?.name}</option>
                 ))}
               </select>
             </div>
@@ -319,8 +343,8 @@ const EmployeeList: React.FC = () => {
                 onChange={(e) => setSelectedDesignation(e.target.value)}
               >
                 <option value="">All Designations</option>
-                {designations.map(desig => (
-                  <option key={desig} value={desig}>{desig}</option>
+                {desinations.map(desig => (
+                  <option key={desig?._id} value={desig.name}>{desig.name}</option>
                 ))}
               </select>
             </div>
