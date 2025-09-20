@@ -409,7 +409,7 @@ const EmployeeList: React.FC = () => {
                 </th>
                 <th className="cursor-pointer" onClick={() => handleSort('joiningDate')}>
                   <div className="flex items-center text-sm">
-                    Joining Date
+                   Role
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
@@ -468,7 +468,7 @@ const EmployeeList: React.FC = () => {
                       <span className="text-sm">{employee?.branch?.branchName || ""}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
+                      <span className="text-sm">{employee?.role}</span>
                     </td>
                     {/* <td>
                       <span className={`badge ${getStatusColor(employee.status)}`}>
