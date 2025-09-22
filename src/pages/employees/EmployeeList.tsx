@@ -36,12 +36,12 @@ const EmployeeList: React.FC = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const[employeesPerPage,setEmployeesPerPage]=useState(15)
+  const [employeesPerPage, setEmployeesPerPage] = useState(15)
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
   const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
   // console.log(currentEmployees)
-  const[totalEmployeecount,setTotalEmployeeCount]=useState(0)
+  const [totalEmployeecount, setTotalEmployeeCount] = useState(0)
 
   const totalPages = Math.ceil(totalEmployeecount / employeesPerPage);
   const [editpass, setEditPass] = useState(false);
@@ -154,12 +154,12 @@ const EmployeeList: React.FC = () => {
     setDropdownOpenId(prev => (prev === id ? null : id));
   };
 
-
+  
 
   const employeeByPage = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=${employeesPerPage}`)
-setEmployees(response.data.data?.users)
+      setEmployees(response.data.data?.users)
     } catch (error) {
       console.error(error)
     }
