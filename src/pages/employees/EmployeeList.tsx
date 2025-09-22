@@ -163,6 +163,8 @@ const EmployeeList: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=${employeesPerPage}`)
       setEmployees(response.data.data?.users)
+            setTotalEmployeeCount(response.data?.data?.totalRecords)
+
     } catch (error) {
       console.error(error)
     }finally{
