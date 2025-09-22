@@ -32,6 +32,8 @@ export default {
           800: 'var(--primary-800)',
           900: 'var(--primary-900)',
         },
+
+        
         accent: {
           500: 'var(--accent-500)',
           600: 'var(--accent-600)',

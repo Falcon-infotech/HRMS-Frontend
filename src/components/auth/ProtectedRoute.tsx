@@ -9,24 +9,27 @@ interface ProtectedRouteProps {
   requiredRole?: 'admin' | 'hr' | 'employee';
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRole
 }) => {
-  const { isAuthenticated, user } = useSelector((state:RootState)=>state.auth);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   // console.log(user?.role)
-  
- 
+  if (user?.role === "superAdmin") {
+    return <>{children}</>;
+
+  }
+
 
   if (!isAuthenticated) {
     // Redirect to login page if not authenticated
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
- if (requiredRole && !requiredRole.includes(user?.role)) {
-  return <Navigate to="/home" replace />;
-}
+  if (requiredRole && !requiredRole.includes(user?.role)) {
+    return <Navigate to="/home" replace />;
+  }
   // if (requiredRole && user?.role !== requiredRole) {
   //   // If role doesn't match, redirect to dashboard
   //   return <Navigate to="/home" replace />;

@@ -13,6 +13,7 @@ import Loading from '../../components/Loading';
 import { MdLockReset } from "react-icons/md";
 import toast from 'react-hot-toast';
 import { FaFileInvoiceDollar } from "react-icons/fa6";
+import { useSearchParams } from "react-router-dom";
 
 
 const EmployeeList: React.FC = () => {
@@ -33,7 +34,8 @@ const EmployeeList: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   // const [resetpasswordModal, setResetpasswordModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
   const employeesPerPage = 10;
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
@@ -46,13 +48,14 @@ const EmployeeList: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [updateloading, setUpdateLoading] = useState(false)
+  const [desinations, setDesignations] = useState([]);
+  const [department, setDepartment] = useState([]);
 
   // console.log(user.role)
   const [loading, setLoading] = useState(true);
   const call = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('tokenId');
 
       const response = await axios.get(`${BASE_URL}/api/employee`,
       );
@@ -68,7 +71,27 @@ const EmployeeList: React.FC = () => {
       setLoading(false);
     }
   };
+  const loaddesignations = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/employee/designation`,);
+      setDesignations(response.data.data);
+      // console.log(response.data.data)
 
+    } catch (error) {
+      console.error("Error fetching designations:", error);
+    }
+  }
+
+
+  const loaddepartments = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/employee/department`,);
+      setDepartment(response.data.data);
+      // console.log(response.data.data)
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  }
   //update password
 
 
@@ -120,11 +143,28 @@ const EmployeeList: React.FC = () => {
 
   useEffect(() => {
     call();
+    loaddesignations();
+    loaddepartments();
   }, []);
 
   const toggleDropdown = (id: string) => {
     setDropdownOpenId(prev => (prev === id ? null : id));
   };
+
+
+
+  const employeeByPage = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=10`)
+      console.log(response.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    employeeByPage()
+  }, [currentPage])
 
 
 
@@ -174,7 +214,7 @@ const EmployeeList: React.FC = () => {
 
     setEmployees(filteredEmployees);
 
-    setCurrentPage(1)
+    // setCurrentPage(1)
 
   }, [searchTerm, selectedDepartment, selectedDesignation, selectedStatus, sortBy, allEmployees]);
 
@@ -305,8 +345,8 @@ const EmployeeList: React.FC = () => {
                 onChange={(e) => setSelectedDepartment(e.target.value)}
               >
                 <option value="">All Departments</option>
-                {departments.map(dept => (
-                  <option key={dept} value={dept}>{dept}</option>
+                {department.map(dept => (
+                  <option key={dept?._id} value={dept?.name}>{dept?.name}</option>
                 ))}
               </select>
             </div>
@@ -319,8 +359,8 @@ const EmployeeList: React.FC = () => {
                 onChange={(e) => setSelectedDesignation(e.target.value)}
               >
                 <option value="">All Designations</option>
-                {designations.map(desig => (
-                  <option key={desig} value={desig}>{desig}</option>
+                {desinations.map(desig => (
+                  <option key={desig?._id} value={desig.name}>{desig.name}</option>
                 ))}
               </select>
             </div>
@@ -385,7 +425,7 @@ const EmployeeList: React.FC = () => {
                 </th>
                 <th className="cursor-pointer" onClick={() => handleSort('joiningDate')}>
                   <div className="flex items-center text-sm">
-                    Joining Date
+                    Role
                     <ArrowUpDown size={16} className="ml-1 text-neutral-400" />
                   </div>
                 </th>
@@ -444,7 +484,7 @@ const EmployeeList: React.FC = () => {
                       <span className="text-sm">{employee?.branch?.branchName || ""}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>
+                      <span className="text-sm">{employee?.role}</span>
                     </td>
                     {/* <td>
                       <span className={`badge ${getStatusColor(employee.status)}`}>
@@ -635,7 +675,7 @@ const EmployeeList: React.FC = () => {
           <div className="flex space-x-2">
             <button
               className="px-3 py-1 border border-neutral-300 rounded-md text-primary-700 text-sm hover:bg-neutral-50"
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => setSearchParams({ page: (currentPage - 1).toString() })}
               disabled={currentPage === 1}
             >
               Previous
@@ -644,7 +684,8 @@ const EmployeeList: React.FC = () => {
             {[...Array(totalPages)].map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentPage(index + 1)}
+                onClick={() => setSearchParams({ page: (index + 1).toString() })}
+                // className={currentPage === index + 1 ? "active" : ""}
                 className={`px-3 py-1 border rounded-md text-sm ${currentPage === index + 1
                   ? "bg-primary-500 border-primary-300 text-white font-medium"
                   : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
@@ -656,7 +697,7 @@ const EmployeeList: React.FC = () => {
 
             <button
               className="px-3 py-1 border border-neutral-300 rounded-md text-primary-700 text-sm hover:bg-neutral-50"
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() => setSearchParams({ page: (currentPage + 1).toString() })}
               disabled={currentPage === totalPages}
             >
               Next

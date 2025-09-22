@@ -52,6 +52,7 @@ const Holiday = () => {
     const fetchBranches = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/api/branch`);
+            // console.log(response.data)
             setBranches(response.data.branches || []);
         } catch (error) {
             console.error("Error fetching branches", error);
@@ -60,7 +61,7 @@ const Holiday = () => {
 
     useEffect(() => {
         fetchHolidays();
-        if (user?.role === "Admin") {
+        if (user?.role === "admin") {
             fetchBranches();
         }
     }, []);
@@ -317,6 +318,7 @@ const Holiday = () => {
                                         <option value="optional">Optional Holidays</option>
                                     </select>
                                 </div>
+                            
 
                                 {(Users?.role === 'admin' || Users?.role === 'hr') && (
                                     <div>
@@ -329,7 +331,7 @@ const Holiday = () => {
                                             <option value="all">All Branches</option>
                                             {branches.map((branch) => (
                                                 <option key={branch._id} value={branch._id}>
-                                                    {branch.branchName}
+                                                    {branch?.branchName}
                                                 </option>
                                             ))}
                                         </select>
