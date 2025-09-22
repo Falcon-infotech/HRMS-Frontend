@@ -36,7 +36,7 @@ const EmployeeList: React.FC = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const employeesPerPage = 10;
+  const[employeesPerPage,setEmployeesPerPage]=useState(15)
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
   const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
@@ -64,6 +64,7 @@ const EmployeeList: React.FC = () => {
       // console.log(datas.data.users)
       setEmployees(datas.data.users)
       setAllEmployees(datas.data.users);
+      setEmployeesPerPage(response.data?.data.count)
 
     } catch (error) {
       console.log(error);
@@ -155,7 +156,7 @@ const EmployeeList: React.FC = () => {
 
   const employeeByPage = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=10`)
+      const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=${employeesPerPage}`)
       console.log(response.data)
     } catch (error) {
       console.error(error)
