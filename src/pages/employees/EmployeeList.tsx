@@ -41,8 +41,9 @@ const EmployeeList: React.FC = () => {
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
   const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
   // console.log(currentEmployees)
+  const[totalEmployeecount,setTotalEmployeeCount]=useState(0)
 
-  const totalPages = Math.ceil(employees.length / employeesPerPage);
+  const totalPages = Math.ceil(totalEmployeecount / employeesPerPage);
   const [editpass, setEditPass] = useState(false);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -65,6 +66,7 @@ const EmployeeList: React.FC = () => {
       setEmployees(datas.data.users)
       setAllEmployees(datas.data.users);
       setEmployeesPerPage(response.data?.data.count)
+      setTotalEmployeeCount(response.data?.data?.totalRecords)
 
     } catch (error) {
       console.log(error);
@@ -157,7 +159,7 @@ const EmployeeList: React.FC = () => {
   const employeeByPage = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=${employeesPerPage}`)
-      console.log(response.data)
+setEmployees(response.data.data?.users)
     } catch (error) {
       console.error(error)
     }
@@ -449,7 +451,7 @@ const EmployeeList: React.FC = () => {
                   </td>
                 </tr>
               ) : <tbody >
-                {currentEmployees.map(employee => (
+                {employees.map(employee => (
                   <tr key={employee._id} className="hover:bg-neutral-50">
                     <td>
                       <span className="text-sm font-medium">{employee?.userId}</span>
