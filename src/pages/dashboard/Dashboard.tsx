@@ -56,7 +56,7 @@ const Dashboard: React.FC = () => {
         setLoading(true)
         const response = await axios.get(`${BASE_URL}/api/employee`, {})
         const data = response.data
-        setCount(data.data.count)
+        setCount(data.data.totalRecords)
         const departmentCount = data?.data?.users?.reduce((acc: any, ele: any) => {
           const dept = ele.department;
           acc[dept] = (acc[dept] || 0) + 1;
