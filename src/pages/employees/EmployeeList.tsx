@@ -219,7 +219,7 @@ const EmployeeList: React.FC = () => {
     // Department filter
     if (selectedDepartment) {
       filteredEmployees = filteredEmployees?.filter(employee =>
-        employee.department === selectedDepartment
+         employee.department === selectedDepartment
       );
     }
 

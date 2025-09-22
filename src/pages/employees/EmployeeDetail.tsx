@@ -912,9 +912,9 @@ const EmployeeDetail: React.FC = () => {
             Authorization: `Bearer ${localStorage.getItem('tokenId')}`,
           }
         });
-        console.log(response.data
+        // console.log(response.data
           
-        )
+        // )
         if (response.status === 200) {
           setLeaveBalance(response.data.leaveBalance);
         }
@@ -931,11 +931,11 @@ const EmployeeDetail: React.FC = () => {
     const fetchEmployees = async () => {
       try {
         const token = localStorage.getItem('tokenId');
-        const response = await axios.get(`${BASE_URL}/api/employee`);
+        const response = await axios.get(`${BASE_URL}/api/employee/${id}`);
 
-        console.log('API response:', response.data);
+        // console.log('API response:', response.data);
 
-        setEmployees(response.data.data.users);
+        setEmployees(response.data.data);
       } catch (error) {
         console.log('Error fetching employees:', error);
       } finally {
@@ -945,8 +945,8 @@ const EmployeeDetail: React.FC = () => {
 
     fetchEmployees();
   }, []);
-  const employee = employees.find(emp => String(emp._id) === String(id));
-console.log(employee)
+  // const employee = employees.find(emp => String(emp._id) === String(id));
+// console.log(employee)
   if (isLoading) {
     return (
       <Loading  text={"Loading employee data..."} />
@@ -955,7 +955,7 @@ console.log(employee)
 
   
 
-  if (!employee) {
+  if (!employees) {
     return (
       <div className="p-6 bg-white rounded-lg shadow-sm border border-neutral-200 text-center">
         <h2 className="text-xl font-semibold mb-2">Employee Not Found</h2>
@@ -1000,15 +1000,15 @@ console.log(employee)
               <div className="flex items-center mb-4 md:mb-0">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 overflow-hidden">
-                    {employee.uploads ? (
+                    {employees.uploads ? (
                       <img 
                         src={ 'https://contacts.zoho.in/file?ID=60028830319&fs=thumb'} 
-                        alt={`${employee?.first_name} ${employee?.last_name}`} 
+                        alt={`${employees?.first_name} ${employees?.last_name}`} 
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-blue-500 text-white text-2xl font-bold">
-                        {employee?.first_name ? employee.first_name[0] : ''}
+                        {employees?.first_name ? employees.first_name[0] : ''}
                       </div>
                     )}
                   </div>
@@ -1024,11 +1024,11 @@ console.log(employee)
                   </label> */}
                 </div>
                 <div className="ml-6">
-                  <h1 className="text-3xl font-bold">{employee?.first_name || employee?.name} {employee?.last_name}</h1>
-                  <p className="text-blue-100 text-lg">{employee?.designation}</p>
+                  <h1 className="text-3xl font-bold">{employees?.first_name || employees?.name} {employees?.last_name}</h1>
+                  <p className="text-blue-100 text-lg">{employees?.designation}</p>
                   <div className="flex items-center mt-2">
                     <Building className="w-4 h-4 mr-2" />
-                    <span>{employee?.department}</span>
+                    <span>{employees?.department}</span>
                   </div>
                 </div>
               </div>
@@ -1064,7 +1064,7 @@ console.log(employee)
                     <span className="text-sm font-medium text-gray-700">Experience</span>
                   </div>
                   <span className="text-sm font-bold text-gray-800">
-                    {Math.floor((new Date().getTime() - new Date(employee.joining_date).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
+                    {Math.floor((new Date().getTime() - new Date(employees.joining_date).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
                   </span>
                 </div>
 
@@ -1092,17 +1092,17 @@ console.log(employee)
               <div className="space-y-3">
                 <div className="flex items-center text-gray-600">
                   <Mail className="w-4 h-4 mr-3 text-gray-400" />
-                  <span className="text-sm">{employee?.email}</span>
+                  <span className="text-sm">{employees?.email}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Phone className="w-4 h-4 mr-3 text-gray-400" />
-                  <span className="text-sm">{employee?.phone || "9876543210"}</span>
+                  <span className="text-sm">{employees?.phone || "9876543210"}</span>
                 </div>
-                {employee?.address_line && (
+                {employees?.address_line && (
                   <div className="flex items-start text-gray-600">
                     <MapPin className="w-4 h-4 mr-3 text-gray-400 mt-1" />
                     <span className="text-sm">
-                      {employee?.address}, {employee?.city}, {employee?.state}
+                      {employees?.address}, {employees?.city}, {employees?.state}
                     </span>
                   </div>
                 )}
@@ -1110,8 +1110,8 @@ console.log(employee)
             </div>
 
             {/* Skills */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Skills & Expertise</h3>
+            {/* <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Skills & Expertise</h3> */}
               {/* <div className="flex flex-wrap gap-2">
                 {skills.map((skill, index) => (
                   <span
@@ -1122,7 +1122,7 @@ console.log(employee)
                   </span>
                 ))}
               </div> */}
-            </div>
+            {/* </div> */}
           </div>
 
           {/* Main Content */}
@@ -1156,19 +1156,19 @@ console.log(employee)
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Full Name</label>
-                        <p className="text-gray-800">{employee?.first_name || employee?.name} {employee?.last_name}</p>
+                        <p className="text-gray-800">{employees?.first_name || employees?.name} {employees?.last_name}</p>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Employee ID</label>
-                        <p className="text-gray-800">{employee?.userId}</p>
+                        <p className="text-gray-800">{employees?.userId}</p>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Email</label>
-                        <p className="text-gray-800">{employee?.email}</p>
+                        <p className="text-gray-800">{employees?.email}</p>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Phone</label>
-                        <p className="text-gray-800">{employee?.phone || "9876543210"}</p>
+                        <p className="text-gray-800">{employees?.phone || "9876543210"}</p>
                       </div>
                       <div className="space-y-2 md:col-span-2">
                         <div className="flex items-center justify-between">
@@ -1182,7 +1182,7 @@ console.log(employee)
                           </button> */}
                         </div>
                         <p className="text-gray-800">
-                          {employee?.address?.address_line}, {employee?.address?.city}, {employee?.address?.state} {employee?.address?.pincode}, {employee?.address?.country}
+                          {employees?.address?.address_line}, {employees?.address?.city}, {employees?.address?.state} {employees?.address?.pincode}, {employees?.address?.country}
                         </p>
                       </div>
                     </div>
@@ -1195,7 +1195,7 @@ console.log(employee)
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Department</label>
                         <div className="flex items-center justify-between">
-                          <p className="text-gray-800">{employee?.department}</p>
+                          <p className="text-gray-800">{employees?.department}</p>
                           {/* <button
                             onClick={() => setIsDepartmentModalOpen(true)}
                             className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
@@ -1207,27 +1207,27 @@ console.log(employee)
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Designation</label>
-                        <p className="text-gray-800">{employee?.designation}</p>
+                        <p className="text-gray-800">{employees?.designation}</p>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Employment Type</label>
-                        <p className="text-gray-800">{employee?.role}</p>
+                        <p className="text-gray-800">{employees?.role}</p>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Joining Date</label>
-                        <p className="text-gray-800">{new Date(employee?.joining_date).toLocaleDateString()}</p>
+                        <p className="text-gray-800">{new Date(employees?.joining_date).toLocaleDateString()}</p>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500">Status</label>
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          employee.status === 'active' 
+                          employees.status === 'active' 
                             ? 'bg-green-100 text-green-800'
                             : employee.status === 'on-leave'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
                         }`}>
-                          {employee.status === 'active' ? 'Active' :
-                           employee.status === 'on-leave' ? 'On Leave' : 'Inactive'}
+                          {employees.status === 'active' ? 'Active' :
+                           employees.status === 'on-leave' ? 'On Leave' : 'Inactive'}
                         </span>
                       </div>
                     </div>
