@@ -54,26 +54,26 @@ const EmployeeList: React.FC = () => {
 
   // console.log(user.role)
   const [loading, setLoading] = useState(true);
-  const call = async () => {
-    try {
-      setLoading(true);
+  // const call = async () => {
+  //   try {
+  //     setLoading(true);
 
-      const response = await axios.get(`${BASE_URL}/api/employee`,
-      );
+  //     const response = await axios.get(`${BASE_URL}/api/employee`,
+  //     );
 
-      const datas = response.data;
-      // console.log(datas.data.users)
-      setEmployees(datas.data.users)
-      setAllEmployees(datas.data.users);
-      setEmployeesPerPage(response.data?.data.count)
-      setTotalEmployeeCount(response.data?.data?.totalRecords)
+  //     const datas = response.data;
+  //     // console.log(datas.data.users)
+  //     setEmployees(datas.data.users)
+  //     setAllEmployees(datas.data.users);
+  //     setEmployeesPerPage(response.data?.data.count)
+  //     setTotalEmployeeCount(response.data?.data?.totalRecords)
 
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const loaddesignations = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee/designation`,);
@@ -145,7 +145,7 @@ const EmployeeList: React.FC = () => {
   };
 
   useEffect(() => {
-    call();
+    // call();
     loaddesignations();
     loaddepartments();
   }, []);
@@ -154,14 +154,19 @@ const EmployeeList: React.FC = () => {
     setDropdownOpenId(prev => (prev === id ? null : id));
   };
 
-  
+
 
   const employeeByPage = async () => {
+
+
+    setLoading(true)
     try {
       const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=${employeesPerPage}`)
       setEmployees(response.data.data?.users)
     } catch (error) {
       console.error(error)
+    }finally{
+      setLoading(false)
     }
   }
 
