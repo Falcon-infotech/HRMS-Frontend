@@ -163,18 +163,43 @@ const EmployeeList: React.FC = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/employee?page=${currentPage}&limit=${employeesPerPage}`)
       setEmployees(response.data.data?.users)
-            setTotalEmployeeCount(response.data?.data?.totalRecords)
+      setTotalEmployeeCount(response.data?.data?.totalRecords)
+      setAllEmployees(response.data.data.users);
+
 
     } catch (error) {
       console.error(error)
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
 
+
+
+  const searchEmployees = async (term: string) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${BASE_URL}/api/employee/search?search=${searchTerm}`
+      );
+      setEmployees(response.data?.users || []);
+      setTotalEmployeeCount(response.data.data?.totalRecords || 0);
+      
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    employeeByPage()
-  }, [currentPage])
+    if (searchTerm.trim()) {
+      searchEmployees(searchTerm);
+    } else {
+      employeeByPage();
+    }
+  }, [currentPage, employeesPerPage, searchTerm]);
+
 
 
 
@@ -184,16 +209,16 @@ const EmployeeList: React.FC = () => {
     // Search filter
     if (searchTerm) {
       filteredEmployees = filteredEmployees.filter(employee =>
-        employee.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee._id.toLowerCase().includes(searchTerm.toLowerCase())
+        employee?.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee?.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee?._id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Department filter
     if (selectedDepartment) {
-      filteredEmployees = filteredEmployees.filter(employee =>
+      filteredEmployees = filteredEmployees?.filter(employee =>
         employee.department === selectedDepartment
       );
     }
