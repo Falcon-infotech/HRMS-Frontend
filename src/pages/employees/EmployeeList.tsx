@@ -573,6 +573,7 @@ const EmployeeList: React.FC = () => {
                                         onChange={(e) => handleRoleChange(employee._id, e.target.value)}
                                         className="w-full p-1 text-sm border border-gray-300 rounded"
                                       >
+                                        <option value="admin">Admin</option>
                                         <option value="employee">Employee</option>
                                         <option value="hr">Hr</option>
                                       </select>

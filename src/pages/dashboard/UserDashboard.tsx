@@ -10,7 +10,7 @@ import ActivitiesTab from '../../components/ActivitiesTab';
 
 
 const UserDashboard = () => {
-  const [checkInTime, setCheckInTime] = useState(null);
+  const [checkInTime, setCheckInTime] = useState<null|string>(null);
   const [checkOutTime, setCheckOutTime] = useState<string | null>(null);
 
   const [elapsed, setElapsed] = useState('00:00:00');
@@ -139,7 +139,7 @@ const UserDashboard = () => {
 
   const handleCheckIn = async () => {
 
-    try {
+    try { 
       setCheckinLoading(true)
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
@@ -166,7 +166,7 @@ const UserDashboard = () => {
     } catch (error: any) {
       console.error("❌ Check-in Error:", error);
 
-      if (axios.isAxiosError(error)) {
+      if (axios?.isAxiosError(error)) {
         const errorMessage = error.response?.data?.message || "Something went wrong.";
         console.log("🔴 API 400 Error Response:", error.response?.data);
 
