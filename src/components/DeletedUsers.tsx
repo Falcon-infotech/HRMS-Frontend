@@ -257,7 +257,7 @@ const DeletedUsers = () => {
                       <span className="text-sm">{employee.designation}</span>
                     </td>
                     <td>
-                      <span className="text-sm">{employee?.branch || ""}</span>
+                      <span className="text-sm">{employee?.branch?.branchName || ""}</span>
                     </td>
                     <td>
                       <span className="text-sm">{new Date(employee?.joining_date).toLocaleDateString()}</span>

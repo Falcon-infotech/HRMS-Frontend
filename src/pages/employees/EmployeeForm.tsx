@@ -1012,7 +1012,7 @@ const EmployeeForm: React.FC = () => {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <h3 className="text-lg font-medium text-neutral-800 mb-4">Profile Image</h3>
                   <div className="flex items-center space-x-6">
                     <div className="flex-shrink-0 h-24 w-24 bg-neutral-100 rounded-full overflow-hidden border border-neutral-200">
@@ -1034,8 +1034,8 @@ const EmployeeForm: React.FC = () => {
                               type="file"
                               className="hidden"
                               accept="image/*"
-                            // value={images}
-                            // onChange={handleImage}
+                            value={images}
+                            onChange={handleImage}
                             />
                           </label>
                           <p className="mt-1 text-xs text-neutral-500">PNG, JPG or GIF up to 2MB</p>
@@ -1048,18 +1048,18 @@ const EmployeeForm: React.FC = () => {
                             Remove
                           </button>
                         )}
-                        {/* {
+                        {
 
                           <>
                             <div>
                               <button onClick={(e)=>handleuploadImage(e)}>Submit</button>
                             </div>
                           </>
-                        } */}
+                        }
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
 
