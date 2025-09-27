@@ -145,7 +145,7 @@ const DashboardLayout: React.FC = () => {
     { name: 'Reports', href: '/reports', icon: BarChart2 },
     { name: 'Daily Reports', href: '/dailyreports', icon: BarChart },
     { name: "Employees Daily Report", href: '/allEmloyeesTask', icon: MdOutlineImportExport },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    // { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   const [openDropdowns, setOpenDropdowns] = useState<{ [key: string]: boolean }>({});

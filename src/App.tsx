@@ -191,7 +191,7 @@ function App() {
               />
 
               {/* Settings */}
-              <Route path="/settings" element={<Settings />} />
+              {/* <Route path="/settings" element={<Settings />} /> */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/holidays" element={<Holiday />} />
               <Route path="/attendancestatus" element={<AttendanceStatus />} />

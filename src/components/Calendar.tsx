@@ -5,13 +5,13 @@ import { RootState } from '../store/store';
 import { useSelector } from 'react-redux';
 import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaCheckCircle } from 'react-icons/fa';
 
-const Calendar = ({ attendanceData }) => {
+const Calendar = ({ attendanceData }:any) => {
 
   // console.log(attendanceData)
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
   const { user } = useSelector((state: RootState) => state.auth);
-  const joiningDate = user?.joining_date ? new Date(user.joining_date) : null;
+  const joiningDate = user?.joining_date ? new Date(user?.joining_date) : null;
 
 
   // drawer component
