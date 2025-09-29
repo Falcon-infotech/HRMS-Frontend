@@ -139,7 +139,7 @@ const Attendance: React.FC = () => {
   useEffect(() => {
     const fetchAllUsers = async (): Promise<any> => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/employee`,);
+        const response = await axios.get(`${BASE_URL}/api/employee/list`,);
         const data = response.data
         setAllUsers(data.data.users)
         // console.log(data.data.users)
