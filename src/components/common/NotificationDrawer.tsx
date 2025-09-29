@@ -193,7 +193,7 @@ const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, onClose }
                           {notification.title}
                         </h3>
                         <span className="text-xs text-neutral-500 ml-2">
-                          {formatTime(notification.updatedAt)}
+                          {formatTime(notification.createdAt)}
                         </span>
                       </div>
                       <p className="mt-1 text-sm text-neutral-600">{notification.message}</p>
