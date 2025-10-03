@@ -61,7 +61,7 @@ const Holiday = () => {
 
     useEffect(() => {
         fetchHolidays();
-        if (user?.role === "admin") {
+        if (user?.role != "employee") {
             fetchBranches();
         }
     }, []);
