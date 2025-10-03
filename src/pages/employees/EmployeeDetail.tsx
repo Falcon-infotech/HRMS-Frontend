@@ -1076,13 +1076,13 @@ const EmployeeDetail: React.FC = () => {
                   <span className="text-sm font-bold text-gray-800">{leaveBalance} days</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
+                {/* <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
                   <div className="flex items-center">
                     <Award className="w-5 h-5 text-purple-600 mr-3" />
                     <span className="text-sm font-medium text-gray-700">Performance</span>
                   </div>
                   <span className="text-sm font-bold text-gray-800">4.5/5</span>
-                </div>
+                </div> */}
               </div>
             </div>
 

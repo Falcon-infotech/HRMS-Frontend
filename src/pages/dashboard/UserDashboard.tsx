@@ -122,8 +122,7 @@ const UserDashboard = () => {
       records.forEach((record: any) => {
         mapped[record.date] = record.status;
       });
-      const todayRes = await axios.get(`${BASE_URL}/api/attendance/single_user_today_attendance`);
-      const todayData = todayRes.data?.attendance;
+            const todayData = todayRes.data?.attendance;
       if (todayData?.status) {
         const todayStr = new Date().toISOString().split('T')[0];
         mapped[todayStr] = todayData.status;

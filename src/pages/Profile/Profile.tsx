@@ -387,13 +387,13 @@ const EmployeeDetail: React.FC = () => {
                   <span className="text-sm font-bold text-gray-800">{leaveBalance} days</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
+                {/* <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
                   <div className="flex items-center">
                     <Award className="w-5 h-5 text-purple-600 mr-3" />
                     <span className="text-sm font-medium text-gray-700">Performance</span>
                   </div>
                   <span className="text-sm font-bold text-gray-800">4.5/5</span>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -441,7 +441,7 @@ const EmployeeDetail: React.FC = () => {
             {/* Tabs Navigation */}
             <div className="bg-white rounded-2xl shadow-sm p-4 border border-gray-100">
               <nav className="flex space-x-6 overflow-x-auto">
-                {['overview', 'performance', 'documents', 'activity'].map((tab) => (
+                {['overview'].map((tab) => (
                   <button
                     key={tab}
                     className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${activeTab === tab
