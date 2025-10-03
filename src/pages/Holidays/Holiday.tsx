@@ -320,7 +320,7 @@ const Holiday = () => {
                                 </div>
                             
 
-                                {(Users?.role === 'admin' || Users?.role === 'hr') && (
+                                {(Users?.role === 'admin' || Users?.role === 'hr' || Users?.role === 'superAdmin') && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Branch</label>
                                         <select
