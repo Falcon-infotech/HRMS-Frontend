@@ -174,7 +174,7 @@ function App() {
               <Route
                 path="/allEmloyeesTask"
                 element={
-                  <ProtectedRoute requiredRole={['admin']}>
+                  <ProtectedRoute requiredRole={['admin',"superAdmin"]}>
                     <EmployeesDailyReport />
 
                   </ProtectedRoute>
@@ -183,7 +183,7 @@ function App() {
               <Route
                 path="/allEmloyeesTask/:id"
                 element={
-                  <ProtectedRoute requiredRole={['admin']}>
+                  <ProtectedRoute requiredRole={['admin',"superAdmin"]}>
                     <SingleReport />
 
                   </ProtectedRoute>
@@ -199,7 +199,7 @@ function App() {
 
             </Route>
 
-            <Route element={<ProtectedRoute requiredRole={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>
+            <Route element={<ProtectedRoute requiredRole={['admin', 'hr',"superAdmin"]}><DashboardLayout /></ProtectedRoute>}>
               <Route path="/employees" element={<EmployeeList />} />
               <Route path="/employees/:id" element={<EmployeeDetail />} />
               <Route path="/employees/new" element={<EmployeeForm />} />
@@ -207,7 +207,7 @@ function App() {
               <Route
                 path="/branch"
                 element={
-                  <ProtectedRoute requiredRole={['admin']}>
+                  <ProtectedRoute requiredRole={['admin',"superAdmin"]}>
                     <Branch />
                   </ProtectedRoute>
                 }
@@ -215,7 +215,7 @@ function App() {
               <Route
                 path="/deleted"
                 element={
-                  <ProtectedRoute requiredRole={['admin']}>
+                  <ProtectedRoute requiredRole={['admin',"superAdmin"]}>
                     <DeletedUsers />
                   </ProtectedRoute>
                 }
@@ -223,7 +223,7 @@ function App() {
 
             </Route>
 
-            <Route element={<ProtectedRoute requiredRole={['admin', 'hr']}><DashboardLayout /></ProtectedRoute>}>
+            <Route element={<ProtectedRoute requiredRole={['admin', 'hr',"superAdmin"]}><DashboardLayout /></ProtectedRoute>}>
               <Route path="/attendance" element={<Attendance />} />
               <Route path="/attendance/log" element={<AttendanceLog />} />
               <Route path="/dashboard" element={<Dashboard />} />

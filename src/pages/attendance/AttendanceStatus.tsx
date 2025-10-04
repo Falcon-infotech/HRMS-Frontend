@@ -216,8 +216,8 @@ const AttendanceStatus = () => {
                                     <div
                                         key={index}
                                         className={`sm:p-3 p-1 rounded-lg cursor-pointer 
-              ${isSameDay(day, new Date()) ? 'border border-blue-500' : ''}
-              bg-blue-100 text-blue-800 hover:bg-blue-200`}
+                                    ${isSameDay(day, new Date()) ? 'border border-blue-500' : ''}
+                                    bg-blue-100 text-blue-800 hover:bg-blue-200`}
                                     >
                                         <div className="font-semibold">{format(day, 'EEE')}</div>
                                         <div>{format(day, 'dd')}</div>

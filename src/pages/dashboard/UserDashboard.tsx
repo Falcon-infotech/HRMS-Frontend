@@ -10,7 +10,7 @@ import ActivitiesTab from '../../components/ActivitiesTab';
 
 
 const UserDashboard = () => {
-  const [checkInTime, setCheckInTime] = useState<null|string>(null);
+  const [checkInTime, setCheckInTime] = useState<null | string>(null);
   const [checkOutTime, setCheckOutTime] = useState<string | null>(null);
 
   const [elapsed, setElapsed] = useState('00:00:00');
@@ -122,7 +122,7 @@ const UserDashboard = () => {
       records.forEach((record: any) => {
         mapped[record.date] = record.status;
       });
-            const todayData = todayRes.data?.attendance;
+      const todayData = records.data?.attendance;
       if (todayData?.status) {
         const todayStr = new Date().toISOString().split('T')[0];
         mapped[todayStr] = todayData.status;
@@ -138,7 +138,7 @@ const UserDashboard = () => {
 
   const handleCheckIn = async () => {
 
-    try { 
+    try {
       setCheckinLoading(true)
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
