@@ -33,7 +33,7 @@ const UserDashboard = () => {
 
   const fetchHolidays = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/holidays/all_holidays`,
+      const response = await axios.get(`${BASE_URL}/api/holidays/holidays_by_user`,
       );
 
 
