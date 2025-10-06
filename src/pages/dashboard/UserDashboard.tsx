@@ -39,7 +39,7 @@ const UserDashboard = () => {
 
       const data = await response.data;
       // console.log(data.data)
-      setHolidays(data.data || [])
+      setHolidays(data.holidays || [])
     } catch (error) {
       console.error('Error fetching holidays', error);
     }
