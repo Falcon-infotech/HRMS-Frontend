@@ -4,7 +4,7 @@
 
 
 // for development
-// export const BASE_URL = 'http://koc4k40848g84k4cg8ook4oc.43.204.178.166.sslip.io';
+export const BASE_URL = 'http://koc4k40848g84k4cg8ook4oc.43.204.178.166.sslip.io';
 
 
 
@@ -16,7 +16,7 @@
 
 //aws
 
-export const BASE_URL = 'https://hrms-backend.falconinfotech.co';
+// export const BASE_URL = 'https://hrms-backend.falconinfotech.co';
 
 
 
