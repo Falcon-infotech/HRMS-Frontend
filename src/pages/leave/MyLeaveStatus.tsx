@@ -86,8 +86,8 @@ const MyLeaveStatus = () => {
                                             {leave?.status === "approved" &&
                                                 new Date(leave?.fromDate).getTime() > Date.now() && (
                                                     <button
-                                                        className="flex items-center gap-2 px-4 py-1 rounded-xl 
-                                                                    bg-red-600 text-white font-medium 
+                                                        className="flex items-center gap-2 px-2 py-1 rounded-xl 
+                                                                    bg-red-600 text-white font-medium text-xs 
                                                                     shadow-md hover:bg-red-700 
                                                                     transition-all duration-200 ease-in-out 
                                                                     focus:ring-2 focus:ring-red-400 focus:outline-none text-nowrap"

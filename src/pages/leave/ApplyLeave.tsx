@@ -6,6 +6,7 @@ import PageHeader from '../../components/common/PageHeader';
 import axios from '../../constants/axiosInstance';
 import { BASE_URL } from '../../constants/api';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 const ApplyLeave: React.FC = () => {
   const [leaveBalance, setLeaveBalance] = useState<number>(0);
@@ -18,7 +19,9 @@ const ApplyLeave: React.FC = () => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
-
+  
+const {user}=useSelector((state:any)=>state.auth)
+console.log(user)
   const fetchLeaveData = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/leaves/my_leaves`, );
@@ -32,7 +35,7 @@ const ApplyLeave: React.FC = () => {
         acc[leaveType] = (acc[leaveType] || 0) + 1;
         return acc;
       }, {});
-      // console.log(totalLeaveCount)
+      console.log(totalLeaveCount)
       setLeaveCount(totalLeaveCount);
 
       // Calculate leave balance
