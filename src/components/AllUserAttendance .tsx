@@ -6,6 +6,7 @@ import { BASE_URL } from "../constants/api";
 const USERS_PER_PAGE = 10;
 
 const AllUserAttendance = ({ attendanceData, isLoading }) => {
+  console.log(attendanceData)
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
@@ -143,14 +144,14 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
             {currentUsers.map((user) => (
               <tr
                 key={user.userId}
-                className={`cursor-pointer hover:bg-gray-100 border bprder-t ${selectedUserId === user.userId ? "bg-gray-100" : ""
+                className={`cursor-pointer hover:bg-gray-100 border bprder-t ${selectedUserId === user.user.userId ? "bg-gray-100" : ""
                   }`}
-                onClick={() => handleUserSelect(user.userId)}
+                onClick={() => handleUserSelect(user.user.userId)}
               >
-                <td className="px-4 py-3">{user.empId}</td>
-                <td className="px-4 py-3">{user.userName}</td>
-                <td className="px-4 py-3">{user.userEmail}</td>
-                <td className="px-4 py-3">{user.userPhone}</td>
+                <td className="px-4 py-3">{user.user.empId}</td>
+                <td className="px-4 py-3">{user.user.name}</td>
+                <td className="px-4 py-3">{user.user.email}</td>
+                <td className="px-4 py-3">{user.user.phone}</td>
                 <td className="px-4 py-3 text-sm text-gray-700">Click to view</td>
               </tr>
             ))}

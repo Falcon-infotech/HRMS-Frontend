@@ -76,14 +76,14 @@ export const leaveTypes = [
     color: '#ec4899', // pink
   },
   {
-    id: 'first half',
+    id: 'firstHalf',
     name: 'First Half',
     // description: 'Leave granted to mothers during and after pregnancy',
     maxDays: 90,
     color: '#8b5cf6', 
   },
   {
-    id: 'second half',
+    id: 'secondHalf',
     name: 'Second Half ',
     // description: 'Leave granted to mothers during and after pregnancy',
     maxDays: 90,
@@ -96,7 +96,7 @@ export const leaveTypes = [
   //   maxDays: 10,
   //   color: '#8b5cf6', // violet
   // },
-  // {
+  // {s
   //   id: 'unpaid',
   //   name: 'Unpaid Leave',
   //   description: 'Leave without pay',
