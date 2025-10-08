@@ -1,3 +1,4 @@
+import moment from "moment-timezone";
 
 // old one
 // export const BASE_URL = 'https://hrms-backend-fork-1.onrender.com';
@@ -25,6 +26,14 @@ export const API = {
     LOGIN: `${BASE_URL}/api/auth/login`,
     LOGOUT: `${BASE_URL}/api/auth/logout`,
     REGISTER: `${BASE_URL}/api/auth/register`,
+}
+
+
+
+export function timeZone(timeZone: string) {
+    const now = moment().tz(timeZone);
+    const abbreviation = now.format("z")
+    return abbreviation
 }
 
 

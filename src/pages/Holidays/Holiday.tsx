@@ -186,7 +186,7 @@ const Holiday = () => {
                             <p className="text-blue-100 mt-2">Manage and view all holidays in your organization</p>
                         </div>
                         <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                            {(Users?.role === 'admin' || Users?.role === 'hr') && (
+                            {(Users?.role !=="employee") && (
                                 <button
                                     onClick={() => {
                                         setSelectedHoliday(null);
