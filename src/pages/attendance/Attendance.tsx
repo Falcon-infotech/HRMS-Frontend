@@ -8,14 +8,15 @@ import { generateCalendarDays, attendanceData, getEmployeeAttendance } from '../
 import employeesData from '../../data/employeeData';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from '../../constants/axiosInstance';
-import { BASE_URL } from '../../constants/api';
+import { BASE_URL, timeZone } from '../../constants/api';
 import { FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaTimesCircle } from 'react-icons/fa';
 import { FaClock, FaRegCalendarMinus } from 'react-icons/fa6';
 import { all } from 'axios';
 import Loading from '../../components/Loading';
+import { useSelector } from 'react-redux';
 
 const Attendance: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useSelector((state)=>state.auth)
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEmployee, setSelectedEmployee] = useState(user?.role === 'employee' ? user.id : '');
@@ -575,8 +576,9 @@ const Attendance: React.FC = () => {
                                     {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                                   </span>
                                 </td>
-                                <td>{record.inTime ? extractHourAndMinute(record?.inTime) : '--'}</td>
-                                <td>{record.outTime ? extractHourAndMinute(record?.outTime) : '--'}</td>
+                                <td>{record.inTime ? (extractHourAndMinute(record?.inTime) + (" ") + timeZone(user?.timeZone))  : '--'} </td>
+                                <td>{record.outTime ? (extractHourAndMinute(record?.outTime) + (" ") + timeZone(user?.timeZone))  : '--'} </td>
+                                {/* <td>{record.outTime ? extractHourAndMinute(record?.outTime) : '--'}</td> */}
                                 {/* <td>{record.date ? record?.date : '--'}</td> */}
                                 <td>{record.duration ? `${record.duration} hrs` : '--'}</td>
                               </tr>
