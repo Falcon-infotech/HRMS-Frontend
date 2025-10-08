@@ -7,7 +7,7 @@ import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaCheckCircle } from 'react-ico
 
 const Calendar = ({ attendanceData }:any) => {
 
-  // console.log(attendanceData)
+  console.log(attendanceData)
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const today = new Date();
   const { user } = useSelector((state: RootState) => state.auth);

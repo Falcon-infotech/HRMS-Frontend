@@ -922,7 +922,7 @@ const Attendance: React.FC = () => {
                           </p>
                           <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
                           <p className="text-sm text-gray-700">
-                            {attendanceDataSingle?.location?.checkIn?.displayName || 'Location not available'}
+                            {attendanceDataSingle?.location?.checkIn?.address || 'Location not available'}
                           </p>
                         </div>
                       </div>
@@ -939,7 +939,7 @@ const Attendance: React.FC = () => {
                           </p>
                           <p className="text-balance text-gray-500 font-semibold mt-2">Location:</p>
                           <p className="text-sm text-gray-700">
-                            {attendanceDataSingle?.location?.checkOut?.displayName || 'Location not available'}
+                            {attendanceDataSingle?.location?.checkOut?.address || 'Location not available'}
                           </p>
                         </div>
                       </div>
