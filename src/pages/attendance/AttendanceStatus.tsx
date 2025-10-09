@@ -3,7 +3,7 @@ import { addDays, addWeeks, endOfWeek, format, isSameDay, startOfWeek, subWeeks 
 import { CalendarHeart } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker';
-import { BASE_URL } from '../../constants/api';
+import { BASE_URL, timeZone } from '../../constants/api';
 import Calendar from '../../components/Calendar';
 import { RootState } from '../../store/store';
 import { useSelector } from 'react-redux';
@@ -294,10 +294,20 @@ const AttendanceStatus = () => {
                                                     {format(day, 'dd')}
                                                 </div>
                                                 <div className="w-24 text-center">
-                                                    {record?.inTime ? formatter.format(new Date(record.inTime)) : '--'}
+                                                    {record.inTime
+                                                        ? `${new Date(record.inTime).toLocaleTimeString([], {
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                        })} ${timeZone(userDetails.timeZone)}`
+                                                        : "--"}
 
                                                 </div>
-                                                <div className="w-24 text-center">{record?.outTime ? formatter.format(new Date(record.outTime)) : '--'}</div>
+                                                {record.outTime
+                                                        ? `${new Date(record.outTime).toLocaleTimeString([], {
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                        })} ${timeZone(userDetails.timeZone)}`
+                                                        : "--"}
                                                 <div className="w-24 text-center">{record?.status ?? '--'}</div>
                                                 <div className="w-28 text-center text-green-600">{record?.duration ?? '00:00'}</div>
                                             </div>

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "../constants/axiosInstance";
 import Loading from "./Loading";
-import { BASE_URL } from "../constants/api";
+import { BASE_URL, timeZone } from "../constants/api";
+import { useSelector } from "react-redux";
 
 const USERS_PER_PAGE = 10;
 
 const AllUserAttendance = ({ attendanceData, isLoading }) => {
-  console.log(attendanceData)
+  // console.log(attendanceData)
+  const { user } = useSelector((state) => state.auth)
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
@@ -50,8 +52,8 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice((currentPage2 - 1) * itemsPerPage, currentPage2 * itemsPerPage);
 
-    const handlePrevious = () => currentPage > 1 && setCurrentPage(p => p - 1);
-    const handleNext = () => currentPage < totalPages && setCurrentPage(p => p + 1);
+  const handlePrevious = () => currentPage > 1 && setCurrentPage(p => p - 1);
+  const handleNext = () => currentPage < totalPages && setCurrentPage(p => p + 1);
 
   const handleUserSelect = (userId) => {
     setSelectedUserId(userId === selectedUserId ? null : userId);
@@ -78,8 +80,8 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
         <button
           key={i}
           className={`px-3 py-1 text-sm rounded border ${i === currentPage
-              ? "bg-primary-500 text-white border-primary-500"
-              : "border-gray-300 text-gray-700 hover:bg-gray-200"
+            ? "bg-primary-500 text-white border-primary-500"
+            : "border-gray-300 text-gray-700 hover:bg-gray-200"
             }`}
           onClick={() => setCurrentPage(i)}
         >
@@ -104,8 +106,8 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
         <button
           key={i}
           className={`px-3 py-1 text-sm rounded border ${i === currentPage2
-              ? "bg-primary-600 text-white border-blue-500"
-              : "border-gray-300 text-gray-700 hover:bg-gray-200"
+            ? "bg-primary-600 text-white border-blue-500"
+            : "border-gray-300 text-gray-700 hover:bg-gray-200"
             }`}
           onClick={() => setCurrentPage2(i)}
         >
@@ -201,28 +203,30 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
                         <td className="px-4 py-2 text-center">{att.date}</td>
                         <td className="px-4 py-2 text-center">
                           {att.inTime
-                            ? new Date(att.inTime).toLocaleTimeString([], {
+                            ? `${new Date(att.inTime).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
-                            })
+                            })} ${timeZone(user.timeZone)}`
                             : "--"}
                         </td>
-                        <td className="px-4 py- text-center2">
+
+                        <td className="px-4 py-2 text-center">
                           {att.outTime
-                            ? new Date(att.outTime).toLocaleTimeString([], {
+                            ? `${new Date(att.outTime).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
-                            })
+                            })} ${timeZone(user.timeZone)}`
                             : "--"}
                         </td>
+
                         <td className="px-4 py-2 text-center">{att.duration || "--"}</td>
                         <td className="px-4 py- text-center">
                           <span
                             className={`px-2 py-1 rounded text-xs ${att.status === "Absent"
-                                ? "bg-red-500 text-white"
-                                : att.status === "Half Day"
-                                  ? "bg-yellow-400 text-gray-800"
-                                  : "bg-green-500 text-white"
+                              ? "bg-red-500 text-white"
+                              : att.status === "Half Day"
+                                ? "bg-yellow-400 text-gray-800"
+                                : "bg-green-500 text-white"
                               }`}
                           >
                             {att.status}
