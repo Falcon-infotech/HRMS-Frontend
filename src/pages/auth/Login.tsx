@@ -34,7 +34,8 @@ const Login: React.FC = () => {
 
     try {
       // await login(email, password);
-      const resultAction = await dispatch(loginUser({ email, password })).unwrap();
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const resultAction = await dispatch(loginUser({ email, password,timeZone })).unwrap();
       if (resultAction.user.role === 'admin' || resultAction.user.role === 'hr') {
         navigate('/dashboard');
       }
