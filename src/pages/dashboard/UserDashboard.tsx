@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import Loading from '../../components/Loading';
 import ActivitiesTab from '../../components/ActivitiesTab';
+import { isToday } from 'date-fns';
 
 
 
@@ -57,6 +58,17 @@ const UserDashboard = () => {
     const date = new Date(holiday.date)
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear
   })
+
+  function IsTodayHoliday() {
+    const today = new Date().toISOString().split("T")[0];
+    const data = holidatsThisMonth.find((holiday) => {
+      let holidayDate = new Date(holiday.date).toISOString().split("T")[0]
+      return holidayDate === today
+    })
+    return data
+  }
+
+  console.log(IsTodayHoliday()?.reason)
 
 
   const getCurrentWeekDates = () => {
@@ -445,9 +457,14 @@ const UserDashboard = () => {
                 <div className="mt-6 text-center">
                   {isOnHoliday ? (
                     <>
-                      <p className="text-orange-500 font-semibold mb-3">
+                      <p className="text-orange-500 font-semibold mb-1">
                         Today is a holiday. Check-in is disabled.
                       </p>
+                      {IsTodayHoliday()?.reason && (
+                        <p className="text-orange-600 italic mb-3">
+                          {IsTodayHoliday().reason}
+                        </p>
+                      )}
                       <button
                         className="bg-gray-400 text-white px-6 py-2 rounded-lg shadow cursor-not-allowed"
                         disabled
@@ -455,6 +472,7 @@ const UserDashboard = () => {
                         Check In
                       </button>
                     </>
+
                   ) : isOnLeave ? (
                     <>
                       <p className="text-red-500 font-semibold mb-3">
