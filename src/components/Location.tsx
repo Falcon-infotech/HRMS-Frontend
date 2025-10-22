@@ -34,7 +34,7 @@ const Location = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null)
   const [updateLoading, setUpdateLoading] = useState(false)
-const [search ,setSearch]=useState("")
+  const [search, setSearch] = useState("")
   const [form, setForm] = useState({
     branchName: '',
     branchCode: '',
@@ -44,7 +44,7 @@ const [search ,setSearch]=useState("")
   });
 
 
-  const filteredSearch=branches.filter((branch)=>(
+  const filteredSearch = branches.filter((branch) => (
     branch.branchName.toLocaleLowerCase().includes(search) ||
     branch.country.toLocaleLowerCase().includes(search) ||
     branch.branchCode.toLocaleLowerCase().includes(search)
@@ -138,7 +138,7 @@ const [search ,setSearch]=useState("")
       setUpdateLoading(true);
       await axios.put(`${BASE_URL}/api/branch/update/${selectedBranch._id}`, editForm);
       setIsEditMode(false);
-      fetchLocations(); 
+      fetchLocations();
       setSelectedBranch((prev) => prev ? {
         ...prev,
         ...editForm
@@ -174,7 +174,7 @@ const [search ,setSearch]=useState("")
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
@@ -191,23 +191,23 @@ const [search ,setSearch]=useState("")
       </div>
 
       {/* Action Bar */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 gap-3">
         <div className="relative w-64">
           <input
             type="text"
             placeholder="Search branches..."
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             value={search}
-            onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setSearch(e.target.value)
             }}
           />
-          
-          <svg 
-            className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
+
+          <svg
+            className="w-5 h-5 absolute left-3 top-2.5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -218,7 +218,9 @@ const [search ,setSearch]=useState("")
           className="bg-primary-600 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 hover:bg-primary-700 transition shadow-md hover:shadow-lg"
         >
           <MdAdd className="w-5 h-5" />
-          Create New Branch
+          <span className='hidden sm:inline'>Create New Branch</span>
+          <span className="sm:hidden">Create</span>
+
         </button>
       </div>
 
@@ -243,7 +245,7 @@ const [search ,setSearch]=useState("")
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm overflow-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -257,8 +259,8 @@ const [search ,setSearch]=useState("")
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredSearch.map((branch) => (
-                <tr 
-                  key={branch._id} 
+                <tr
+                  key={branch._id}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => fetchBranchDetail(branch._id)}
                 >
@@ -277,7 +279,7 @@ const [search ,setSearch]=useState("")
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button 
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         fetchBranchDetail(branch._id);
@@ -300,8 +302,8 @@ const [search ,setSearch]=useState("")
           <div className="bg-white rounded-xl w-full max-w-2xl shadow-xl overflow-hidden">
             <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-800">Create New Branch</h2>
-              <button 
-                onClick={() => setIsModalOpen(false)} 
+              <button
+                onClick={() => setIsModalOpen(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <MdClose className="w-6 h-6" />
@@ -346,8 +348,8 @@ const [search ,setSearch]=useState("")
                       />
                       <label
                         htmlFor={`weekend-${day}`}
-                        className={`flex-1 text-center py-2 rounded-lg border cursor-pointer transition ${form.weekends.includes(day) 
-                          ? 'bg-primary-100 border-primary-500 text-primary-700' 
+                        className={`flex-1 text-center py-2 rounded-lg border cursor-pointer transition ${form.weekends.includes(day)
+                          ? 'bg-primary-100 border-primary-500 text-primary-700'
                           : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'}`}
                       >
                         {day.substring(0, 3)}
@@ -522,8 +524,8 @@ const [search ,setSearch]=useState("")
                               />
                               <label
                                 htmlFor={`edit-weekend-${day}`}
-                                className={`flex-1 text-center py-2 rounded-lg border cursor-pointer transition ${editForm.weekends.includes(day) 
-                                  ? 'bg-primary-100 border-primary-500 text-primary-700' 
+                                className={`flex-1 text-center py-2 rounded-lg border cursor-pointer transition ${editForm.weekends.includes(day)
+                                  ? 'bg-primary-100 border-primary-500 text-primary-700'
                                   : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'}`}
                               >
                                 {day.substring(0, 3)}
@@ -552,7 +554,7 @@ const [search ,setSearch]=useState("")
                       <FiUsers className="text-gray-500" />
                       Associated Users ({selectedBranch?.associatedUsersCount})
                     </h4>
-                    
+
                     {selectedBranch?.associatedUsersCount === 0 ? (
                       <div className="text-center py-6">
                         <div className="mx-auto w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-3">
