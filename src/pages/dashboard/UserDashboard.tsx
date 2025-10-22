@@ -270,7 +270,7 @@ const UserDashboard = () => {
 
   const [isStatusLoading, setIsStatusLoading] = useState(true);
   const [isOnLeave, setIsOnLeave] = useState(false);
-
+  const [isOnHoliday, setIsOnHoliday] = useState(false)
 
   const fetchStatus = async (showLoading: boolean = true) => {
     if (showLoading) setIsStatusLoading(true);
@@ -280,9 +280,11 @@ const UserDashboard = () => {
 
       );
 
-      // console.log(res.data.attendance)
+      console.log(res.data.attendance)
       if (res.data?.attendance?.status === "Leave") {
         setIsOnLeave(true)
+      } else if (res.data?.attendance?.status === "Holiday") {
+        setIsOnHoliday(true)
       }
       if (res?.data?.attendance?.inTime) {
         setCheckInTime(res.data?.attendance?.inTime);
@@ -441,7 +443,19 @@ const UserDashboard = () => {
                 </div>
 
                 <div className="mt-6 text-center">
-                  {isOnLeave ? (
+                  {isOnHoliday ? (
+                    <>
+                      <p className="text-orange-500 font-semibold mb-3">
+                        Today is a holiday. Check-in is disabled.
+                      </p>
+                      <button
+                        className="bg-gray-400 text-white px-6 py-2 rounded-lg shadow cursor-not-allowed"
+                        disabled
+                      >
+                        Check In
+                      </button>
+                    </>
+                  ) : isOnLeave ? (
                     <>
                       <p className="text-red-500 font-semibold mb-3">
                         You are on leave today. Check-in is disabled.
@@ -480,9 +494,10 @@ const UserDashboard = () => {
                   ) : (
                     <div className="flex items-center gap-2 justify-center px-6 py-2 bg-blue-500 rounded-lg">
                       <div className="w-5 h-5 border-2 rounded-full border-blue-400 border-t-yellow-500 animate-spin" />
-                      <span className='text-white'>Checking-Out...</span>
+                      <span className="text-white">Checking-Out...</span>
                     </div>
                   )}
+
                 </div>
 
 
