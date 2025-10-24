@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
+import * as currencyCodes from "currency-codes";
 
 const EmployeeForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,9 +41,10 @@ const EmployeeForm: React.FC = () => {
     country: '',
     empployeeId: "",
     id: "",
-    branch: ""
+    branch: "",
+    currency: "INR"
   });
-
+  const currencies = currencyCodes.data;
   const [emergencyContact, setEmergencyContact] = useState({
     name: '',
     relationship: '',
@@ -338,7 +340,7 @@ const EmployeeForm: React.FC = () => {
   }
 
 
-  const handleuploadImage = async (e) => {
+  const handleuploadImage = async (e: any) => {
     e.stopPropagation();
 
     if (!images) {
@@ -966,19 +968,34 @@ const EmployeeForm: React.FC = () => {
                     </div> */}
 
                     <div className="form-group">
-                      <label htmlFor="joininsalarygDate" className="form-label">Salary *</label>
-                      <input
-                        type="number"
-                        id="salary"
-                        name="salary"
-                        className={`form-input`}
-                        value={employee.salary || ''}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      {formErrors.salary && (
-                        <p className="mt-1 text-sm text-red-600">{formErrors.salary}</p>
-                      )}
+                      <label htmlFor="salary" className="form-label">
+                        Salary *
+                      </label>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          id="salary"
+                          name="salary"
+                          className="form-input border border-gray-300 rounded-md p-2 w-full"
+                          value={employee?.salary}
+                          onChange={handleInputChange}
+                          required
+                        />
+
+                        <select
+                          name="currency"
+                          value={employee?.currency}
+                          onChange={handleInputChange}
+                          className="border border-gray-300 rounded-md p-2 w-1/2"
+                        >
+                          {currencies.map((c: any) => (
+                            <option key={c.code} value={c.code}>
+                              {c.code} - {c.currency}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                     <div className="form-group">
                       <label htmlFor="joiningDate" className="form-label">Joining Date *</label>
