@@ -68,7 +68,7 @@ const UserDashboard = () => {
     return data
   }
 
-  console.log(IsTodayHoliday()?.reason)
+  // console.log(IsTodayHoliday()?.reason)
 
 
   const getCurrentWeekDates = () => {
@@ -92,8 +92,9 @@ const UserDashboard = () => {
         status = '';
       } else if (attendanceData[dateStr]) {
         status = attendanceData[dateStr];
+        console.log(status)
         color =
-          status === 'Present'
+          status?.status === 'Present'
             ? 'text-green-600'
             : status === 'Absent'
               ? 'text-red-500'
@@ -115,6 +116,7 @@ const UserDashboard = () => {
         status,
         color,
         highlight: date.toDateString() === today.toDateString(),
+        // inTime:attendanceData[]
 
       };
     });
@@ -128,19 +130,28 @@ const UserDashboard = () => {
 
       });
       const records = res.data?.data || [];
-      // console.log(records, "records")
+      console.log(records, "records")
 
       const mapped: any = {};
       records.forEach((record: any) => {
-        mapped[record.date] = record.status;
+        mapped[record.date] = {
+          status: record.status || "N/A",
+          inTime: record.inTime || null,
+          outTime: record.outTime || null,
+          duration: record.duration || null,
+        };
       });
+      console.log(mapped)
       const todayData = records.data?.attendance;
       if (todayData?.status) {
         const todayStr = new Date().toISOString().split('T')[0];
-        mapped[todayStr] = todayData.status;
+        mapped[todayStr] = {
+          status: todayData.status || "N/A",
+          inTime: todayData.inTime || null,
+          outTime: todayData.outTime || null,
+          duration: todayData.duration || null,
+        };
       }
-      // console.log(mapped)
-
       setAttendanceData(mapped);
     } catch (err) {
       console.error('Error fetching attendance', err);
@@ -170,7 +181,7 @@ const UserDashboard = () => {
 
       setCheckInTime(inTime);
       localStorage.setItem('lastCheckInTime', inTime);
-      // setCheckInTime(response.data.attendance.inTime)??;
+      // setCheckInTime(response.data.attendance.inTime)??;                                
       toast.success('Checked in successfully');
       await fetchAttendance();
       fetchStatus(false);
