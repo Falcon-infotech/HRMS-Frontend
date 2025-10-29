@@ -76,11 +76,8 @@ const EmployeeForm: React.FC = () => {
         try {
           const token = localStorage.getItem('tokenId');
 
-          const response = await axios.get(`${BASE_URL}/api/employee/${id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await axios.get(`${BASE_URL}/api/employee/${id}`, 
+          );
 
           const existingEmployee = response.data;
           // // console.log(existingEmployee.data)
@@ -112,7 +109,8 @@ const EmployeeForm: React.FC = () => {
               empployeeId: emp._id || '',
               village: emp?.address?.village,
               id: emp.userId,
-              branch: emp?.branch
+              branch: emp?.branch,
+              currency:emp?.currency
             });
 
             // if (existingEmployee.emergencyContact) {
@@ -246,8 +244,10 @@ const EmployeeForm: React.FC = () => {
           pincode: employee.pincode || ''
         },
         userId: employee.id || '',
-        branch: employee?.branch || ""
+        branch: employee?.branch || "",
+        currency:employee?.currency || "IND"
       };
+      console.log(payload)
 
       try {
         const token = localStorage.getItem("tokenId")

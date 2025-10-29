@@ -9,18 +9,18 @@ const ActivitiesTab = React.memo(({ userDetails, weekData, holidatsThisMonth, ch
   const capitalize = (str: string) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
-// console.log(weekData)
-  function getGreeing(){
-    const hour=new Date().getHours();
-    if(hour<12){
+  // console.log(weekData)
+  function getGreeing() {
+    const hour = new Date().getHours();
+    if (hour < 12) {
       return "Good Morning";
-    }else if(hour<17){
+    } else if (hour < 17) {
       return "Good Afternoon";
     }
     return "Good Evening";
   }
-  
-// console.log(weekData)
+
+  console.log(weekData)
   return (
     <div className="space-y-6">
       {/* Greeting */}
@@ -58,7 +58,29 @@ const ActivitiesTab = React.memo(({ userDetails, weekData, holidatsThisMonth, ch
                 >
                   {item.dateNum}
                 </div>
-                <div className={`text-xs ${item.status==="-" ? "text-orange-500" :item.color}`}>{item.status==="-" ?"Absent":item.status}</div>
+                <div className={`text-xs ${item?.status.status === "-" ? "text-orange-500" : item.color}`}>{item?.status.status === "-" ? "Absent" : item?.status.status}</div>
+                <p className={`text-xs ${item?.status.status === "-" ? "text-orange-500" : item.color}`}>
+                  {item?.status.inTime
+                    ? new Date(item?.status.inTime).toLocaleString("en-IN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true, // show AM/PM
+                    })
+                    : " "}
+                </p>
+                <p className={`text-xs ${item?.status.status === "-" ? "text-orange-500" : item.color}`}>
+                  {item?.status.outTime
+                    ? new Date(item?.status.outTime).toLocaleString("en-IN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true, // show AM/PM
+                    })
+                    : ""}
+                </p>
+                <p className={`text-xs ${item?.status.status === "-" ? "text-orange-500" : item.color}`}>
+                  {item?.status.duration
+                    }
+                </p>
               </div>
             ))}
           </div>
