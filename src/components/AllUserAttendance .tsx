@@ -49,7 +49,7 @@ const AllUserAttendance = ({ attendanceData, isLoading }) => {
   const totalPages2 = Math.ceil(totalItems / itemsPerPage);
 
   const paginatedData = [...attendanceHistory]
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .sort((a, b) => new Date(b?.date) - new Date(a?.date))
     .slice((currentPage2 - 1) * itemsPerPage, currentPage2 * itemsPerPage);
 
   const handlePrevious = () => currentPage > 1 && setCurrentPage(p => p - 1);
