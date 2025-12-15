@@ -409,7 +409,6 @@ const EmployeeList: React.FC = () => {
               >
                 <option value="">All Status</option>
                 <option value="active">Active</option>
-                <option value="on-leave">On Leave</option>
                 <option value="inactive">Inactive</option>
               </select>
             </div>
@@ -543,15 +542,17 @@ const EmployeeList: React.FC = () => {
                         <Link to={`/employees/${employee._id}`} className="text-neutal-500 text-primary-600 hover:scale-[1.7]" title="View">
                           <Eye size={18} />
                         </Link>
-                        <Link to={`/employees/edit/${employee._id}`} className="text-neutal-500 hover:scale-[1.7] text-warning-500" title="Edit">
+                        {user?.role === "superAdmin" &&    <Link to={`/employees/edit/${employee._id}`} className="text-neutal-500 hover:scale-[1.7] text-warning-500" title="Edit">
                           <Edit size={18} />
-                        </Link>
-                        <button className="text-red-500 hover:text-error-500 hover:scale-[1.7]" title="Delete" onClick={() => {
+                        </Link>}
+                   
+                        {user?.role === "superAdmin" &&   <button className="text-red-500 hover:text-error-500 hover:scale-[1.7]" title="Delete" onClick={() => {
                           setSelectedEmployeeId(employee._id);
                           setShowDeleteModal(true);
                         }}>
                           <Trash2 size={18} />
-                        </button>
+                        </button>}
+
                         <div className="relative inline-block text-left">
                           {
                             user?.role === "superAdmin" && (

@@ -49,6 +49,7 @@ import { RootState } from './store/store';
 import { setAccessToken } from './constants/axiosInstance';
 import { Braces } from 'lucide-react';
 import Branch from './components/Branch';
+import Sheets from './components/Sheets';
 import DeletedUsers from './components/DeletedUsers';
 import DailyReport from './components/DailyReport';
 import MyReort from './components/MyReort';
@@ -209,6 +210,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole={['admin',"superAdmin"]}>
                     <Branch />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/sheets"
+                element={
+                  <ProtectedRoute requiredRole={['admin',"superAdmin"]}>
+                  <Sheets/>
                   </ProtectedRoute>
                 }
               />

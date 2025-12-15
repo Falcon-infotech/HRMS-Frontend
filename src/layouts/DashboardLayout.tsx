@@ -9,7 +9,8 @@ import {
   LocateIcon,
   UserX,
   BarChart,
-  HelpCircle
+  HelpCircle,
+  FileSpreadsheet
 } from 'lucide-react';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -123,6 +124,7 @@ const DashboardLayout: React.FC = () => {
     },
     { name: 'Holidays', href: '/holidays', icon: PartyPopper },
     { name: 'Branch', href: '/branch', icon: LocateIcon },
+    { name: 'Sheets', href: '/sheets', icon: FileSpreadsheet },
 
     {
       name: 'Payroll', href: '/payroll', icon: DollarSign, children: [
