@@ -179,8 +179,8 @@ const DashboardLayout: React.FC = () => {
           const restrictedSections = ["Employees", "Attendance", "Recruitment", "Reports", "Performance", "Settings", "Branch", "Deleted Employees", "Employees Daily Report"];
           return !restrictedSections.includes(item.name);
         }
-        if (user?.role === "hr") {
-          const restrictedSections = ["Branch", "Deleted Employees", "Employees Daily Report"];
+        if (user?.role === "hr" ) {
+          const restrictedSections = ["Branch", "Deleted Employees", "Employees Daily Report","Sheets"];
           return !restrictedSections.includes(item.name);
         }
 

@@ -224,7 +224,7 @@ function App() {
               <Route
                 path="/deleted"
                 element={
-                  <ProtectedRoute requiredRole={['admin',"superAdmin"]}>
+                  <ProtectedRoute requiredRole={['hr','admin',"superAdmin"]}>
                     <DeletedUsers />
                   </ProtectedRoute>
                 }
