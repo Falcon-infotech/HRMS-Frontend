@@ -1022,7 +1022,6 @@ const EmployeeForm: React.FC = () => {
                         onChange={handleInputChange}
                       >
                         <option value="active">Active</option>
-                        <option value="on-leave">On Leave</option>
                         <option value="inactive">Inactive</option>
                       </select>
                     </div>

@@ -36,5 +36,15 @@ export function timeZone(timeZone: string) {
     return abbreviation
 }
 
+export const formatDate = (d?: string | null) => {
+  if (!d) return ''
+  try {
+    return new Date(d).toISOString().split('T')[0]
+  } catch {
+    return ''
+  }
+}
+
+
 
 
